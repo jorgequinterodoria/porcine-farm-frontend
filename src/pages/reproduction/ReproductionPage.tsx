@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+// import { useQuery } from '@tanstack/react-query';
 import { 
   Plus, 
   Heart,
@@ -8,19 +8,11 @@ import {
   ClipboardCheck,
   MoreVertical
 } from 'lucide-react';
-import api from '../../api/axiosInstance';
-import type { BreedingService } from '../../types/farm.types';
+// import api from '../../api/axiosInstance';
+// import type { BreedingService } from '../../types/farm.types';
 
 export const ReproductionPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'breeding' | 'pregnancy' | 'farrowing'>('breeding');
-
-  const { data: services, isLoading: isLoadingServices } = useQuery({
-    queryKey: ['breeding-services'],
-    queryFn: async () => {
-      const response = await api.get('/reproduction/breeding'); // Needs to handle femaleId in query or list
-      return response.data.data as BreedingService[];
-    }
-  });
 
   return (
     <div className="space-y-6">

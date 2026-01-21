@@ -11,7 +11,7 @@ import {
   Bell
 } from 'lucide-react';
 import api from '../../api/axiosInstance';
-import type { Task, Notification } from '../../types/management.types';
+import type { Task } from '../../types/management.types';
 
 export const OperationsPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'tasks' | 'notifications'>('tasks');

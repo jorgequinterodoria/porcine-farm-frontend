@@ -8,8 +8,8 @@ import { useAuthStore } from '../../store/useAuthStore';
 import api from '../../api/axiosInstance';
 
 const loginSchema = z.object({
-  email: z.string().email('Invalid email address'),
-  password: z.string().min(6, 'Password must be at least 6 characters'),
+  email: z.email('Correo electrónico inválido'),
+  password: z.string().min(6, 'La contraseña debe tener al menos 6 caracteres'),
 });
 
 type LoginInputs = z.infer<typeof loginSchema>;
@@ -46,22 +46,29 @@ export const LoginPage: React.FC = () => {
       } else {
         navigate('/dashboard');
       }
-    } catch (err: any) {
-      setError(err.response?.data?.message || 'Failed to login. Please try again.');
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message || 'Error al iniciar sesión. Por favor intenta nuevamente.');
+      } else if (typeof err === 'object' && err !== null && 'response' in err) {
+        const axiosErr = err as { response?: { data?: { message?: string } } };
+        setError(axiosErr.response?.data?.message || 'Error al iniciar sesión. Por favor intenta nuevamente.');
+      } else {
+        setError('Error al iniciar sesión. Por favor intenta nuevamente.');
+      }
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center gradient-bg p-4">
-      <div className="glass w-full max-w-md p-8 rounded-2xl page-transition">
+    <div className="min-h-screen flex items-center justify-center p-4">
+      <div className="glass w-full max-w-md p-8 rounded-2xl animate-fadeIn border-t border-white/20">
         <div className="text-center mb-10">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-primary/10 rounded-2xl mb-4">
-            <LogIn className="w-8 h-8 text-primary" />
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-500/10 rounded-2xl mb-4 border border-blue-500/20 shadow-lg shadow-blue-500/10 backdrop-blur-md">
+            <LogIn className="w-8 h-8 text-blue-400" />
           </div>
-          <h1 className="text-3xl font-bold">Welcome Back</h1>
-          <p className="text-text-dim mt-2">Sign in to manage your farm</p>
+          <h1 className="text-3xl font-bold text-white">Bienvenido</h1>
+          <p className="text-slate-400 mt-2">Inicia sesión para gestionar tu granja</p>
         </div>
 
         {error && (
@@ -72,13 +79,13 @@ export const LoginPage: React.FC = () => {
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           <div className="space-y-2">
-            <label className="text-sm font-medium ml-1">Email Address</label>
+            <label className="text-sm font-medium ml-1">Correo Electrónico</label>
             <div className="relative">
               <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-text-dim" />
               <input
                 {...register('email')}
                 className="input pl-10"
-                placeholder="name@company.com"
+                placeholder="      nombre@empresa.com"
                 type="email"
               />
             </div>
@@ -86,13 +93,13 @@ export const LoginPage: React.FC = () => {
           </div>
 
           <div className="space-y-2">
-            <label className="text-sm font-medium ml-1">Password</label>
+            <label className="text-sm font-medium ml-1">Contraseña</label>
             <div className="relative">
               <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-text-dim" />
               <input
                 {...register('password')}
                 className="input pl-10"
-                placeholder="••••••••"
+                placeholder="      ••••••••"
                 type="password"
               />
             </div>
@@ -104,16 +111,9 @@ export const LoginPage: React.FC = () => {
             disabled={isLoading}
             className="btn btn-primary w-full py-3 h-12"
           >
-            {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Sign In'}
+            {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Iniciar Sesión'}
           </button>
         </form>
-
-        <p className="text-center text-text-dim text-sm mt-8">
-          Don't have an account?{' '}
-          <button className="text-primary font-medium hover:underline">
-            Register your farm
-          </button>
-        </p>
       </div>
     </div>
   );
