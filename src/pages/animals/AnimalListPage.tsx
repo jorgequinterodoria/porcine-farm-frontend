@@ -43,15 +43,15 @@ export const AnimalListPage: React.FC = () => {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-white">Animals Inventory</h1>
-          <p className="text-slate-400 mt-1">Manage and track your livestock history</p>
+          <h1 className="text-3xl font-bold text-white">Inventario de Animales</h1>
+          <p className="text-slate-400 mt-1">Gestiona y rastrea el historial de tu ganado</p>
         </div>
         <button 
           onClick={() => setIsFormOpen(true)}
           className="btn btn-primary gap-2"
         >
           <Plus className="w-4 h-4" />
-          Add Animal
+          Agregar Animal
         </button>
       </div>
 
@@ -60,7 +60,7 @@ export const AnimalListPage: React.FC = () => {
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
           <input 
             type="text"
-            placeholder="Search by code or electronic ID..."
+            placeholder="Buscar por código o ID electrónico..."
             className="input pl-10 h-10"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
@@ -73,11 +73,11 @@ export const AnimalListPage: React.FC = () => {
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
           >
-            <option value="all">All Status</option>
-            <option value="active">Active</option>
-            <option value="quarantine">Quarantine</option>
-            <option value="sold">Sold</option>
-            <option value="deceased">Deceased</option>
+            <option value="all">Todos los Estados</option>
+            <option value="active">Activo</option>
+            <option value="quarantine">Cuarentena</option>
+            <option value="sold">Vendido</option>
+            <option value="deceased">Fallecido</option>
           </select>
         </div>
       </div>
@@ -86,12 +86,12 @@ export const AnimalListPage: React.FC = () => {
         <table className="w-full text-left border-collapse">
           <thead>
             <tr className="bg-white/5 text-xs uppercase tracking-wider text-slate-400 font-bold">
-              <th className="px-6 py-4">Internal Code</th>
-              <th className="px-6 py-4">Sex</th>
-              <th className="px-6 py-4">Status</th>
-              <th className="px-6 py-4">Current Pen</th>
-              <th className="px-6 py-4">Breed</th>
-              <th className="px-6 py-4">Created</th>
+              <th className="px-6 py-4">Código Interno</th>
+              <th className="px-6 py-4">Sexo</th>
+              <th className="px-6 py-4">Estado</th>
+              <th className="px-6 py-4">Corral Actual</th>
+              <th className="px-6 py-4">Raza</th>
+              <th className="px-6 py-4">Creado</th>
               <th className="px-6 py-4"></th>
             </tr>
           </thead>
@@ -113,12 +113,12 @@ export const AnimalListPage: React.FC = () => {
                 <td className="px-6 py-4 font-bold text-blue-400 group-hover:underline">
                   {animal.internalCode}
                 </td>
-                <td className="px-6 py-4 capitalize text-white">{animal.sex}</td>
+                <td className="px-6 py-4 capitalize text-white">{animal.sex === 'male' ? 'Macho' : 'Hembra'}</td>
                 <td className="px-6 py-4">
                   <span className={`px-2 py-1 rounded-md text-[10px] font-bold uppercase ${
                     animal.currentStatus === 'active' ? 'bg-green-500/20 text-green-400' : 'bg-amber-500/20 text-amber-400'
                   }`}>
-                    {animal.currentStatus}
+                    {animal.currentStatus === 'active' ? 'Activo' : animal.currentStatus}
                   </span>
                 </td>
                 <td className="px-6 py-4">
@@ -127,7 +127,7 @@ export const AnimalListPage: React.FC = () => {
                     {animal.currentPenId ? 'Corral #4' : 'N/A'}
                   </div>
                 </td>
-                <td className="px-6 py-4 text-sm text-slate-400">{animal.breed?.name || 'Standard'}</td>
+                <td className="px-6 py-4 text-sm text-slate-400">{animal.breed?.name || 'Estándar'}</td>
                 <td className="px-6 py-4 text-sm text-slate-400">
                   {new Date(animal.createdAt).toLocaleDateString()}
                 </td>
@@ -144,8 +144,8 @@ export const AnimalListPage: React.FC = () => {
         {!isLoading && filteredAnimals?.length === 0 && (
           <div className="p-12 text-center text-slate-400">
             <Rows className="w-12 h-12 mx-auto mb-4 opacity-20" />
-            <p className="text-lg font-medium text-white">No animals found</p>
-            <p className="text-sm mt-1">Try adjusting your filters or search terms</p>
+            <p className="text-lg font-medium text-white">No se encontraron animales</p>
+            <p className="text-sm mt-1">Intenta ajustar tus filtros o términos de búsqueda</p>
           </div>
         )}
       </div>

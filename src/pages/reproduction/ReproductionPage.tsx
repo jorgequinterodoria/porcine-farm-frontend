@@ -18,12 +18,12 @@ export const ReproductionPage: React.FC = () => {
     <div className="space-y-6">
        <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold">Reproduction Cycle</h1>
-          <p className="text-text-dim mt-1">Manage breeding, pregnancy and farrowing events</p>
+          <h1 className="text-3xl font-bold text-white">Ciclo Reproductivo</h1>
+          <p className="text-slate-400 mt-1">Gestiona eventos de cría, gestación y partos</p>
         </div>
         <button className="btn btn-primary gap-2">
           <Plus className="w-4 h-4" />
-          Add Event
+          Agregar Evento
         </button>
       </div>
 
@@ -31,26 +31,26 @@ export const ReproductionPage: React.FC = () => {
         <button 
           onClick={() => setActiveTab('breeding')}
           className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-            activeTab === 'breeding' ? 'bg-primary text-white shadow-lg' : 'text-text-dim hover:text-text-main'
+            activeTab === 'breeding' ? 'bg-blue-600 text-white shadow-lg' : 'text-slate-400 hover:text-white'
           }`}
         >
-          Breeding (Celos)
+          Celos y Montas
         </button>
         <button 
           onClick={() => setActiveTab('pregnancy')}
           className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-            activeTab === 'pregnancy' ? 'bg-primary text-white shadow-lg' : 'text-text-dim hover:text-text-main'
+            activeTab === 'pregnancy' ? 'bg-blue-600 text-white shadow-lg' : 'text-slate-400 hover:text-white'
           }`}
         >
-          Pregnancies
+          Gestación
         </button>
         <button 
           onClick={() => setActiveTab('farrowing')}
           className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-            activeTab === 'farrowing' ? 'bg-primary text-white shadow-lg' : 'text-text-dim hover:text-text-main'
+            activeTab === 'farrowing' ? 'bg-blue-600 text-white shadow-lg' : 'text-slate-400 hover:text-white'
           }`}
         >
-          Farrowing (Partos)
+          Partos
         </button>
       </div>
 
@@ -60,68 +60,68 @@ export const ReproductionPage: React.FC = () => {
           [...Array(3)].map((_, i) => (
              <div key={i} className="glass p-6 rounded-2xl hover:bg-white/5 transition-all group">
                 <div className="flex items-center gap-4 mb-6">
-                    <div className="w-12 h-12 bg-error/20 rounded-xl flex items-center justify-center text-error">
+                    <div className="w-12 h-12 bg-red-500/20 rounded-xl flex items-center justify-center text-red-500">
                         <Heart className="w-6 h-6" />
                     </div>
                     <div>
-                        <h3 className="font-bold">Natural Service #88</h3>
-                        <p className="text-text-dim text-sm">Animal ID: P-203</p>
+                        <h3 className="font-bold text-white">Servicio Natural #88</h3>
+                        <p className="text-slate-400 text-sm">ID Animal: P-203</p>
                     </div>
                 </div>
                 <div className="space-y-3">
                     <div className="flex justify-between text-sm">
-                        <span className="text-text-dim">Date</span>
-                        <span className="font-medium">21/01/2024</span>
+                        <span className="text-slate-400">Fecha</span>
+                        <span className="font-medium text-white">21/01/2024</span>
                     </div>
                      <div className="flex justify-between text-sm">
-                        <span className="text-text-dim">Technician</span>
-                        <span className="font-medium">Juan Pérez</span>
+                        <span className="text-slate-400">Técnico</span>
+                        <span className="font-medium text-white">Juan Pérez</span>
                     </div>
                 </div>
                 <div className="mt-6 pt-4 border-t border-white/5 flex items-center justify-between">
-                    <span className="text-xs px-2 py-1 bg-white/5 text-text-dim rounded">In Progress</span>
-                    <button className="text-primary hover:underline text-sm font-bold">Details</button>
+                    <span className="text-xs px-2 py-1 bg-white/5 text-slate-400 rounded">En Progreso</span>
+                    <button className="text-blue-400 hover:underline text-sm font-bold">Detalles</button>
                 </div>
              </div>
           ))
         ) : activeTab === 'pregnancy' ? (
           // Pregnancy View
           <div className="col-span-full glass p-12 text-center rounded-3xl">
-             <ClipboardCheck className="w-16 h-16 mx-auto mb-4 text-text-dim/20" />
-             <h3 className="text-xl font-bold">No active pregnancies</h3>
-             <p className="text-text-dim mt-1">Confirmed pregnancies will appear here after breeding confirmation.</p>
+             <ClipboardCheck className="w-16 h-16 mx-auto mb-4 text-slate-400/20" />
+             <h3 className="text-xl font-bold text-white">No hay gestaciones activas</h3>
+             <p className="text-slate-400 mt-1">Las gestaciones confirmadas aparecerán aquí después de la confirmación del servicio.</p>
           </div>
         ) : (
           // Farrowing View
           [...Array(2)].map((_, i) => (
-            <div key={i} className="glass p-6 rounded-2xl border-l-4 border-success">
+            <div key={i} className="glass p-6 rounded-2xl border-l-4 border-green-500">
                 <div className="flex justify-between items-start mb-4">
-                     <div className="w-10 h-10 bg-success/20 rounded-lg flex items-center justify-center text-success">
+                     <div className="w-10 h-10 bg-green-500/20 rounded-lg flex items-center justify-center text-green-500">
                         <Baby className="w-5 h-5" />
                     </div>
-                    <button className="text-text-dim"><MoreVertical className="w-4 h-4" /></button>
+                    <button className="text-slate-400 hover:text-white"><MoreVertical className="w-4 h-4" /></button>
                 </div>
-                <h3 className="font-bold text-lg mb-1">Parto #F-23</h3>
-                <p className="text-sm text-text-dim mb-4">Madre: Sow_A2 (Large White)</p>
+                <h3 className="font-bold text-lg mb-1 text-white">Parto #F-23</h3>
+                <p className="text-sm text-slate-400 mb-4">Madre: Sow_A2 (Large White)</p>
                 
                 <div className="grid grid-cols-3 gap-2 mb-4">
                     <div className="bg-white/5 p-2 rounded-lg text-center">
-                        <p className="text-[10px] text-text-dim uppercase font-bold">Alive</p>
-                        <p className="text-lg font-bold text-success">14</p>
+                        <p className="text-[10px] text-slate-400 uppercase font-bold">Vivos</p>
+                        <p className="text-lg font-bold text-green-500">14</p>
                     </div>
                      <div className="bg-white/5 p-2 rounded-lg text-center">
-                        <p className="text-[10px] text-text-dim uppercase font-bold">Dead</p>
-                        <p className="text-lg font-bold text-error">1</p>
+                        <p className="text-[10px] text-slate-400 uppercase font-bold">Muertos</p>
+                        <p className="text-lg font-bold text-red-500">1</p>
                     </div>
                      <div className="bg-white/5 p-2 rounded-lg text-center">
-                        <p className="text-[10px] text-text-dim uppercase font-bold">Mumm.</p>
-                        <p className="text-lg font-bold text-warning">0</p>
+                        <p className="text-[10px] text-slate-400 uppercase font-bold">Momif.</p>
+                        <p className="text-lg font-bold text-amber-500">0</p>
                     </div>
                 </div>
 
-                <div className="flex items-center gap-2 text-xs text-text-dim">
+                <div className="flex items-center gap-2 text-xs text-slate-400">
                     <CalendarDays className="w-3.5 h-3.5" />
-                    Farrowed on Jan 18, 2024
+                    Parto el 18 Ene, 2024
                 </div>
             </div>
           ))
