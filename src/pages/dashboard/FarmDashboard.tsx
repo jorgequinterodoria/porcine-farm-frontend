@@ -27,6 +27,7 @@ export const FarmDashboard: React.FC = () => {
     }
   });
 
+  // Actualizamos los colores para Light Mode (Tonos 600 para texto, 50 para fondos)
   const stats = [
     { 
       name: 'Total de Animales', 
@@ -34,7 +35,9 @@ export const FarmDashboard: React.FC = () => {
       change: '+12%', 
       trend: 'up', 
       icon: Rows,
-      color: 'text-blue-400'
+      color: 'text-blue-600',
+      bg: 'bg-blue-50',
+      border: 'border-blue-100'
     },
     { 
       name: 'Lotes Activos', 
@@ -42,7 +45,9 @@ export const FarmDashboard: React.FC = () => {
       change: '+2', 
       trend: 'up', 
       icon: Layers,
-      color: 'text-indigo-400'
+      color: 'text-indigo-600',
+      bg: 'bg-indigo-50',
+      border: 'border-indigo-100'
     },
     { 
       name: 'Alertas Sanitarias', 
@@ -50,7 +55,9 @@ export const FarmDashboard: React.FC = () => {
       change: '-1', 
       trend: 'down', 
       icon: AlertCircle,
-      color: 'text-amber-400'
+      color: 'text-amber-600',
+      bg: 'bg-amber-50',
+      border: 'border-amber-100'
     },
     { 
       name: 'Ganancia Diaria Prom.', 
@@ -58,67 +65,85 @@ export const FarmDashboard: React.FC = () => {
       change: '+5g', 
       trend: 'up', 
       icon: Activity,
-      color: 'text-green-400'
+      color: 'text-emerald-600',
+      bg: 'bg-emerald-50',
+      border: 'border-emerald-100'
     },
   ];
 
   return (
     <div className="space-y-8">
+      {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold text-white">Resumen de la Granja</h1>
-        <p className="text-slate-400 mt-1">Métricas de rendimiento en tiempo real</p>
+        <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Resumen de la Granja</h1>
+        <p className="text-gray-500 mt-1 text-sm">Métricas de rendimiento y actividad en tiempo real.</p>
       </div>
 
+      {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {stats.map((stat) => (
-          <div key={stat.name} className="glass p-6 rounded-2xl group hover:border-blue-500/50 transition-colors">
+          <div 
+            key={stat.name} 
+            className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm hover:shadow-md hover:border-indigo-200 transition-all group"
+          >
             <div className="flex items-start justify-between">
-              <div className={`p-3 rounded-xl bg-white/5 ${stat.color}`}>
+              <div className={`p-3 rounded-xl ${stat.bg} ${stat.color} ${stat.border} border`}>
                 <stat.icon className="w-6 h-6" />
               </div>
-              <div className={`flex items-center gap-1 text-xs font-bold ${
-                stat.trend === 'up' ? 'text-green-400' : 'text-amber-400'
+              <div className={`flex items-center gap-1 text-xs font-bold px-2 py-1 rounded-full border ${
+                stat.trend === 'up' 
+                  ? 'bg-emerald-50 text-emerald-600 border-emerald-100' 
+                  : 'bg-amber-50 text-amber-600 border-amber-100'
               }`}>
                 {stat.trend === 'up' ? <ArrowUpRight className="w-3 h-3" /> : <ArrowDownRight className="w-3 h-3" />}
                 {stat.change}
               </div>
             </div>
             <div className="mt-4">
-              <p className="text-slate-400 text-sm font-medium">{stat.name}</p>
-              <p className="text-3xl font-bold mt-1 text-white">{stat.value}</p>
+              <p className="text-gray-500 text-sm font-medium">{stat.name}</p>
+              <p className="text-3xl font-bold mt-1 text-gray-900 tabular-nums">{stat.value}</p>
             </div>
           </div>
         ))}
       </div>
 
+      {/* Charts & Activity Section */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div className="lg:col-span-2 glass p-8 rounded-2xl h-[400px] flex flex-col border border-white/10">
-          <div className="flex items-center justify-between mb-8">
-            <h3 className="text-xl font-bold text-white">Rendimiento de Crecimiento</h3>
-            <select className="input w-32 h-9 py-0 text-sm">
+        
+        {/* Growth Performance Chart (Placeholder) */}
+        <div className="lg:col-span-2 bg-white p-6 rounded-xl border border-gray-200 shadow-sm flex flex-col h-[400px]">
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="text-lg font-bold text-gray-900">Rendimiento de Crecimiento</h3>
+            <select className="input h-9 py-0 text-sm w-40 bg-gray-50 border-gray-200">
               <option>Últimos 7 días</option>
               <option>Últimos 30 días</option>
             </select>
           </div>
-          <div className="flex-1 flex items-center justify-center border-2 border-dashed border-white/5 rounded-xl text-slate-500">
+          <div className="flex-1 flex items-center justify-center bg-gray-50 border-2 border-dashed border-gray-200 rounded-xl text-gray-400 text-sm">
             El gráfico de análisis de crecimiento se integrará aquí
           </div>
         </div>
 
-        <div className="glass p-8 rounded-2xl h-[400px] flex flex-col border border-white/10">
-          <h3 className="text-xl font-bold mb-6 text-white">Actividad Reciente</h3>
-          <div className="space-y-6 flex-1 overflow-y-auto">
+        {/* Recent Activity Feed */}
+        <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm flex flex-col h-[400px]">
+          <h3 className="text-lg font-bold mb-6 text-gray-900">Actividad Reciente</h3>
+          <div className="space-y-6 flex-1 overflow-y-auto pr-2 custom-scrollbar">
             {[...Array(4)].map((_, i) => (
-              <div key={i} className="flex gap-4">
-                <div className="w-2 h-2 rounded-full bg-blue-500 mt-2 flex-shrink-0" />
+              <div key={i} className="flex gap-4 group">
+                <div className="relative mt-1.5">
+                    <div className="w-2.5 h-2.5 rounded-full bg-indigo-500 ring-4 ring-indigo-50 group-hover:ring-indigo-100 transition-all" />
+                    {i !== 3 && <div className="absolute top-3 left-1/2 -translate-x-1/2 w-px h-full bg-gray-100 -mb-4" />}
+                </div>
                 <div>
-                  <p className="text-sm font-medium text-white">Lote B-104 movido a Corral #12</p>
-                  <p className="text-xs text-slate-400 mt-1">Hace 2 horas • Por Admin</p>
+                  <p className="text-sm font-medium text-gray-900 group-hover:text-indigo-600 transition-colors">
+                    Lote B-104 movido a Corral #12
+                  </p>
+                  <p className="text-xs text-gray-500 mt-1">Hace 2 horas • Por <span className="font-medium text-gray-700">Admin</span></p>
                 </div>
               </div>
             ))}
           </div>
-          <button className="btn btn-ghost w-full mt-6 border border-white/10">
+          <button className="w-full mt-6 py-2.5 text-sm font-medium text-gray-600 bg-gray-50 hover:bg-gray-100 hover:text-gray-900 rounded-lg border border-gray-200 transition-colors">
             Ver Toda la Actividad
           </button>
         </div>

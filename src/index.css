@@ -1,91 +1,134 @@
+/* En Tailwind v4, esta es la ÚNICA línea necesaria para cargar el framework */
 @import "tailwindcss";
 
+/* Definimos el tema visual (Modo Claro) usando variables CSS estándar */
 @layer base {
   :root {
-    /* Slate 900 base for better readability but still dark mode */
-    --background: 222.2 47.4% 11.2%;
-    --foreground: 210 40% 98%;
+    /* --- PALETA DE COLORES (Modo Claro) --- */
+    --background: #f8fafc;       /* Slate 50 (Gris muy claro) */
+    --foreground: #0f172a;       /* Slate 900 (Texto oscuro) */
+    
+    --card: #ffffff;             /* Blanco Puro */
+    --card-foreground: #0f172a;
+    
+    --primary: #4f46e5;          /* Indigo 600 (Tu color de marca) */
+    --primary-foreground: #ffffff;
+    
+    --border: #e2e8f0;           /* Slate 200 (Bordes suaves) */
+    --input: #e2e8f0;            /* Slate 200 */
+    --radius: 0.5rem;
 
-    --card: 217.2 32.6% 17.5%;
-    --card-foreground: 210 40% 98%;
-
-    --popover: 222.2 47.4% 11.2%;
-    --popover-foreground: 210 40% 98%;
-
-    /* Bright Blue for primary actions - high contrast */
-    --primary: 217.2 91.2% 59.8%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 75.1%; /* Lighter for better readability */
-
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
-
-    --radius: 0.75rem;
+    /* --- COMPATIBILIDAD (Para que tus componentes viejos funcionen) --- */
+    --bg-main: #f8fafc;
+    --bg-card: #ffffff;
+    --text-main: #0f172a;
+    --text-dim: #64748b;
+    --border-legacy: #e2e8f0;
   }
 
+  /* Configuraciones globales */
   body {
-    @apply antialiased min-h-screen text-slate-100;
-    background-color: #0f172a; /* Slate 900 - Lighter than 950 */
-    background-image: 
-      radial-gradient(at 0% 0%, rgba(56, 189, 248, 0.08) 0px, transparent 50%), 
-      radial-gradient(at 100% 0%, rgba(139, 92, 246, 0.08) 0px, transparent 50%);
-    background-attachment: fixed;
+    background-color: var(--background);
+    color: var(--foreground);
+    font-family: 'Inter', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    /* Forzamos limpieza de fondos */
+    background-image: none !important; 
+  }
+
+  /* Títulos */
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Outfit', sans-serif;
+    color: var(--foreground);
+    font-weight: 700;
   }
 }
 
-@layer components {
-  /* Glassmorphism Core Utilities - More readable */
-  .glass {
-    @apply bg-slate-900/80 backdrop-blur-xl border border-white/10 shadow-xl;
-  }
-  
-  .glass-card {
-    @apply bg-slate-900/60 backdrop-blur-md border border-white/5 shadow-lg rounded-2xl p-6 transition-all duration-300 hover:bg-slate-900/80 hover:border-white/10;
-  }
+/* --- CLASES PERSONALIZADAS (CSS Estándar para evitar errores) --- */
 
-  /* Form Elements */
-  .input {
-    @apply flex h-11 w-full rounded-xl border border-slate-700 bg-slate-950/80 px-4 py-2 text-sm text-slate-200 placeholder:text-slate-500 
-    focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50
-    disabled:cursor-not-allowed disabled:opacity-50 transition-all duration-200;
-  }
+/* Tarjetas (.glass ahora es blanco sólido) */
+.glass {
+  background-color: white;
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+}
 
-  .label {
-    @apply text-sm font-medium text-slate-400 ml-1 mb-2 block;
-  }
+/* Inputs (Blanco con borde gris) */
+.input {
+  display: flex;
+  width: 100%;
+  height: 2.75rem; /* 44px */
+  padding: 0.5rem 0.75rem;
+  background-color: white;
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  color: var(--foreground);
+  transition: all 0.2s;
+}
 
-  /* Buttons */
-  .btn {
-    @apply inline-flex items-center justify-center rounded-xl px-5 py-2.5 text-sm font-medium transition-all duration-300 
-    focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:ring-offset-2 focus:ring-offset-slate-900 
-    disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer active:scale-95 shadow-sm;
-  }
-  
-  .btn-primary {
-    @apply bg-blue-600/80 hover:bg-blue-600 text-white shadow-lg shadow-blue-500/20 backdrop-blur-sm border border-white/10;
-  }
+.input:focus {
+  outline: 2px solid var(--primary);
+  border-color: var(--primary);
+  outline-offset: 2px;
+}
 
-  .btn-secondary {
-    @apply bg-white/10 hover:bg-white/20 text-white border border-white/10 backdrop-blur-sm;
-  }
+.input::placeholder {
+  color: #94a3b8; /* Slate 400 */
+}
 
-  .btn-ghost {
-    @apply hover:bg-white/10 text-white/70 hover:text-white;
-  }
+/* Botones */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.5rem;
+  padding: 0.625rem 1.25rem;
+  font-weight: 500;
+  cursor: pointer;
+  border: none;
+  font-size: 0.875rem;
+}
 
-  .btn-danger {
-    @apply bg-red-500/80 hover:bg-red-600 text-white shadow-lg shadow-red-500/20 backdrop-blur-sm;
-  }
+.btn-primary {
+  background-color: var(--primary);
+  color: white;
+}
+
+.btn-primary:hover {
+  filter: brightness(0.9);
+}
+
+.btn-ghost {
+  background-color: transparent;
+  color: #64748b;
+}
+
+.btn-ghost:hover {
+  background-color: #f1f5f9;
+  color: #0f172a;
+}
+
+/* Eliminamos el gradiente oscuro */
+.gradient-bg {
+  background: none !important;
+}
+/* --- CORRECCIÓN DE INPUTS CON ICONOS --- */
+/* Esto asegura que el texto no se monte sobre la lupa */
+
+.input.pl-9 {
+  padding-left: 2.25rem !important; /* 36px */
+}
+
+.input.pl-10 {
+  padding-left: 2.5rem !important;  /* 40px */
+}
+
+.input.pl-11 {
+  padding-left: 2.75rem !important; /* 44px */
+}
+
+.input.pl-12 {
+  padding-left: 3rem !important;    /* 48px */
 }

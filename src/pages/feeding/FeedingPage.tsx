@@ -5,7 +5,8 @@ import {
   Search, 
   Package, 
   ArrowRightLeft,
-  AlertTriangle
+  AlertTriangle,
+  Filter
 } from 'lucide-react';
 import api from '../../api/axiosInstance';
 import type { FeedType } from '../../types/management.types';
@@ -22,94 +23,124 @@ export const FeedingPage: React.FC = () => {
   });
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="space-y-8">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold">Feeding & Nutrition</h1>
-          <p className="text-text-dim mt-1">Manage food inventory and daily consumption</p>
+          <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Alimentación y Nutrición</h1>
+          <p className="text-gray-500 text-sm mt-1">Gestiona el inventario de alimentos y monitorea el consumo diario.</p>
         </div>
-        <button className="btn btn-primary gap-2">
+        <button className="btn btn-primary shadow-lg shadow-indigo-500/20 gap-2">
           <Plus className="w-4 h-4" />
-          {activeTab === 'inventory' ? 'Add Inventory' : 'Log Consumption'}
+          {activeTab === 'inventory' ? 'Agregar Inventario' : 'Registrar Consumo'}
         </button>
       </div>
 
-       <div className="flex items-center gap-1 bg-white/5 p-1 rounded-xl w-fit">
+      {/* Tabs */}
+      <div className="flex items-center gap-1 bg-gray-100 p-1 rounded-lg w-full md:w-fit">
         <button 
           onClick={() => setActiveTab('inventory')}
-          className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-            activeTab === 'inventory' ? 'bg-primary text-white shadow-lg' : 'text-text-dim hover:text-text-main'
+          className={`flex-1 md:flex-none px-4 py-2 rounded-md text-sm font-medium transition-all ${
+            activeTab === 'inventory' 
+              ? 'bg-white text-gray-900 shadow-sm ring-1 ring-black/5' 
+              : 'text-gray-500 hover:text-gray-900'
           }`}
         >
-          Inventory Stock
+          Stock de Inventario
         </button>
         <button 
           onClick={() => setActiveTab('consumption')}
-          className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-            activeTab === 'consumption' ? 'bg-primary text-white shadow-lg' : 'text-text-dim hover:text-text-main'
+          className={`flex-1 md:flex-none px-4 py-2 rounded-md text-sm font-medium transition-all ${
+            activeTab === 'consumption' 
+              ? 'bg-white text-gray-900 shadow-sm ring-1 ring-black/5' 
+              : 'text-gray-500 hover:text-gray-900'
           }`}
         >
-          Consumption History
+          Historial de Consumo
         </button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className="md:col-span-3 space-y-4">
-            <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-text-dim" />
-                <input 
-                    type="text"
-                    placeholder="Search by feed name or code..."
-                    className="input pl-10 h-11"
-                />
+      {/* Main Grid Layout */}
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+        
+        {/* Left Column: Inventory List (Span 3) */}
+        <div className="lg:col-span-3 space-y-6">
+            <div className="flex gap-2">
+                <div className="relative flex-1">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                    <input 
+                        type="text"
+                        placeholder="Buscar por nombre de alimento o código..."
+                        className="input pl-9 h-10"
+                    />
+                </div>
+                <button className="h-10 w-10 flex items-center justify-center bg-white border border-gray-200 rounded-lg text-gray-500 hover:bg-gray-50 hover:text-gray-900 transition-colors">
+                    <Filter className="w-4 h-4" />
+                </button>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {isLoading ? (
-                    <div className="glass p-6 animate-pulse h-32 rounded-2xl"></div>
+                    // Skeleton
+                    [...Array(4)].map((_, i) => (
+                        <div key={i} className="bg-white border border-gray-200 p-6 animate-pulse h-32 rounded-xl"></div>
+                    ))
                 ) : feedTypes?.map(type => (
-                    <div key={type.id} className="glass p-5 rounded-2xl flex items-center justify-between group cursor-pointer hover:bg-white/5 transition-all">
+                    // Feed Type Card
+                    <div 
+                        key={type.id} 
+                        className="bg-white p-5 rounded-xl border border-gray-200 flex items-center justify-between group cursor-pointer hover:shadow-md hover:border-indigo-200 transition-all"
+                    >
                         <div className="flex items-center gap-4">
-                            <div className="w-12 h-12 bg-primary/20 rounded-xl flex items-center justify-center text-primary">
+                            <div className="w-12 h-12 bg-indigo-50 rounded-xl flex items-center justify-center text-indigo-600 border border-indigo-100 group-hover:bg-indigo-100 transition-colors">
                                 <Package className="w-6 h-6" />
                             </div>
                             <div>
-                                <h3 className="font-bold">{type.name}</h3>
-                                <p className="text-xs text-text-dim font-mono uppercase">{type.code}</p>
+                                <h3 className="font-bold text-gray-900 group-hover:text-indigo-700 transition-colors">{type.name}</h3>
+                                <p className="text-xs text-gray-500 font-mono uppercase bg-gray-100 inline-block px-1.5 py-0.5 rounded mt-1">{type.code}</p>
                             </div>
                         </div>
                         <div className="text-right">
-                            <p className="text-xl font-bold">{type.currentStockKg} kg</p>
-                            <p className="text-[10px] text-text-dim uppercase font-bold">In Stock</p>
+                            <p className="text-xl font-bold text-gray-900 tabular-nums">{type.currentStockKg} <span className="text-sm text-gray-500 font-normal">kg</span></p>
+                            <p className="text-[10px] text-gray-400 uppercase font-bold tracking-wider mt-0.5">En Stock</p>
                         </div>
                     </div>
                 ))}
             </div>
         </div>
 
-        <div className="space-y-4">
-            <div className="glass p-6 rounded-2xl">
-                <h3 className="font-bold flex items-center gap-2 mb-4">
-                    <AlertTriangle className="w-5 h-5 text-warning" />
-                    Low Stock Alerts
+        {/* Right Column: Widgets (Span 1) */}
+        <div className="space-y-6">
+            {/* Alerts Widget */}
+            <div className="bg-white p-5 rounded-xl border border-gray-200 shadow-sm">
+                <h3 className="font-bold flex items-center gap-2 mb-4 text-gray-900 text-sm">
+                    <AlertTriangle className="w-4 h-4 text-amber-500" />
+                    Alertas de Stock Bajo
                 </h3>
                 <div className="space-y-3">
-                    <div className="p-3 bg-warning/10 rounded-xl border border-warning/20">
-                        <p className="text-sm font-bold text-warning">Soy Meal (S-01)</p>
-                        <p className="text-xs">Only 45kg left! Restock soon.</p>
+                    <div className="p-3 bg-amber-50 rounded-lg border border-amber-100">
+                        <p className="text-sm font-bold text-amber-800">Harina de Soja (S-01)</p>
+                        <p className="text-xs text-amber-700 mt-1 leading-snug">¡Solo quedan 45kg! Reabastecer pronto.</p>
                     </div>
                 </div>
             </div>
 
-             <div className="glass p-6 rounded-2xl">
-                <h3 className="font-bold mb-4 flex items-center gap-2">
-                    <ArrowRightLeft className="w-5 h-5 text-primary" />
-                    Quick Actions
+            {/* Quick Actions Widget */}
+             <div className="bg-white p-5 rounded-xl border border-gray-200 shadow-sm">
+                <h3 className="font-bold mb-4 flex items-center gap-2 text-gray-900 text-sm">
+                    <ArrowRightLeft className="w-4 h-4 text-indigo-600" />
+                    Acciones Rápidas
                 </h3>
                 <div className="space-y-2">
-                    <button className="btn btn-outline w-full text-xs py-2">Inventory Adj.</button>
-                    <button className="btn btn-outline w-full text-xs py-2">Transfer Stock</button>
-                    <button className="btn btn-outline w-full text-xs py-2">Purchase Order</button>
+                    <button className="w-full py-2 px-3 text-xs font-medium text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 hover:text-indigo-600 hover:border-indigo-200 transition-all text-left">
+                        Ajuste de Inventario
+                    </button>
+                    <button className="w-full py-2 px-3 text-xs font-medium text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 hover:text-indigo-600 hover:border-indigo-200 transition-all text-left">
+                        Transferir Stock entre Silos
+                    </button>
+                    <button className="w-full py-2 px-3 text-xs font-medium text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 hover:text-indigo-600 hover:border-indigo-200 transition-all text-left">
+                        Generar Orden de Compra
+                    </button>
                 </div>
             </div>
         </div>

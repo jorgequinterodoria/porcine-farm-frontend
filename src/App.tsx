@@ -14,7 +14,7 @@ import { FeedingPage } from './pages/feeding/FeedingPage';
 import { FinancialPage } from './pages/financial/FinancialPage';
 import { OperationsPage } from './pages/operations/OperationsPage';
 import { useAuthStore } from './store/useAuthStore';
-import './styles/index.css';
+import './index.css';
 
 const queryClient = new QueryClient();
 

@@ -10,7 +10,9 @@ import {
   ShieldCheck,
   MoreVertical,
   Filter,
-  ChevronRight
+  ChevronRight,
+  Syringe,
+  AlertCircle
 } from 'lucide-react';
 import api from '../../api/axiosInstance';
 import type { HealthRecord, Medication } from '../../types/farm.types';
@@ -36,92 +38,110 @@ export const HealthPage: React.FC = () => {
   });
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="space-y-8">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-white">Salud y Sanidad</h1>
-          <p className="text-slate-400 mt-1">Rastrea tratamientos, vacunas e historial clínico</p>
+          <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Salud y Sanidad</h1>
+          <p className="text-gray-500 text-sm mt-1">Rastrea tratamientos, vacunas e historial clínico del ganado.</p>
         </div>
-        <button className="btn btn-primary gap-2">
+        <button className="btn btn-primary shadow-lg shadow-indigo-500/20 gap-2">
           <Plus className="w-4 h-4" />
           Agregar Registro
         </button>
       </div>
 
-      <div className="flex items-center gap-1 bg-white/5 p-1 rounded-xl w-fit">
-        <button 
-          onClick={() => setActiveTab('records')}
-          className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-            activeTab === 'records' ? 'bg-blue-600 text-white shadow-lg' : 'text-slate-400 hover:text-white'
-          }`}
-        >
-          Historial Clínico
-        </button>
-        <button 
-          onClick={() => setActiveTab('catalog')}
-          className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-            activeTab === 'catalog' ? 'bg-blue-600 text-white shadow-lg' : 'text-slate-400 hover:text-white'
-          }`}
-        >
-          Catálogos
-        </button>
-      </div>
-
-      <div className="flex items-center gap-4">
-        <div className="relative flex-1 max-w-md">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
-          <input 
-            type="text"
-            placeholder="Buscar registros o medicamentos..."
-            className="input pl-10 h-11"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
+      {/* Tabs & Search Container */}
+      <div className="flex flex-col md:flex-row gap-4 justify-between items-start md:items-center">
+        
+        {/* Segmented Control Tabs */}
+        <div className="flex items-center gap-1 bg-gray-100 p-1 rounded-lg w-full md:w-auto">
+          <button 
+            onClick={() => setActiveTab('records')}
+            className={`flex-1 md:flex-none px-4 py-2 rounded-md text-sm font-medium transition-all ${
+              activeTab === 'records' 
+                ? 'bg-white text-gray-900 shadow-sm ring-1 ring-black/5' 
+                : 'text-gray-500 hover:text-gray-900'
+            }`}
+          >
+            Historial Clínico
+          </button>
+          <button 
+            onClick={() => setActiveTab('catalog')}
+            className={`flex-1 md:flex-none px-4 py-2 rounded-md text-sm font-medium transition-all ${
+              activeTab === 'catalog' 
+                ? 'bg-white text-gray-900 shadow-sm ring-1 ring-black/5' 
+                : 'text-gray-500 hover:text-gray-900'
+            }`}
+          >
+            Catálogos
+          </button>
         </div>
-        <button className="btn bg-white/5 border-white/10 hover:bg-white/10 text-slate-400 p-2.5">
-          <Filter className="w-5 h-5" />
-        </button>
+
+        {/* Search & Filter */}
+        <div className="flex items-center gap-2 w-full md:w-auto">
+          <div className="relative flex-1 md:w-80">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <input 
+              type="text"
+              placeholder="Buscar registros o medicamentos..."
+              className="input pl-9 h-10"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+          </div>
+          <button className="h-10 w-10 flex items-center justify-center bg-white border border-gray-200 rounded-lg text-gray-500 hover:bg-gray-50 hover:text-gray-900 transition-colors">
+            <Filter className="w-4 h-4" />
+          </button>
+        </div>
       </div>
 
       {activeTab === 'records' ? (
         <div className="space-y-4">
           {isLoadingRecords ? (
             [...Array(3)].map((_, i) => (
-              <div key={i} className="glass p-6 rounded-2xl animate-pulse h-24"></div>
+              <div key={i} className="bg-white p-6 rounded-xl border border-gray-200 animate-pulse h-24" />
             ))
           ) : records?.length === 0 ? (
-            <div className="glass p-12 text-center rounded-3xl">
-              <History className="w-16 h-16 mx-auto mb-4 text-slate-400/20" />
-              <h3 className="text-xl font-bold text-white">Sin historial clínico</h3>
-              <p className="text-slate-400 mt-1">Registra eventos de salud para comenzar el seguimiento.</p>
+            <div className="bg-white border border-gray-200 border-dashed p-16 text-center rounded-xl">
+              <History className="w-12 h-12 mx-auto mb-4 text-gray-300" />
+              <h3 className="text-lg font-bold text-gray-900">Sin historial clínico</h3>
+              <p className="text-gray-500 mt-1 text-sm">Registra eventos de salud para comenzar el seguimiento.</p>
             </div>
           ) : (
             records?.map((record) => (
-              <div key={record.id} className="glass p-5 rounded-2xl hover:bg-white/5 transition-all group border border-transparent hover:border-white/10 flex items-center gap-5">
-                <div className="w-12 h-12 bg-blue-500/20 rounded-xl flex items-center justify-center text-blue-400">
-                  <Activity className="w-6 h-6" />
-                </div>
-                <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-1">
-                    <h3 className="font-bold text-white">{record.diagnosis || 'Observación General'}</h3>
-                    <span className={`px-2 py-0.5 rounded-md text-[10px] font-bold uppercase ${
-                      record.status === 'resolved' ? 'bg-green-500/20 text-green-400' : 'bg-amber-500/20 text-amber-400'
-                    }`}>
-                      {record.status === 'resolved' ? 'Resuelto' : 'Pendiente'}
-                    </span>
+              <div 
+                key={record.id} 
+                className="bg-white p-5 rounded-xl border border-gray-200 shadow-sm hover:shadow-md hover:border-indigo-200 transition-all group flex flex-col sm:flex-row sm:items-center gap-5 cursor-pointer"
+              >
+                <div className="flex items-center gap-5 flex-1">
+                  <div className="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center text-blue-600 border border-blue-100">
+                    <Activity className="w-6 h-6" />
                   </div>
-                  <div className="flex items-center gap-4 text-sm text-slate-400">
-                    <span className="flex items-center gap-1.5 capitalize">
-                      <Stethoscope className="w-4 h-4" />
-                      Tipo: Individual
-                    </span>
-                    <span className="flex items-center gap-1.5">
-                      <Calendar className="w-4 h-4" />
-                      {new Date(record.recordDate).toLocaleDateString()}
-                    </span>
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-1">
+                      <h3 className="font-bold text-gray-900">{record.diagnosis || 'Observación General'}</h3>
+                      <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase border ${
+                        record.status === 'resolved' 
+                          ? 'bg-green-50 text-green-700 border-green-200' 
+                          : 'bg-amber-50 text-amber-700 border-amber-200'
+                      }`}>
+                        {record.status === 'resolved' ? 'Resuelto' : 'Pendiente'}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-4 text-sm text-gray-500">
+                      <span className="flex items-center gap-1.5 capitalize">
+                        <Stethoscope className="w-4 h-4 text-gray-400" />
+                        Individual
+                      </span>
+                      <span className="flex items-center gap-1.5">
+                        <Calendar className="w-4 h-4 text-gray-400" />
+                        {new Date(record.recordDate).toLocaleDateString()}
+                      </span>
+                    </div>
                   </div>
                 </div>
-                <button className="text-slate-400 hover:text-white">
+                <button className="text-gray-400 hover:text-gray-600 p-2 hover:bg-gray-50 rounded-lg transition-colors self-end sm:self-center">
                   <MoreVertical className="w-5 h-5" />
                 </button>
               </div>
@@ -129,30 +149,69 @@ export const HealthPage: React.FC = () => {
           )}
         </div>
       ) : (
+        /* VISTA DE CATÁLOGOS */
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <div className="glass p-6 rounded-2xl">
+          
+          {/* Tarjeta de Medicamentos */}
+          <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm h-full flex flex-col">
             <div className="flex items-center gap-3 mb-6">
-              <ShieldCheck className="w-6 h-6 text-blue-400" />
-              <h3 className="font-bold text-lg text-white">Medicamentos</h3>
+              <div className="p-2 bg-indigo-50 rounded-lg text-indigo-600">
+                <ShieldCheck className="w-5 h-5" />
+              </div>
+              <h3 className="font-bold text-lg text-gray-900">Medicamentos</h3>
             </div>
-            <div className="space-y-3">
+            
+            <div className="space-y-2 flex-1">
               {isLoadingMeds ? (
-                 <div className="animate-pulse h-20 bg-white/5 rounded-xl"></div>
+                 <div className="animate-pulse h-20 bg-gray-50 rounded-xl"></div>
               ) : medications?.map(med => (
-                <div key={med.id} className="p-3 bg-white/5 rounded-xl flex items-center justify-between group">
+                <div key={med.id} className="p-3 bg-gray-50 border border-gray-100 rounded-lg flex items-center justify-between group hover:border-indigo-200 hover:bg-indigo-50/30 transition-colors cursor-pointer">
                   <div>
-                    <p className="font-medium text-sm text-white">{med.name}</p>
-                    <p className="text-xs text-slate-400">{med.presentation || 'Líquido'} - {med.unit || 'ml'}</p>
+                    <p className="font-medium text-sm text-gray-900">{med.name}</p>
+                    <p className="text-xs text-gray-500">{med.presentation || 'Líquido'} - {med.unit || 'ml'}</p>
                   </div>
-                  <ChevronRight className="w-4 h-4 text-slate-400 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <ChevronRight className="w-4 h-4 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity" />
                 </div>
               ))}
-              <button className="w-full py-2 border border-dashed border-white/10 rounded-xl text-xs text-slate-400 hover:border-blue-400 hover:text-blue-400 transition-colors">
-                + Agregar Medicamento
-              </button>
             </div>
+            
+            <button className="w-full mt-4 py-2 border border-dashed border-gray-300 rounded-lg text-xs font-medium text-gray-500 hover:border-indigo-400 hover:text-indigo-600 hover:bg-indigo-50 transition-colors">
+              + Agregar Medicamento
+            </button>
           </div>
-          {/* Repetir para Vacunas y Enfermedades */}
+
+          {/* Tarjeta Placeholder: Vacunas */}
+          <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm h-full flex flex-col opacity-75">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="p-2 bg-teal-50 rounded-lg text-teal-600">
+                <Syringe className="w-5 h-5" />
+              </div>
+              <h3 className="font-bold text-lg text-gray-900">Vacunas</h3>
+            </div>
+            <div className="flex-1 flex items-center justify-center text-center p-4">
+                <p className="text-sm text-gray-400">Próximamente gestión de inventario de vacunas</p>
+            </div>
+            <button className="w-full mt-4 py-2 border border-dashed border-gray-300 rounded-lg text-xs font-medium text-gray-500 hover:border-teal-400 hover:text-teal-600 hover:bg-teal-50 transition-colors">
+              + Agregar Vacuna
+            </button>
+          </div>
+
+           {/* Tarjeta Placeholder: Enfermedades */}
+           <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm h-full flex flex-col opacity-75">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="p-2 bg-rose-50 rounded-lg text-rose-600">
+                <AlertCircle className="w-5 h-5" />
+              </div>
+              <h3 className="font-bold text-lg text-gray-900">Enfermedades</h3>
+            </div>
+            <div className="flex-1 flex items-center justify-center text-center p-4">
+                <p className="text-sm text-gray-400">Próximamente catálogo de patologías</p>
+            </div>
+            <button className="w-full mt-4 py-2 border border-dashed border-gray-300 rounded-lg text-xs font-medium text-gray-500 hover:border-rose-400 hover:text-rose-600 hover:bg-rose-50 transition-colors">
+              + Agregar Patología
+            </button>
+          </div>
+
         </div>
       )}
     </div>

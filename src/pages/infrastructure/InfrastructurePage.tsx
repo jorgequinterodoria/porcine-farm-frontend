@@ -44,149 +44,162 @@ export const InfrastructurePage: React.FC = () => {
   );
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="space-y-8">
+      {/* --- HEADER --- */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-white">Infraestructura</h1>
-          <p className="text-slate-400 mt-1">Gestiona galpones, edificios y corrales</p>
+          <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Infraestructura</h1>
+          <p className="text-gray-500 text-sm mt-1">Gestiona galpones, edificios y corrales de tu granja.</p>
         </div>
-        <button className="btn btn-primary gap-2">
+        <button className="btn btn-primary shadow-lg shadow-indigo-500/20 gap-2">
           <Plus className="w-4 h-4" />
           Agregar {activeTab === 'facilities' ? 'Instalación' : 'Corral'}
         </button>
       </div>
 
-      <div className="flex items-center gap-1 bg-white/5 p-1 rounded-xl w-fit">
-        <button 
-          onClick={() => setActiveTab('facilities')}
-          className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-            activeTab === 'facilities' ? 'bg-blue-600 text-white shadow-lg' : 'text-slate-400 hover:text-white'
-          }`}
-        >
-          Instalaciones
-        </button>
-        <button 
-          onClick={() => setActiveTab('pens')}
-          className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-            activeTab === 'pens' ? 'bg-blue-600 text-white shadow-lg' : 'text-slate-400 hover:text-white'
-          }`}
-        >
-          Corrales
-        </button>
+      {/* --- CONTROLES (TABS + BÚSQUEDA) --- */}
+      <div className="flex flex-col md:flex-row gap-4 justify-between items-start md:items-center">
+        
+        {/* TABS (Estilo iOS Segmented Control) */}
+        <div className="flex items-center gap-1 bg-gray-100 p-1 rounded-lg w-full md:w-auto">
+          <button 
+            onClick={() => setActiveTab('facilities')}
+            className={`flex-1 md:flex-none px-4 py-2 rounded-md text-sm font-medium transition-all ${
+              activeTab === 'facilities' 
+                ? 'bg-white text-gray-900 shadow-sm ring-1 ring-black/5' 
+                : 'text-gray-500 hover:text-gray-900'
+            }`}
+          >
+            Instalaciones
+          </button>
+          <button 
+            onClick={() => setActiveTab('pens')}
+            className={`flex-1 md:flex-none px-4 py-2 rounded-md text-sm font-medium transition-all ${
+              activeTab === 'pens' 
+                ? 'bg-white text-gray-900 shadow-sm ring-1 ring-black/5' 
+                : 'text-gray-500 hover:text-gray-900'
+            }`}
+          >
+            Corrales
+          </button>
+        </div>
+
+        {/* BÚSQUEDA */}
+        <div className="relative w-full md:w-80">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+          <input 
+            type="text"
+            placeholder={`Buscar ${activeTab === 'facilities' ? 'instalaciones' : 'corrales'}...`}
+            className="input pl-9 h-10"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+        </div>
       </div>
 
-      <div className="relative max-w-md">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
-        <input 
-          type="text"
-          placeholder={`Buscar ${activeTab === 'facilities' ? 'instalaciones' : 'corrales'}...`}
-          className="input pl-10 h-11"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
-      </div>
-
+      {/* --- GRID DE CONTENIDO --- */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {activeTab === 'facilities' ? (
+          // --- VISTA DE INSTALACIONES ---
           isLoadingFacilities ? (
             [...Array(3)].map((_, i) => (
-              <div key={i} className="glass p-6 rounded-2xl animate-pulse">
+              <div key={i} className="bg-white p-6 rounded-xl border border-gray-200 animate-pulse">
                 <div className="flex items-center gap-4 mb-4">
-                  <div className="w-12 h-12 bg-white/10 rounded-xl"></div>
-                  <div className="flex-1">
-                    <div className="h-5 bg-white/10 rounded w-3/4 mb-2"></div>
-                    <div className="h-4 bg-white/10 rounded w-1/2"></div>
+                  <div className="w-12 h-12 bg-gray-100 rounded-lg"></div>
+                  <div className="flex-1 space-y-2">
+                    <div className="h-4 bg-gray-100 rounded w-3/4"></div>
+                    <div className="h-3 bg-gray-100 rounded w-1/2"></div>
                   </div>
                 </div>
                 <div className="space-y-3">
-                  <div className="h-4 bg-white/10 rounded w-full"></div>
-                  <div className="h-4 bg-white/10 rounded w-full"></div>
+                  <div className="h-3 bg-gray-100 rounded w-full"></div>
+                  <div className="h-3 bg-gray-100 rounded w-full"></div>
                 </div>
               </div>
             ))
           ) : filteredFacilities?.map((f) => (
-            <div key={f.id} className="glass p-6 rounded-2xl hover:bg-white/5 transition-all group border border-transparent hover:border-white/10">
-              <div className="flex items-start justify-between mb-4">
+            <div key={f.id} className="bg-white p-6 rounded-xl border border-gray-200 hover:shadow-md hover:border-indigo-200 transition-all group">
+              <div className="flex items-start justify-between mb-6">
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 bg-primary/20 rounded-xl flex items-center justify-center text-primary">
+                  <div className="w-12 h-12 bg-indigo-50 rounded-lg flex items-center justify-center text-indigo-600 border border-indigo-100">
                     <Building2 className="w-6 h-6" />
                   </div>
                   <div>
-                    <h3 className="font-bold text-lg text-white">{f.name}</h3>
-                    <p className="text-slate-400 text-sm font-mono uppercase tracking-wider">{f.code}</p>
+                    <h3 className="font-bold text-gray-900">{f.name}</h3>
+                    <p className="text-gray-400 text-xs font-mono uppercase tracking-wider mt-0.5">{f.code}</p>
                   </div>
                 </div>
-                <button className="text-slate-400 hover:text-white">
+                <button className="text-gray-400 hover:text-gray-600 hover:bg-gray-50 p-1 rounded transition-colors">
                   <MoreVertical className="w-5 h-5" />
                 </button>
               </div>
 
               <div className="space-y-4">
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-slate-400">Corrales</span>
-                  <span className="font-medium text-white">{f.pens?.length || 0}</span>
+                <div className="flex items-center justify-between text-sm py-2 border-b border-gray-50">
+                  <span className="text-gray-500">Corrales</span>
+                  <span className="font-semibold text-gray-900">{f.pens?.length || 0}</span>
                 </div>
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-slate-400">Capacidad</span>
-                  <span className="font-medium text-blue-400">{f.capacity || 'N/A'}</span>
+                <div className="flex items-center justify-between text-sm py-2 border-b border-gray-50">
+                  <span className="text-gray-500">Capacidad Total</span>
+                  <span className="font-semibold text-indigo-600">{f.capacity || 'N/A'}</span>
                 </div>
                 
-                <div className="pt-4 border-t border-white/5">
-                  <button className="w-full flex items-center justify-between text-sm text-slate-400 group-hover:text-blue-400 transition-colors">
+                <div className="pt-2">
+                  <button className="w-full flex items-center justify-between text-sm font-medium text-gray-500 hover:text-indigo-600 transition-colors group/btn">
                     Ver detalles internos
-                    <ChevronRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+                    <ChevronRight className="w-4 h-4 transition-transform group-hover/btn:translate-x-1" />
                   </button>
                 </div>
               </div>
             </div>
           ))
         ) : (
+          // --- VISTA DE CORRALES ---
           isLoadingPens ? (
             [...Array(3)].map((_, i) => (
-              <div key={i} className="glass p-6 rounded-2xl animate-pulse">
-                <div className="h-6 bg-white/10 rounded w-1/2 mb-4"></div>
-                <div className="space-y-4">
-                  <div className="h-4 bg-white/10 rounded w-full"></div>
-                  <div className="h-4 bg-white/10 rounded w-full"></div>
-                </div>
-              </div>
+              <div key={i} className="bg-white p-6 rounded-xl border border-gray-200 animate-pulse h-48" />
             ))
           ) : filteredPens?.map((p) => (
-            <div key={p.id} className="glass p-6 rounded-2xl hover:bg-white/5 transition-all group">
+            <div key={p.id} className="bg-white p-6 rounded-xl border border-gray-200 hover:shadow-md hover:border-indigo-200 transition-all group">
                <div className="flex items-start justify-between mb-4">
                 <div>
-                  <h3 className="font-bold text-lg text-white">{p.name}</h3>
-                  <div className="flex items-center gap-2 mt-1">
-                    <MapPin className="w-3.5 h-3.5 text-slate-400" />
-                    <span className="text-slate-400 text-sm">ID Instalación: {p.facilityId.slice(0, 8)}...</span>
+                  <h3 className="font-bold text-gray-900 text-lg">{p.name}</h3>
+                  <div className="flex items-center gap-1.5 mt-1">
+                    <MapPin className="w-3.5 h-3.5 text-gray-400" />
+                    <span className="text-gray-500 text-xs">Instalación: {p.facilityId.slice(0, 8)}...</span>
                   </div>
                 </div>
-                <span className="px-2 py-1 bg-blue-500/10 text-blue-400 rounded text-[10px] font-bold uppercase">
+                <span className="px-2 py-1 bg-gray-100 text-gray-600 border border-gray-200 rounded text-[10px] font-bold uppercase">
                   {p.code}
                 </span>
               </div>
 
-              <div className="space-y-4">
-                <div className="bg-white/5 rounded-xl p-3">
-                  <div className="flex items-center justify-between text-xs text-slate-400 mb-1">
-                    <span>Ocupación</span>
-                    <span>{p.currentOccupancy || 0} / {p.capacity}</span>
+              <div className="space-y-5">
+                {/* Barra de Progreso */}
+                <div className="bg-gray-50 rounded-lg p-3 border border-gray-100">
+                  <div className="flex items-center justify-between text-xs text-gray-500 mb-2 font-medium">
+                    <span>Ocupación Actual</span>
+                    <span className={(p.currentOccupancy ?? 0) >= p.capacity ? "text-red-600" : "text-gray-900"}>
+                      {p.currentOccupancy || 0} / {p.capacity}
+                    </span>
                   </div>
-                  <div className="h-1.5 bg-white/10 rounded-full overflow-hidden">
+                  <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
                     <div 
-                      className="h-full bg-blue-500 transition-all" 
+                      className={`h-full rounded-full transition-all duration-500 ${
+                        (p.currentOccupancy ?? 0) >= p.capacity ? 'bg-red-500' : 'bg-indigo-500'
+                      }`} 
                       style={{ width: `${Math.min(((p.currentOccupancy || 0) / p.capacity) * 100, 100)}%` }}
                     />
                   </div>
                 </div>
 
-                <div className="flex items-center gap-4">
-                  <div className="flex items-center gap-1.5 text-sm text-slate-400">
-                    <Users className="w-4 h-4" />
+                <div className="flex items-center gap-4 pt-1">
+                  <div className="flex items-center gap-1.5 text-xs font-medium text-gray-500 bg-gray-50 px-2 py-1 rounded">
+                    <Users className="w-3.5 h-3.5" />
                     Max: {p.capacity}
                   </div>
-                  <div className="flex items-center gap-1.5 text-sm text-slate-400">
-                    <LayoutGrid className="w-4 h-4" />
+                  <div className="flex items-center gap-1.5 text-xs font-medium text-gray-500 bg-gray-50 px-2 py-1 rounded">
+                    <LayoutGrid className="w-3.5 h-3.5" />
                     Tipo: Crianza
                   </div>
                 </div>
@@ -196,11 +209,14 @@ export const InfrastructurePage: React.FC = () => {
         )}
       </div>
 
+      {/* --- ESTADO VACÍO --- */}
       {(!isLoadingFacilities && !isLoadingPens && (activeTab === 'facilities' ? filteredFacilities : filteredPens)?.length === 0) && (
-        <div className="glass p-12 text-center rounded-3xl">
-          <Building2 className="w-16 h-16 mx-auto mb-4 text-slate-400/20" />
-          <h3 className="text-xl font-bold text-white">No hay nada aquí todavía</h3>
-          <p className="text-slate-400 mt-1">Empieza agregando tu primera {activeTab === 'facilities' ? 'instalación' : 'corral'}.</p>
+        <div className="bg-white border border-gray-200 border-dashed p-16 text-center rounded-xl">
+          <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4">
+            <Building2 className="w-8 h-8 text-gray-300" />
+          </div>
+          <h3 className="text-lg font-bold text-gray-900">No hay nada aquí todavía</h3>
+          <p className="text-gray-500 mt-1 text-sm">Empieza agregando tu primera {activeTab === 'facilities' ? 'instalación' : 'corral'}.</p>
         </div>
       )}
     </div>

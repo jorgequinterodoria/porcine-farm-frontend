@@ -9,7 +9,8 @@ import {
   ArrowUpRight,
   MoreVertical,
   Filter,
-  PieChart
+  PieChart,
+  Wallet
 } from 'lucide-react';
 import api from '../../api/axiosInstance';
 import type { FinancialTransaction } from '../../types/management.types';
@@ -24,104 +25,148 @@ export const FinancialPage: React.FC = () => {
   });
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="space-y-8">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-white">Finanzas y Ventas</h1>
-          <p className="text-slate-400 mt-1">Monitorea ingresos, gastos y ventas de animales</p>
+          <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Finanzas y Ventas</h1>
+          <p className="text-gray-500 text-sm mt-1">Monitorea ingresos, gastos y rentabilidad de la granja.</p>
         </div>
-        <div className="flex gap-2">
-            <button className="btn bg-white/5 border-white/10 hover:bg-white/10 text-slate-400 gap-2">
+        <div className="flex gap-3">
+            <button className="btn bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 hover:text-gray-900 shadow-sm gap-2">
                 <PieChart className="w-4 h-4" />
                 Reportes
             </button>
-            <button className="btn btn-primary gap-2">
+            <button className="btn btn-primary shadow-lg shadow-indigo-500/20 gap-2">
                 <Plus className="w-4 h-4" />
-                Agregar Transacción
+                Nueva Transacción
             </button>
         </div>
       </div>
 
+      {/* Summary Cards Grid */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="glass p-6 rounded-2xl relative overflow-hidden group">
-            <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
-                <TrendingUp className="w-24 h-24" />
+        {/* Card: Ingresos */}
+        <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-all relative overflow-hidden group">
+            <div className="flex justify-between items-start mb-4">
+                <div className="p-2 bg-emerald-50 rounded-lg text-emerald-600 border border-emerald-100">
+                    <TrendingUp className="w-6 h-6" />
+                </div>
+                <div className="flex items-center gap-1 text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full border border-emerald-100">
+                    <ArrowUpRight className="w-3 h-3" />
+                    <span>+15.2%</span>
+                </div>
             </div>
-            <p className="text-slate-400 text-sm font-medium mb-1">Ingresos Totales (Mensual)</p>
-            <h2 className="text-3xl font-bold text-green-400">$12,450.00</h2>
-            <div className="mt-4 flex items-center gap-2 text-xs text-green-400">
-                <ArrowUpRight className="w-3 h-3" />
-                <span>+15.2% vs mes anterior</span>
-            </div>
-        </div>
-
-        <div className="glass p-6 rounded-2xl relative overflow-hidden group">
-            <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
-                <TrendingDown className="w-24 h-24" />
-            </div>
-            <p className="text-slate-400 text-sm font-medium mb-1">Gastos Totales (Mensual)</p>
-            <h2 className="text-3xl font-bold text-red-400">$8,120.00</h2>
-            <div className="mt-4 flex items-center gap-2 text-xs text-red-400">
-                <TrendingDown className="w-3 h-3" />
-                <span>+5.4% vs mes anterior</span>
+            <div>
+                <p className="text-gray-500 text-sm font-medium mb-1">Ingresos Totales (Mes)</p>
+                <h2 className="text-3xl font-bold text-gray-900">$12,450.00</h2>
             </div>
         </div>
 
-        <div className="glass p-6 rounded-2xl bg-blue-500/10 border-blue-500/20">
-            <p className="text-slate-400 text-sm font-medium mb-1">Balance Neto</p>
-            <h2 className="text-3xl font-bold text-blue-400">$4,330.00</h2>
-            <p className="mt-4 text-xs text-slate-400">¡Sigue así! Tu granja es rentable.</p>
+        {/* Card: Gastos */}
+        <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-all relative overflow-hidden group">
+            <div className="flex justify-between items-start mb-4">
+                <div className="p-2 bg-rose-50 rounded-lg text-rose-600 border border-rose-100">
+                    <TrendingDown className="w-6 h-6" />
+                </div>
+                <div className="flex items-center gap-1 text-xs font-bold text-rose-600 bg-rose-50 px-2 py-1 rounded-full border border-rose-100">
+                    <TrendingUp className="w-3 h-3" />
+                    <span>+5.4%</span>
+                </div>
+            </div>
+            <div>
+                <p className="text-gray-500 text-sm font-medium mb-1">Gastos Totales (Mes)</p>
+                <h2 className="text-3xl font-bold text-gray-900">$8,120.00</h2>
+            </div>
+        </div>
+
+        {/* Card: Balance Neto */}
+        <div className="bg-indigo-600 p-6 rounded-xl border border-indigo-500 shadow-lg shadow-indigo-500/20 relative overflow-hidden text-white">
+            <div className="absolute top-0 right-0 p-4 opacity-10">
+                <Wallet className="w-32 h-32 transform -rotate-12 translate-x-8 -translate-y-8" />
+            </div>
+            <div className="relative z-10">
+                <div className="flex items-center gap-2 mb-4">
+                    <div className="p-2 bg-white/20 rounded-lg backdrop-blur-sm">
+                        <DollarSign className="w-6 h-6 text-white" />
+                    </div>
+                </div>
+                <p className="text-indigo-100 text-sm font-medium mb-1">Balance Neto</p>
+                <h2 className="text-3xl font-bold text-white">$4,330.00</h2>
+                <p className="mt-4 text-xs text-indigo-100 bg-indigo-500/50 inline-block px-2 py-1 rounded border border-indigo-400/30">
+                    ¡Excelente! Tu margen es saludable.
+                </p>
+            </div>
         </div>
       </div>
 
-      <div className="glass rounded-2xl overflow-hidden">
-        <div className="p-6 border-b border-white/5 flex items-center justify-between">
-            <h3 className="font-bold flex items-center gap-2 text-white">
-                <DollarSign className="w-5 h-5 text-blue-400" />
+      {/* Transactions Table */}
+      <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+        {/* Table Header & Controls */}
+        <div className="p-5 border-b border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <h3 className="font-bold text-lg text-gray-900 flex items-center gap-2">
                 Transacciones Recientes
             </h3>
             <div className="flex items-center gap-2">
                 <div className="relative">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                    <input type="text" placeholder="Buscar..." className="input pl-9 h-9 text-xs w-48" />
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                    <input 
+                        type="text" 
+                        placeholder="Buscar movimiento..." 
+                        className="pl-9 h-9 w-64 rounded-lg border border-gray-300 text-sm focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all outline-none" 
+                    />
                 </div>
-                <button className="btn bg-white/5 border-white/10 p-2 min-h-0 h-9 text-slate-400">
+                <button className="h-9 w-9 flex items-center justify-center border border-gray-300 rounded-lg text-gray-500 hover:bg-gray-50 hover:text-gray-900 transition-colors bg-white">
                     <Filter className="w-4 h-4" />
                 </button>
             </div>
         </div>
-        <table className="w-full text-left">
-            <thead>
-                <tr className="bg-white/5 text-[10px] uppercase tracking-wider text-slate-400 font-bold">
-                    <th className="px-6 py-3">Fecha</th>
-                    <th className="px-6 py-3">Descripción</th>
-                    <th className="px-6 py-3">Categoría</th>
-                    <th className="px-6 py-3 text-right">Monto</th>
-                    <th className="px-6 py-3"></th>
-                </tr>
-            </thead>
-            <tbody className="divide-y divide-white/5">
-                {isLoading ? (
-                    <tr><td colSpan={5} className="px-6 py-8 text-center animate-pulse text-slate-400">Cargando transacciones...</td></tr>
-                ) : transactions?.length === 0 ? (
-                    <tr><td colSpan={5} className="px-6 py-12 text-center text-slate-400">No se encontraron transacciones</td></tr>
-                ) : transactions?.map(tx => (
-                    <tr key={tx.id} className="hover:bg-white/5 transition-colors group">
-                        <td className="px-6 py-4 text-sm font-mono text-slate-300">{new Date(tx.transactionDate).toLocaleDateString()}</td>
-                        <td className="px-6 py-4 text-sm font-medium text-white">{tx.description}</td>
-                        <td className="px-6 py-4">
-                            <span className="px-2 py-1 bg-white/5 rounded-md text-[10px] uppercase font-bold text-slate-400">Gasto de Alimento</span>
-                        </td>
-                        <td className={`px-6 py-4 text-sm font-bold text-right ${tx.transactionType === 'income' ? 'text-green-400' : 'text-red-400'}`}>
-                            {tx.transactionType === 'income' ? '+' : '-'}${tx.amount.toLocaleString()}
-                        </td>
-                        <td className="px-6 py-4 text-right">
-                            <button className="text-slate-400 hover:text-white"><MoreVertical className="w-4 h-4" /></button>
-                        </td>
+
+        {/* Table Content */}
+        <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse">
+                <thead>
+                    <tr className="bg-gray-50/50 border-b border-gray-200 text-xs uppercase tracking-wider text-gray-500 font-semibold">
+                        <th className="px-6 py-4">Fecha</th>
+                        <th className="px-6 py-4">Descripción</th>
+                        <th className="px-6 py-4">Categoría</th>
+                        <th className="px-6 py-4 text-right">Monto</th>
+                        <th className="px-6 py-4"></th>
                     </tr>
-                ))}
-            </tbody>
-        </table>
+                </thead>
+                <tbody className="divide-y divide-gray-100">
+                    {isLoading ? (
+                        <tr><td colSpan={5} className="px-6 py-12 text-center text-gray-400 animate-pulse">Cargando información financiera...</td></tr>
+                    ) : transactions?.length === 0 ? (
+                        <tr><td colSpan={5} className="px-6 py-16 text-center text-gray-500">No se encontraron transacciones registradas</td></tr>
+                    ) : transactions?.map(tx => (
+                        <tr key={tx.id} className="hover:bg-gray-50 transition-colors group">
+                            <td className="px-6 py-4 text-sm font-medium text-gray-900 tabular-nums">
+                                {new Date(tx.transactionDate).toLocaleDateString()}
+                            </td>
+                            <td className="px-6 py-4 text-sm text-gray-700 font-medium">
+                                {tx.description}
+                            </td>
+                            <td className="px-6 py-4">
+                                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-600 border border-gray-200">
+                                    Gasto de Alimento
+                                </span>
+                            </td>
+                            <td className={`px-6 py-4 text-sm font-bold text-right tabular-nums ${
+                                tx.transactionType === 'income' ? 'text-emerald-600' : 'text-rose-600'
+                            }`}>
+                                {tx.transactionType === 'income' ? '+' : '-'}${tx.amount.toLocaleString()}
+                            </td>
+                            <td className="px-6 py-4 text-right">
+                                <button className="text-gray-400 hover:text-gray-600 p-2 hover:bg-gray-100 rounded-lg transition-colors">
+                                    <MoreVertical className="w-4 h-4" />
+                                </button>
+                            </td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+        </div>
       </div>
     </div>
   );

@@ -38,63 +38,72 @@ export const TenantListPage: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="space-y-8">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-white">System Tenants</h1>
-          <p className="text-slate-400 mt-1">Manage farms and global administrative access</p>
+          <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Granjas del Sistema</h1>
+          <p className="text-gray-500 text-sm mt-1">Gestiona accesos y suscripciones de tus clientes.</p>
         </div>
         <button 
           onClick={() => setIsFormOpen(true)}
-          className="btn btn-primary gap-2"
+          className="btn btn-primary shadow-lg shadow-indigo-500/20 gap-2"
         >
           <Plus className="w-4 h-4" />
-          New Farm
+          Nueva Granja
         </button>
       </div>
 
+      {/* Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {isLoading ? (
           [...Array(3)].map((_, i) => (
-            <div key={i} className="glass h-48 animate-pulse rounded-2xl" />
+            <div key={i} className="bg-white p-6 rounded-xl border border-gray-200 animate-pulse h-48 shadow-sm" />
           ))
         ) : tenants?.map((tenant) => (
-          <div key={tenant.id} className="glass p-6 rounded-2xl relative overflow-hidden group hover:border-blue-500/30 transition-all">
+          <div 
+            key={tenant.id} 
+            className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm hover:shadow-md hover:border-indigo-300 transition-all relative overflow-hidden group"
+          >
             <div className="flex items-center justify-between mb-4">
-              <div className="w-12 h-12 bg-blue-500/10 rounded-xl flex items-center justify-center border border-blue-500/20">
-                <Globe className="text-blue-400 w-6 h-6" />
+              <div className="w-12 h-12 bg-indigo-50 rounded-xl flex items-center justify-center text-indigo-600 border border-indigo-100">
+                <Globe className="w-6 h-6" />
               </div>
               <div className="flex items-center gap-2">
-                <span className={`px-2 py-1 rounded-md text-[10px] font-bold uppercase border ${
+                <span className={`px-2.5 py-1 rounded-full text-xs font-bold uppercase border ${
                   tenant.isActive 
-                    ? 'bg-green-500/10 text-green-400 border-green-500/20' 
-                    : 'bg-red-500/10 text-red-400 border-red-500/20'
+                    ? 'bg-green-50 text-green-700 border-green-200' 
+                    : 'bg-red-50 text-red-700 border-red-200'
                 }`}>
-                  {tenant.isActive ? 'Active' : 'Inactive'}
+                  {tenant.isActive ? 'Activo' : 'Inactivo'}
                 </span>
-                <button className="text-slate-400 hover:text-white p-1.5 rounded-lg hover:bg-white/5 transition-colors">
+                <button className="text-gray-400 hover:text-gray-600 hover:bg-gray-50 p-1.5 rounded-lg transition-colors">
                   <MoreVertical className="w-4 h-4" />
                 </button>
               </div>
             </div>
             
-            <h3 className="text-xl font-bold text-white">{tenant.name}</h3>
-            <p className="text-slate-400 text-sm mt-1">{tenant.subdomain}.porcifarm.com</p>
+            <h3 className="text-lg font-bold text-gray-900 group-hover:text-indigo-600 transition-colors">
+              {tenant.name}
+            </h3>
+            <p className="text-gray-500 text-sm mt-1 font-mono bg-gray-50 inline-block px-2 py-0.5 rounded">
+              {tenant.subdomain}.porcifarm.com
+            </p>
             
-            <div className="flex items-center gap-6 mt-6 pt-6 border-t border-white/5">
-              <div className="flex items-center gap-1.5 text-xs text-slate-400 font-medium">
-                <Users className="w-4 h-4" />
-                {tenant.maxUsers} Users
+            <div className="flex items-center gap-6 mt-6 pt-6 border-t border-gray-100">
+              <div className="flex items-center gap-1.5 text-xs text-gray-500 font-medium">
+                <Users className="w-4 h-4 text-gray-400" />
+                {tenant.maxUsers} Usuarios
               </div>
-              <div className="flex items-center gap-1.5 text-xs text-slate-400 font-medium capitalize">
-                <LayoutDashboard className="w-4 h-4" />
-                {tenant.subscriptionPlan}
+              <div className="flex items-center gap-1.5 text-xs text-gray-500 font-medium capitalize">
+                <LayoutDashboard className="w-4 h-4 text-gray-400" />
+                Plan {tenant.subscriptionPlan}
               </div>
             </div>
 
-            {/* Background decoration */}
-            <div className="absolute -right-4 -bottom-4 opacity-[0.03] group-hover:opacity-[0.05] transition-opacity pointer-events-none">
-              <Globe className="w-32 h-32" />
+            {/* Decoración de fondo sutil */}
+            <div className="absolute -right-6 -bottom-6 text-gray-50 opacity-[0.4] group-hover:opacity-[0.6] transition-opacity pointer-events-none group-hover:text-indigo-50">
+              <Globe className="w-32 h-32 transform rotate-12" />
             </div>
           </div>
         ))}
@@ -107,52 +116,50 @@ export const TenantListPage: React.FC = () => {
         isLoading={createTenant.isPending}
       />
 
-      {/* Credentials Modal */}
+      {/* MODAL DE CREDENCIALES (ÉXITO) */}
       {createdCredentials && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fadeIn">
-          <div className="glass w-full max-w-md p-6 rounded-2xl relative animate-scaleIn border border-green-500/20">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/40 backdrop-blur-sm animate-fadeIn">
+          <div className="bg-white w-full max-w-md p-8 rounded-2xl relative shadow-2xl border border-gray-100 animate-scaleIn">
             <button 
               onClick={() => setCreatedCredentials(null)}
-              className="absolute top-4 right-4 text-slate-400 hover:text-white transition-colors"
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 hover:bg-gray-100 p-1 rounded-full transition-colors"
             >
               <X className="w-5 h-5" />
             </button>
             
-            <div className="flex flex-col items-center text-center mb-6">
-              <div className="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center mb-4 border border-green-500/30 shadow-[0_0_15px_rgba(34,197,94,0.3)]">
-                <CheckCircle className="w-8 h-8 text-green-400" />
+            <div className="flex flex-col items-center text-center mb-8">
+              <div className="w-16 h-16 bg-green-50 rounded-full flex items-center justify-center mb-4 border border-green-100 text-green-600 shadow-sm">
+                <CheckCircle className="w-8 h-8" />
               </div>
-              <h3 className="text-2xl font-bold text-white">Farm Created!</h3>
-              <p className="text-slate-400 mt-2 text-sm">
-                Please copy these credentials safely. The password will not be shown again.
+              <h3 className="text-xl font-bold text-gray-900">¡Granja Creada con Éxito!</h3>
+              <p className="text-gray-500 mt-2 text-sm max-w-xs mx-auto">
+                Copia estas credenciales ahora. Por seguridad, la contraseña no se volverá a mostrar.
               </p>
             </div>
 
-            <div className="space-y-4 bg-slate-950/50 p-4 rounded-xl border border-white/5">
-              <div className="space-y-1">
-                <label className="text-xs font-medium text-slate-500 uppercase tracking-wider">Admin Email</label>
-                <div className="flex items-center justify-between group">
-                  <code className="text-sm font-mono text-white">{createdCredentials.email}</code>
+            <div className="space-y-5 bg-gray-50 p-5 rounded-xl border border-gray-200">
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">Email Administrador</label>
+                <div className="flex items-center justify-between group bg-white p-2.5 rounded-lg border border-gray-200 hover:border-indigo-300 transition-colors">
+                  <code className="text-sm font-mono text-gray-900">{createdCredentials.email}</code>
                   <button 
                     onClick={() => copyToClipboard(createdCredentials.email)}
-                    className="p-1.5 text-slate-500 hover:text-blue-400 hover:bg-blue-500/10 rounded-lg transition-all opacity-0 group-hover:opacity-100"
-                    title="Copiar Correo Electrónico"
+                    className="p-1.5 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-md transition-all"
+                    title="Copiar Email"
                   >
                     <Copy className="w-4 h-4" />
                   </button>
                 </div>
               </div>
 
-              <div className="h-px bg-white/5" />
-
-              <div className="space-y-1">
-                <label className="text-xs font-medium text-slate-500 uppercase tracking-wider">Contraseña Temporal</label>
-                <div className="flex items-center justify-between group bg-slate-900/50 p-3 rounded-lg border border-white/5">
-                  <code className="text-lg font-mono text-green-400 font-bold tracking-wide">{createdCredentials.password}</code>
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">Contraseña Temporal</label>
+                <div className="flex items-center justify-between group bg-white p-3 rounded-lg border border-gray-200 hover:border-green-300 transition-colors shadow-sm">
+                  <code className="text-lg font-mono text-green-700 font-bold tracking-wide">{createdCredentials.password}</code>
                   <button 
                     onClick={() => copyToClipboard(createdCredentials.password)}
-                    className="p-2 text-slate-400 hover:text-green-400 hover:bg-green-500/10 rounded-lg transition-all"
-                    title="Copy Password"
+                    className="p-2 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-md transition-all"
+                    title="Copiar Contraseña"
                   >
                     <Copy className="w-5 h-5" />
                   </button>
@@ -162,9 +169,9 @@ export const TenantListPage: React.FC = () => {
 
             <button 
               onClick={() => setCreatedCredentials(null)}
-              className="btn btn-primary w-full mt-6"
+              className="btn btn-primary w-full mt-8 py-3 text-base shadow-lg shadow-indigo-500/20"
             >
-              Hecho
+              Entendido, finalizar
             </button>
           </div>
         </div>
