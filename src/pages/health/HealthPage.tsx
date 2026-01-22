@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { 
   Plus, 
   Search, 
@@ -10,32 +10,76 @@ import {
   ShieldCheck,
   MoreVertical,
   Filter,
-  ChevronRight,
   Syringe,
-  AlertCircle
+  AlertCircle,
+  Edit,
+  Trash2
 } from 'lucide-react';
-import api from '../../api/axiosInstance';
-import type { HealthRecord, Medication } from '../../types/farm.types';
+import { getHealthRecords, getMedications, getVaccines, getDiseases, deleteMedication, deleteVaccine, deleteDisease } from '../../api/health';
+import type { Medication, Vaccine, Disease } from '../../types/farm.types';
+import { MedicationModal } from '../../components/health/MedicationModal';
+import { VaccineModal } from '../../components/health/VaccineModal';
+import { DiseaseModal } from '../../components/health/DiseaseModal';
 
 export const HealthPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'records' | 'catalog'>('records');
   const [search, setSearch] = useState('');
+  const queryClient = useQueryClient();
 
+  // Modals state
+  const [isMedicationModalOpen, setIsMedicationModalOpen] = useState(false);
+  const [selectedMedication, setSelectedMedication] = useState<Medication | null>(null);
+
+  const [isVaccineModalOpen, setIsVaccineModalOpen] = useState(false);
+  const [selectedVaccine, setSelectedVaccine] = useState<Vaccine | null>(null);
+
+  const [isDiseaseModalOpen, setIsDiseaseModalOpen] = useState(false);
+  const [selectedDisease, setSelectedDisease] = useState<Disease | null>(null);
+
+  // Queries
   const { data: records, isLoading: isLoadingRecords } = useQuery({
     queryKey: ['health-records'],
-    queryFn: async () => {
-      const response = await api.get('/health/records');
-      return response.data.data as HealthRecord[];
-    }
+    queryFn: getHealthRecords
   });
 
   const { data: medications, isLoading: isLoadingMeds } = useQuery({
     queryKey: ['medications'],
-    queryFn: async () => {
-      const response = await api.get('/health/medications');
-      return response.data.data as Medication[];
-    }
+    queryFn: getMedications
   });
+
+  const { data: vaccines, isLoading: isLoadingVaccines } = useQuery({
+    queryKey: ['vaccines'],
+    queryFn: getVaccines
+  });
+
+  const { data: diseases, isLoading: isLoadingDiseases } = useQuery({
+    queryKey: ['diseases'],
+    queryFn: getDiseases
+  });
+
+  // Delete mutations
+  const deleteMedicationMutation = useMutation({
+    mutationFn: deleteMedication,
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['medications'] })
+  });
+
+  const deleteVaccineMutation = useMutation({
+    mutationFn: deleteVaccine,
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['vaccines'] })
+  });
+
+  const deleteDiseaseMutation = useMutation({
+    mutationFn: deleteDisease,
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['diseases'] })
+  });
+
+  const handleDelete = (type: 'medication' | 'vaccine' | 'disease', id: string) => {
+    if (window.confirm('¿Estás seguro de eliminar este registro?')) {
+        if (type === 'medication') deleteMedicationMutation.mutate(id);
+        if (type === 'vaccine') deleteVaccineMutation.mutate(id);
+        if (type === 'disease') deleteDiseaseMutation.mutate(id);
+    }
+  };
 
   return (
     <div className="space-y-8">
@@ -161,59 +205,130 @@ export const HealthPage: React.FC = () => {
               <h3 className="font-bold text-lg text-gray-900">Medicamentos</h3>
             </div>
             
-            <div className="space-y-2 flex-1">
+            <div className="space-y-2 flex-1 overflow-y-auto max-h-[400px] custom-scrollbar">
               {isLoadingMeds ? (
-                 <div className="animate-pulse h-20 bg-gray-50 rounded-xl"></div>
+                <div className="animate-pulse h-20 bg-gray-50 rounded-xl"></div>
               ) : medications?.map(med => (
-                <div key={med.id} className="p-3 bg-gray-50 border border-gray-100 rounded-lg flex items-center justify-between group hover:border-indigo-200 hover:bg-indigo-50/30 transition-colors cursor-pointer">
+                <div key={med.id} className="p-3 bg-gray-50 border border-gray-100 rounded-lg flex items-center justify-between group hover:border-indigo-200 hover:bg-indigo-50/30 transition-colors">
                   <div>
-                    <p className="font-medium text-sm text-gray-900">{med.name}</p>
-                    <p className="text-xs text-gray-500">{med.presentation || 'Líquido'} - {med.unit || 'ml'}</p>
+                    <p className="font-medium text-sm text-gray-900">{med.commercialName}</p>
+                    <p className="text-xs text-gray-500">{med.presentation || 'N/A'}</p>
                   </div>
-                  <ChevronRight className="w-4 h-4 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <button onClick={() => { setSelectedMedication(med); setIsMedicationModalOpen(true); }} className="p-1.5 text-gray-400 hover:text-indigo-600 hover:bg-white rounded-md shadow-sm">
+                        <Edit className="w-3.5 h-3.5" />
+                    </button>
+                    <button onClick={() => handleDelete('medication', med.id)} className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-white rounded-md shadow-sm">
+                        <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>
             
-            <button className="w-full mt-4 py-2 border border-dashed border-gray-300 rounded-lg text-xs font-medium text-gray-500 hover:border-indigo-400 hover:text-indigo-600 hover:bg-indigo-50 transition-colors">
+            <button 
+                onClick={() => { setSelectedMedication(null); setIsMedicationModalOpen(true); }}
+                className="w-full mt-4 py-2 border border-dashed border-gray-300 rounded-lg text-xs font-medium text-gray-500 hover:border-indigo-400 hover:text-indigo-600 hover:bg-indigo-50 transition-colors"
+            >
               + Agregar Medicamento
             </button>
           </div>
 
-          {/* Tarjeta Placeholder: Vacunas */}
-          <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm h-full flex flex-col opacity-75">
+          {/* Tarjeta Vacunas */}
+          <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm h-full flex flex-col">
             <div className="flex items-center gap-3 mb-6">
               <div className="p-2 bg-teal-50 rounded-lg text-teal-600">
                 <Syringe className="w-5 h-5" />
               </div>
               <h3 className="font-bold text-lg text-gray-900">Vacunas</h3>
             </div>
-            <div className="flex-1 flex items-center justify-center text-center p-4">
-                <p className="text-sm text-gray-400">Próximamente gestión de inventario de vacunas</p>
+            
+            <div className="space-y-2 flex-1 overflow-y-auto max-h-[400px] custom-scrollbar">
+              {isLoadingVaccines ? (
+                <div className="animate-pulse h-20 bg-gray-50 rounded-xl"></div>
+              ) : vaccines?.map(vac => (
+                <div key={vac.id} className="p-3 bg-gray-50 border border-gray-100 rounded-lg flex items-center justify-between group hover:border-teal-200 hover:bg-teal-50/30 transition-colors">
+                  <div>
+                    <p className="font-medium text-sm text-gray-900">{vac.name}</p>
+                    <p className="text-xs text-gray-500">{vac.disease}</p>
+                  </div>
+                  <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <button onClick={() => { setSelectedVaccine(vac); setIsVaccineModalOpen(true); }} className="p-1.5 text-gray-400 hover:text-teal-600 hover:bg-white rounded-md shadow-sm">
+                        <Edit className="w-3.5 h-3.5" />
+                    </button>
+                    <button onClick={() => handleDelete('vaccine', vac.id)} className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-white rounded-md shadow-sm">
+                        <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                </div>
+              ))}
             </div>
-            <button className="w-full mt-4 py-2 border border-dashed border-gray-300 rounded-lg text-xs font-medium text-gray-500 hover:border-teal-400 hover:text-teal-600 hover:bg-teal-50 transition-colors">
+
+            <button 
+                onClick={() => { setSelectedVaccine(null); setIsVaccineModalOpen(true); }}
+                className="w-full mt-4 py-2 border border-dashed border-gray-300 rounded-lg text-xs font-medium text-gray-500 hover:border-teal-400 hover:text-teal-600 hover:bg-teal-50 transition-colors"
+            >
               + Agregar Vacuna
             </button>
           </div>
 
-           {/* Tarjeta Placeholder: Enfermedades */}
-           <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm h-full flex flex-col opacity-75">
+           {/* Tarjeta Enfermedades */}
+          <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm h-full flex flex-col">
             <div className="flex items-center gap-3 mb-6">
               <div className="p-2 bg-rose-50 rounded-lg text-rose-600">
                 <AlertCircle className="w-5 h-5" />
               </div>
               <h3 className="font-bold text-lg text-gray-900">Enfermedades</h3>
             </div>
-            <div className="flex-1 flex items-center justify-center text-center p-4">
-                <p className="text-sm text-gray-400">Próximamente catálogo de patologías</p>
+            
+            <div className="space-y-2 flex-1 overflow-y-auto max-h-[400px] custom-scrollbar">
+              {isLoadingDiseases ? (
+                <div className="animate-pulse h-20 bg-gray-50 rounded-xl"></div>
+              ) : diseases?.map(dis => (
+                <div key={dis.id} className="p-3 bg-gray-50 border border-gray-100 rounded-lg flex items-center justify-between group hover:border-rose-200 hover:bg-rose-50/30 transition-colors">
+                  <div>
+                    <p className="font-medium text-sm text-gray-900">{dis.name}</p>
+                    <p className="text-xs text-gray-500">{dis.code}</p>
+                  </div>
+                  <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <button onClick={() => { setSelectedDisease(dis); setIsDiseaseModalOpen(true); }} className="p-1.5 text-gray-400 hover:text-rose-600 hover:bg-white rounded-md shadow-sm">
+                        <Edit className="w-3.5 h-3.5" />
+                    </button>
+                    <button onClick={() => handleDelete('disease', dis.id)} className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-white rounded-md shadow-sm">
+                        <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                </div>
+              ))}
             </div>
-            <button className="w-full mt-4 py-2 border border-dashed border-gray-300 rounded-lg text-xs font-medium text-gray-500 hover:border-rose-400 hover:text-rose-600 hover:bg-rose-50 transition-colors">
+
+            <button 
+                onClick={() => { setSelectedDisease(null); setIsDiseaseModalOpen(true); }}
+                className="w-full mt-4 py-2 border border-dashed border-gray-300 rounded-lg text-xs font-medium text-gray-500 hover:border-rose-400 hover:text-rose-600 hover:bg-rose-50 transition-colors"
+            >
               + Agregar Patología
             </button>
           </div>
 
         </div>
       )}
+
+      {/* Modals */}
+      <MedicationModal 
+        isOpen={isMedicationModalOpen} 
+        onClose={() => setIsMedicationModalOpen(false)} 
+        medication={selectedMedication} 
+      />
+      <VaccineModal 
+        isOpen={isVaccineModalOpen} 
+        onClose={() => setIsVaccineModalOpen(false)} 
+        vaccine={selectedVaccine} 
+      />
+      <DiseaseModal 
+        isOpen={isDiseaseModalOpen} 
+        onClose={() => setIsDiseaseModalOpen(false)} 
+        disease={selectedDisease} 
+      />
     </div>
   );
 };
