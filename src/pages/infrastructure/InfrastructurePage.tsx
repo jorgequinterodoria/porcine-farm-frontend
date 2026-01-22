@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { 
   Plus, 
   Search, 
@@ -10,28 +10,79 @@ import {
   MapPin,
   Users
 } from 'lucide-react';
-import api from '../../api/axiosInstance';
-import type { Facility, Pen } from '../../types/farm.types';
+import { 
+  getFacilities, 
+  getPens, 
+  createFacility, 
+  createPen 
+} from '../../api/infrastructure';
+import { FacilityForm } from '../../components/infrastructure/FacilityForm';
+import { PenForm } from '../../components/infrastructure/PenForm';
+import type { FacilityFormData, PenFormData } from '../../types/infrastructure.types';
 
 export const InfrastructurePage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'facilities' | 'pens'>('facilities');
   const [search, setSearch] = useState('');
+  
+  // Estados para modales
+  const [isFacilityFormOpen, setIsFacilityFormOpen] = useState(false);
+  const [isPenFormOpen, setIsPenFormOpen] = useState(false);
 
+  const queryClient = useQueryClient();
+
+  // Queries
   const { data: facilities, isLoading: isLoadingFacilities } = useQuery({
     queryKey: ['facilities'],
-    queryFn: async () => {
-      const response = await api.get('/infrastructure/facilities');
-      return response.data.data as Facility[];
-    }
+    queryFn: getFacilities
   });
 
   const { data: pens, isLoading: isLoadingPens } = useQuery({
     queryKey: ['pens'],
-    queryFn: async () => {
-      const response = await api.get('/infrastructure/pens');
-      return response.data.data as Pen[];
+    queryFn: () => getPens() // Llama a getPens sin argumentos para traer todos
+  });
+
+  // Mutations
+  const createFacilityMutation = useMutation({
+    mutationFn: createFacility,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['facilities'] });
+      setIsFacilityFormOpen(false);
     }
   });
+
+  const createPenMutation = useMutation({
+    mutationFn: createPen,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['pens'] });
+      // También invalidamos facilities si queremos refrescar la info de corrales anidados
+      queryClient.invalidateQueries({ queryKey: ['facilities'] });
+      setIsPenFormOpen(false);
+    }
+  });
+
+  // Handlers
+  const handleOpenForm = () => {
+    if (activeTab === 'facilities') {
+      setIsFacilityFormOpen(true);
+    } else {
+      setIsPenFormOpen(true);
+    }
+  };
+
+  const handleCreateFacility = (data: FacilityFormData) => {
+    createFacilityMutation.mutate({
+      ...data,
+      // Aseguramos que capacity sea número, aunque zod lo maneja, el formulario devuelve el tipo correcto
+      capacity: Number(data.capacity)
+    });
+  };
+
+  const handleCreatePen = (data: PenFormData) => {
+    createPenMutation.mutate({
+      ...data,
+      capacity: Number(data.capacity)
+    });
+  };
 
   const filteredFacilities = facilities?.filter(f => 
     f.name.toLowerCase().includes(search.toLowerCase()) || 
@@ -51,7 +102,10 @@ export const InfrastructurePage: React.FC = () => {
           <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Infraestructura</h1>
           <p className="text-gray-500 text-sm mt-1">Gestiona galpones, edificios y corrales de tu granja.</p>
         </div>
-        <button className="btn btn-primary shadow-lg shadow-indigo-500/20 gap-2">
+        <button 
+          onClick={handleOpenForm}
+          className="btn btn-primary shadow-lg shadow-indigo-500/20 gap-2"
+        >
           <Plus className="w-4 h-4" />
           Agregar {activeTab === 'facilities' ? 'Instalación' : 'Corral'}
         </button>
@@ -219,6 +273,22 @@ export const InfrastructurePage: React.FC = () => {
           <p className="text-gray-500 mt-1 text-sm">Empieza agregando tu primera {activeTab === 'facilities' ? 'instalación' : 'corral'}.</p>
         </div>
       )}
+
+      {/* --- MODALES --- */}
+      <FacilityForm 
+        isOpen={isFacilityFormOpen} 
+        onClose={() => setIsFacilityFormOpen(false)}
+        onSubmit={handleCreateFacility}
+        isLoading={createFacilityMutation.isPending}
+      />
+
+      <PenForm 
+        isOpen={isPenFormOpen} 
+        onClose={() => setIsPenFormOpen(false)}
+        onSubmit={handleCreatePen}
+        isLoading={createPenMutation.isPending}
+        facilities={facilities || []}
+      />
     </div>
   );
 };
