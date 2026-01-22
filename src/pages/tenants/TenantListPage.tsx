@@ -23,7 +23,6 @@ export const TenantListPage: React.FC = () => {
     onSuccess: (response, variables) => {
       queryClient.invalidateQueries({ queryKey: ['tenants'] });
       setIsFormOpen(false);
-      // Capture credentials from response
       if (response.data.data.password) {
         setCreatedCredentials({
           email: variables.adminEmail,
@@ -101,7 +100,6 @@ export const TenantListPage: React.FC = () => {
               </div>
             </div>
 
-            {/* Decoración de fondo sutil */}
             <div className="absolute -right-6 -bottom-6 text-gray-50 opacity-[0.4] group-hover:opacity-[0.6] transition-opacity pointer-events-none group-hover:text-indigo-50">
               <Globe className="w-32 h-32 transform rotate-12" />
             </div>

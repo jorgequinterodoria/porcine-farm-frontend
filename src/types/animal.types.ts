@@ -10,10 +10,10 @@ export const animalSchema = z.object({
     geneticLine: z.string().optional(),
     currentStatus: z.string().default('active'),
     stage: z.string().default('nursery'),
-    currentPenId: z.string().uuid().optional().or(z.literal('')).nullable(),
-    breedId: z.string().uuid().optional().or(z.literal('')).nullable(),
-    motherId: z.string().uuid().optional().or(z.literal('')).nullable(),
-    fatherId: z.string().uuid().optional().or(z.literal('')).nullable(),
+    currentPenId: z.uuid().optional().or(z.literal('')).nullable(),
+    breedId: z.uuid().optional().or(z.literal('')).nullable(),
+    motherId: z.uuid().optional().or(z.literal('')).nullable(),
+    fatherId: z.uuid().optional().or(z.literal('')).nullable(),
     purpose: z.string().optional(),
     origin: z.string().optional(),
     acquisitionCost: z.coerce.number().min(0).optional(),
@@ -36,5 +36,9 @@ export interface Animal {
     breedId?: string;
     breed?: { name: string };
     createdAt: string;
-    // ... otros campos para visualización si es necesario
+    geneticLine?: string;
+    purpose?: string;
+    origin?: string;
+    acquisitionCost?: number;
+    notes?: string;
 }

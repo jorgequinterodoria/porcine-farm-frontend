@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { 
-  Plus, 
-  Search, 
-  Layers, 
-  Calendar, 
+import {
+  Plus,
+  Search,
+  Layers,
+  Calendar,
   ChevronRight,
   TrendingUp,
   Edit,
@@ -56,25 +56,19 @@ export const BatchListPage: React.FC = () => {
   };
 
   const handleEdit = (batch: Batch) => {
-    // Map Batch to BatchFormData structure if needed, or cast if compatible
-    // Batch has extra fields (id, createdAt, etc.) which is fine, form ignores them usually or we filter
-    // We need to ensure types match for the form default values
     const batchData: BatchFormData & { id: string } = {
-        id: batch.id,
-        code: batch.code,
-        name: batch.name,
-        batchType: batch.batchType as BatchFormData['batchType'],
-        status: batch.status as BatchFormData['status'],
-        startDate: batch.startDate,
-        expectedEndDate: batch.expectedEndDate,
-        actualEndDate: batch.actualEndDate,
-        initialCount: batch.initialCount,
-        currentCount: batch.currentCount,
-        targetWeight: batch.targetWeight,
-        notes: '', // If notes are not in Batch interface from list, might be missing. 
-                   // The API response for list might not include notes. 
-                   // If we need notes, we might need to fetch details or assume empty.
-                   // For now, let's assume empty or mapped if available.
+      id: batch.id,
+      code: batch.code,
+      name: batch.name,
+      batchType: batch.batchType as BatchFormData['batchType'],
+      status: batch.status as BatchFormData['status'],
+      startDate: batch.startDate,
+      expectedEndDate: batch.expectedEndDate,
+      actualEndDate: batch.actualEndDate,
+      initialCount: batch.initialCount,
+      currentCount: batch.currentCount,
+      targetWeight: batch.targetWeight,
+      notes: '',
     };
     setSelectedBatch(batchData);
     setIsModalOpen(true);
@@ -94,8 +88,8 @@ export const BatchListPage: React.FC = () => {
     }
   };
 
-  const filteredBatches = batches?.filter((b) => 
-    b.name.toLowerCase().includes(search.toLowerCase()) || 
+  const filteredBatches = batches?.filter((b) =>
+    b.name.toLowerCase().includes(search.toLowerCase()) ||
     b.code.toLowerCase().includes(search.toLowerCase())
   );
 
@@ -107,7 +101,7 @@ export const BatchListPage: React.FC = () => {
           <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Lotes de Producción</h1>
           <p className="text-gray-500 text-sm mt-1">Agrupa y rastrea animales por ciclo productivo.</p>
         </div>
-        <button 
+        <button
           onClick={handleCreate}
           className="btn btn-primary shadow-lg shadow-indigo-500/20 gap-2"
         >
@@ -121,7 +115,7 @@ export const BatchListPage: React.FC = () => {
         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
           <Search className="w-5 h-5 text-gray-400" />
         </div>
-        <input 
+        <input
           type="text"
           placeholder="Buscar lotes por nombre o código..."
           className="input pl-10 h-11"
@@ -133,24 +127,21 @@ export const BatchListPage: React.FC = () => {
       {/* Grid Layout */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {isLoading ? (
-          // Skeleton Loading (Clean Style)
           [...Array(4)].map((_, i) => (
             <div key={i} className="h-48 bg-white rounded-xl border border-gray-200 animate-pulse shadow-sm" />
           ))
         ) : filteredBatches?.map((batch) => (
-          // Batch Card
-          <div 
-            key={batch.id} 
+          <div
+            key={batch.id}
             className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm hover:shadow-md hover:border-indigo-300 transition-all group relative overflow-hidden"
           >
             <div className="flex items-start justify-between mb-6">
               <div>
                 <div className="flex items-center gap-2 mb-2">
-                  <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${
-                    batch.status === 'active' ? 'bg-green-50 text-green-700 border-green-100' : 
-                    batch.status === 'closed' ? 'bg-gray-50 text-gray-700 border-gray-100' :
-                    'bg-indigo-50 text-indigo-700 border-indigo-100'
-                  }`}>
+                  <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${batch.status === 'active' ? 'bg-green-50 text-green-700 border-green-100' :
+                      batch.status === 'closed' ? 'bg-gray-50 text-gray-700 border-gray-100' :
+                        'bg-indigo-50 text-indigo-700 border-indigo-100'
+                    }`}>
                     {batch.batchType}
                   </span>
                   <span className="text-xs text-gray-400 font-mono">{batch.code}</span>
@@ -159,21 +150,21 @@ export const BatchListPage: React.FC = () => {
                   {batch.name}
                 </h3>
               </div>
-              
+
               <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                <button 
-                    onClick={(e) => { e.stopPropagation(); handleEdit(batch); }}
-                    className="p-1.5 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
-                    title="Editar"
+                <button
+                  onClick={(e) => { e.stopPropagation(); handleEdit(batch); }}
+                  className="p-1.5 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
+                  title="Editar"
                 >
-                    <Edit className="w-4 h-4" />
+                  <Edit className="w-4 h-4" />
                 </button>
-                <button 
-                    onClick={(e) => { e.stopPropagation(); handleDelete(batch.id); }}
-                    className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                    title="Eliminar"
+                <button
+                  onClick={(e) => { e.stopPropagation(); handleDelete(batch.id); }}
+                  className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                  title="Eliminar"
                 >
-                    <Trash2 className="w-4 h-4" />
+                  <Trash2 className="w-4 h-4" />
                 </button>
               </div>
             </div>
@@ -198,14 +189,14 @@ export const BatchListPage: React.FC = () => {
                 </p>
               </div>
             </div>
-            
+
             <div className="absolute bottom-0 right-0 p-4 opacity-0 group-hover:opacity-100 transition-opacity transform translate-y-2 group-hover:translate-y-0 pointer-events-none">
-               <ChevronRight className="w-5 h-5 text-indigo-400" />
+              <ChevronRight className="w-5 h-5 text-indigo-400" />
             </div>
           </div>
         ))}
       </div>
-      
+
       {/* Empty State */}
       {!isLoading && filteredBatches?.length === 0 && (
         <div className="p-16 text-center bg-white border border-gray-200 border-dashed rounded-xl">
@@ -219,7 +210,7 @@ export const BatchListPage: React.FC = () => {
         </div>
       )}
 
-      <BatchForm 
+      <BatchForm
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onSubmit={handleSubmit}

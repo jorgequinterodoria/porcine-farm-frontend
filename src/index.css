@@ -1,24 +1,22 @@
-/* En Tailwind v4, esta es la ÚNICA línea necesaria para cargar el framework */
 @import "tailwindcss";
 
-/* Definimos el tema visual (Modo Claro) usando variables CSS estándar */
 @layer base {
   :root {
-    /* --- PALETA DE COLORES (Modo Claro) --- */
-    --background: #f8fafc;       /* Slate 50 (Gris muy claro) */
-    --foreground: #0f172a;       /* Slate 900 (Texto oscuro) */
     
-    --card: #ffffff;             /* Blanco Puro */
+    --background: #f8fafc;       
+    --foreground: #0f172a;       
+    
+    --card: #ffffff;             
     --card-foreground: #0f172a;
     
-    --primary: #4f46e5;          /* Indigo 600 (Tu color de marca) */
+    --primary: #4f46e5;          
     --primary-foreground: #ffffff;
     
-    --border: #e2e8f0;           /* Slate 200 (Bordes suaves) */
-    --input: #e2e8f0;            /* Slate 200 */
+    --border: #e2e8f0;           
+    --input: #e2e8f0;            
     --radius: 0.5rem;
 
-    /* --- COMPATIBILIDAD (Para que tus componentes viejos funcionen) --- */
+    
     --bg-main: #f8fafc;
     --bg-card: #ffffff;
     --text-main: #0f172a;
@@ -26,17 +24,17 @@
     --border-legacy: #e2e8f0;
   }
 
-  /* Configuraciones globales */
+  
   body {
     background-color: var(--background);
     color: var(--foreground);
     font-family: 'Inter', sans-serif;
     -webkit-font-smoothing: antialiased;
-    /* Forzamos limpieza de fondos */
+    
     background-image: none !important; 
   }
 
-  /* Títulos */
+  
   h1, h2, h3, h4, h5, h6 {
     font-family: 'Outfit', sans-serif;
     color: var(--foreground);
@@ -44,9 +42,7 @@
   }
 }
 
-/* --- CLASES PERSONALIZADAS (CSS Estándar para evitar errores) --- */
 
-/* Tarjetas (.glass ahora es blanco sólido) */
 .glass {
   background-color: white;
   border: 1px solid var(--border);
@@ -54,7 +50,7 @@
   box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
 }
 
-/* Inputs (Blanco con borde gris) */
+
 .input {
   display: flex;
   width: 100%;
@@ -75,10 +71,10 @@
 }
 
 .input::placeholder {
-  color: #94a3b8; /* Slate 400 */
+  color: #94a3b8; 
 }
 
-/* Botones */
+
 .btn {
   display: inline-flex;
   align-items: center;
@@ -110,12 +106,11 @@
   color: #0f172a;
 }
 
-/* Eliminamos el gradiente oscuro */
+
 .gradient-bg {
   background: none !important;
 }
-/* --- CORRECCIÓN DE INPUTS CON ICONOS --- */
-/* Esto asegura que el texto no se monte sobre la lupa */
+
 
 .input.pl-9 {
   padding-left: 2.25rem !important; /* 36px */

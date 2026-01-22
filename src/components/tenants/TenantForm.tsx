@@ -73,7 +73,7 @@ export const TenantForm: React.FC<TenantFormProps> = ({ isOpen, onClose, onSubmi
                 <input {...register('email')} className="input" placeholder="contacto@granja.com" />
                 {errors.email && <p className="text-error text-xs ml-1">{errors.email.message?.toString()}</p>}
               </div>
-              
+
               <div className="space-y-2">
                 <label className="text-sm font-medium ml-1">Plan de Suscripción</label>
                 <select {...register('subscriptionPlan')} className="input h-[42px] py-0">
@@ -117,16 +117,16 @@ export const TenantForm: React.FC<TenantFormProps> = ({ isOpen, onClose, onSubmi
 
           {/* Limits */}
           <section>
-             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-2">
-                  <label className="text-sm font-medium ml-1">Máx. Animales</label>
-                  <input {...register('maxAnimals', { valueAsNumber: true })} type="number" className="input" />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-medium ml-1">Máx. Usuarios</label>
-                  <input {...register('maxUsers', { valueAsNumber: true })} type="number" className="input" />
-                </div>
-             </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <label className="text-sm font-medium ml-1">Máx. Animales</label>
+                <input {...register('maxAnimals', { valueAsNumber: true })} type="number" className="input" />
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium ml-1">Máx. Usuarios</label>
+                <input {...register('maxUsers', { valueAsNumber: true })} type="number" className="input" />
+              </div>
+            </div>
           </section>
 
           <div className="flex items-center justify-end gap-3 pt-6 border-t border-border">

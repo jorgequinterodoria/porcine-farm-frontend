@@ -1,14 +1,13 @@
 import React from 'react';
-import { 
-  X, 
-  Tag, 
-  Calendar, 
-  Scale, 
-  Dna, 
-  MapPin, 
-  Activity, 
-  DollarSign, 
-  FileText, 
+import {
+  X,
+  Tag,
+  Calendar,
+  Scale,
+  Dna,
+  MapPin,
+  DollarSign,
+  FileText,
   Info,
   Venus,
   Mars
@@ -23,8 +22,8 @@ interface AnimalDetailsModalProps {
   getStageInfo: (stage: string) => { label: string; className: string };
 }
 
-export const AnimalDetailsModal: React.FC<AnimalDetailsModalProps> = ({ 
-  animal, 
+export const AnimalDetailsModal: React.FC<AnimalDetailsModalProps> = ({
+  animal,
   onClose,
   getPenCode,
   getStatusInfo,
@@ -35,7 +34,7 @@ export const AnimalDetailsModal: React.FC<AnimalDetailsModalProps> = ({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/60 backdrop-blur-sm transition-all overflow-y-auto">
       <div className="bg-white w-full max-w-3xl rounded-2xl shadow-2xl overflow-hidden animate-scaleIn border border-gray-100 my-8 flex flex-col max-h-[90vh]">
-        
+
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-100 bg-white sticky top-0 z-10 shadow-sm">
           <div className="flex items-center gap-3">
@@ -47,8 +46,8 @@ export const AnimalDetailsModal: React.FC<AnimalDetailsModalProps> = ({
               <p className="text-sm text-gray-500 font-mono">{animal.internalCode}</p>
             </div>
           </div>
-          <button 
-            onClick={onClose} 
+          <button
+            onClick={onClose}
             className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
           >
             <X className="w-6 h-6" />
@@ -56,7 +55,7 @@ export const AnimalDetailsModal: React.FC<AnimalDetailsModalProps> = ({
         </div>
 
         <div className="overflow-y-auto custom-scrollbar flex-1 p-8 space-y-8">
-          
+
           {/* Sección: Identificación */}
           <section className="bg-gray-50/50 p-6 rounded-2xl border border-gray-100">
             <div className="flex items-center gap-2 mb-4">
@@ -114,7 +113,7 @@ export const AnimalDetailsModal: React.FC<AnimalDetailsModalProps> = ({
                     <span className="text-sm text-gray-500">Línea Genética</span>
                     <span className="text-sm font-medium text-gray-900">{animal.geneticLine || '-'}</span>
                   </div>
-                   <div className="flex justify-between border-b border-gray-50 pb-2">
+                  <div className="flex justify-between border-b border-gray-50 pb-2">
                     <span className="text-sm text-gray-500">Raza</span>
                     <span className="text-sm font-medium text-gray-900">{animal.breed?.name || '-'}</span>
                   </div>
@@ -174,7 +173,7 @@ export const AnimalDetailsModal: React.FC<AnimalDetailsModalProps> = ({
                       {animal.acquisitionCost ? `$${animal.acquisitionCost}` : '-'}
                     </span>
                   </div>
-                   <div className="flex justify-between border-b border-gray-50 pb-2">
+                  <div className="flex justify-between border-b border-gray-50 pb-2">
                     <span className="text-sm text-gray-500">Fecha Ingreso</span>
                     <span className="text-sm font-medium text-gray-900">
                       {new Date(animal.createdAt).toLocaleDateString()}

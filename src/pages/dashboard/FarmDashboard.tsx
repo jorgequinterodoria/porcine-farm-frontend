@@ -27,7 +27,6 @@ export const FarmDashboard: React.FC = () => {
     }
   });
 
-  // Actualizamos los colores para Light Mode (Tonos 600 para texto, 50 para fondos)
   const stats = [
     { 
       name: 'Total de Animales', 

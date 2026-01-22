@@ -22,7 +22,6 @@ export const FacilityForm: React.FC<FacilityFormProps> = ({ isOpen, onClose, onS
         }
     });
 
-    // Resetear el formulario cuando se abre/cierra
     React.useEffect(() => {
         if (isOpen) {
             reset();

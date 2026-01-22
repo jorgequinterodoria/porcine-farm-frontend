@@ -13,6 +13,8 @@ import { ReproductionPage } from './pages/reproduction/ReproductionPage';
 import { FeedingPage } from './pages/feeding/FeedingPage';
 import { FinancialPage } from './pages/financial/FinancialPage';
 import { OperationsPage } from './pages/operations/OperationsPage';
+import { EmployeeListPage } from './pages/admin/EmployeeListPage';
+import { ProfilePage } from './pages/profile/ProfilePage';
 import { useAuthStore } from './store/useAuthStore';
 import './index.css';
 
@@ -49,6 +51,8 @@ function App() {
             <Route path="feeding" element={<FeedingPage />} />
             <Route path="financial" element={<FinancialPage />} />
             <Route path="operations" element={<OperationsPage />} />
+            <Route path="team" element={<EmployeeListPage />} />
+            <Route path="profile" element={<ProfilePage />} />
             <Route path="tenants" element={<TenantListPage />} />
           </Route>
         </Routes>

@@ -83,7 +83,6 @@ export const AnimalListPage: React.FC = () => {
   };
 
   const handleFormSubmit = (data: AnimalFormData) => {
-    // Transformar cadenas vacías a undefined para evitar errores de UUID en el backend
     const sanitizedData = {
       ...data,
       currentPenId: data.currentPenId || undefined,
@@ -104,7 +103,6 @@ export const AnimalListPage: React.FC = () => {
     setOpenMenuId(openMenuId === id ? null : id);
   };
 
-  // Cerrar menú al hacer clic fuera
   React.useEffect(() => {
     const handleClickOutside = () => setOpenMenuId(null);
     document.addEventListener('click', handleClickOutside);
@@ -148,7 +146,6 @@ export const AnimalListPage: React.FC = () => {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          {/* Título oscuro y subtítulo gris suave */}
           <h1 className="text-2xl font-bold text-gray-900">Inventario de Animales</h1>
           <p className="text-gray-500 mt-1">Gestiona y rastrea el historial de tu ganado</p>
         </div>
@@ -167,7 +164,6 @@ export const AnimalListPage: React.FC = () => {
           <input
             type="text"
             placeholder="Buscar por código o ID electrónico..."
-            /* Input blanco con borde gris y texto oscuro */
             className="input pl-10 h-11"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
@@ -176,7 +172,6 @@ export const AnimalListPage: React.FC = () => {
         <div className="flex items-center gap-2">
           <Filter className="w-4 h-4 text-gray-500" />
           <select
-            /* Select limpio con fondo blanco */
             className="input h-11 w-40 py-0 cursor-pointer"
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
@@ -190,11 +185,9 @@ export const AnimalListPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Tarjeta blanca con borde sutil en lugar de glass oscuro */}
       <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden min-h-[400px]">
         <table className="w-full text-left border-collapse">
           <thead>
-            {/* Header gris muy claro con texto oscuro */}
             <tr className="bg-gray-50/50 border-b border-gray-200 text-xs uppercase tracking-wider text-gray-500 font-semibold">
               <th className="px-6 py-4">Código Interno</th>
               <th className="px-6 py-4">Sexo</th>
@@ -219,7 +212,6 @@ export const AnimalListPage: React.FC = () => {
                 </tr>
               ))
             ) : filteredAnimals?.map((animal) => (
-              /* Hover gris suave */
               <tr key={animal.id} className="hover:bg-gray-50 transition-colors group">
                 <td className="px-6 py-4 font-bold text-indigo-600 group-hover:text-indigo-700">
                   {animal.internalCode}
@@ -231,16 +223,13 @@ export const AnimalListPage: React.FC = () => {
                 <td className="px-6 py-4">
                   <div className="flex items-center gap-1.5 text-sm text-gray-600">
                     <MapPin className="w-3.5 h-3.5 text-gray-400" />
-                    {/* Aquí idealmente mostraríamos el nombre del corral si viniera en el objeto animal, por ahora mostramos si está asignado o no */}
                     {getPenCode(animal.currentPenId)}
                   </div>
                 </td>
                 <td className="px-6 py-4 text-sm text-gray-500">
-                  {/* Calcular edad aproximada o mostrar fecha de nacimiento */}
                   {new Date(animal.birthDate).toLocaleDateString()}
                 </td>
                 <td className="px-6 py-4">
-                  {/* Badges estilo pastel (fondo claro, texto oscuro) */}
                   <span className={`px-2.5 py-1 rounded-full text-xs font-medium border ${getStatusInfo(animal.currentStatus).className}`}>
                     {getStatusInfo(animal.currentStatus).label}
                   </span>

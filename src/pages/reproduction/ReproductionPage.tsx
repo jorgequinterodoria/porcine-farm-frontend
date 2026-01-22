@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-// import { useQuery } from '@tanstack/react-query';
 import { 
   Plus, 
   Heart,
@@ -9,8 +8,6 @@ import {
   MoreVertical,
   ArrowRight
 } from 'lucide-react';
-// import api from '../../api/axiosInstance';
-// import type { BreedingService } from '../../types/farm.types';
 
 export const ReproductionPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'breeding' | 'pregnancy' | 'farrowing'>('breeding');
@@ -65,9 +62,8 @@ export const ReproductionPage: React.FC = () => {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {activeTab === 'breeding' ? (
-          // Breeding View (Montas)
           [...Array(3)].map((_, i) => (
-             <div key={i} className="bg-white p-6 rounded-xl border border-gray-200 hover:shadow-md hover:border-rose-200 transition-all group">
+            <div key={i} className="bg-white p-6 rounded-xl border border-gray-200 hover:shadow-md hover:border-rose-200 transition-all group">
                 <div className="flex items-center gap-4 mb-6">
                     <div className="w-12 h-12 bg-rose-50 rounded-xl flex items-center justify-center text-rose-500 border border-rose-100">
                         <Heart className="w-6 h-6" />
@@ -82,7 +78,7 @@ export const ReproductionPage: React.FC = () => {
                         <span className="text-gray-500">Fecha del Evento</span>
                         <span className="font-medium text-gray-900">21/01/2024</span>
                     </div>
-                     <div className="flex justify-between text-sm border-b border-gray-50 pb-2">
+                    <div className="flex justify-between text-sm border-b border-gray-50 pb-2">
                         <span className="text-gray-500">Técnico</span>
                         <span className="font-medium text-gray-900">Juan Pérez</span>
                     </div>
@@ -93,25 +89,23 @@ export const ReproductionPage: React.FC = () => {
                         Detalles <ArrowRight className="w-4 h-4" />
                     </button>
                 </div>
-             </div>
+            </div>
           ))
         ) : activeTab === 'pregnancy' ? (
-          // Pregnancy View (Empty State)
           <div className="col-span-full bg-white border border-gray-200 border-dashed p-16 text-center rounded-xl">
-             <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4">
+            <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4">
                 <ClipboardCheck className="w-8 h-8 text-gray-300" />
-             </div>
-             <h3 className="text-lg font-bold text-gray-900">No hay gestaciones activas</h3>
-             <p className="text-gray-500 mt-1 text-sm max-w-sm mx-auto">
+            </div>
+            <h3 className="text-lg font-bold text-gray-900">No hay gestaciones activas</h3>
+            <p className="text-gray-500 mt-1 text-sm max-w-sm mx-auto">
                 Las gestaciones confirmadas aparecerán aquí automáticamente después de la confirmación del servicio.
-             </p>
+            </p>
           </div>
         ) : (
-          // Farrowing View (Partos)
           [...Array(2)].map((_, i) => (
             <div key={i} className="bg-white p-6 rounded-xl border border-gray-200 border-l-4 border-l-emerald-500 shadow-sm hover:shadow-md transition-all">
                 <div className="flex justify-between items-start mb-4">
-                     <div className="w-10 h-10 bg-emerald-50 rounded-lg flex items-center justify-center text-emerald-600">
+                    <div className="w-10 h-10 bg-emerald-50 rounded-lg flex items-center justify-center text-emerald-600">
                         <Baby className="w-5 h-5" />
                     </div>
                     <button className="text-gray-400 hover:text-gray-600 hover:bg-gray-50 p-1 rounded transition-colors">
@@ -126,11 +120,11 @@ export const ReproductionPage: React.FC = () => {
                         <p className="text-[10px] text-emerald-600 uppercase font-bold tracking-wide">Vivos</p>
                         <p className="text-xl font-bold text-emerald-700">14</p>
                     </div>
-                     <div className="bg-rose-50 p-2 rounded-lg text-center border border-rose-100">
+                    <div className="bg-rose-50 p-2 rounded-lg text-center border border-rose-100">
                         <p className="text-[10px] text-rose-600 uppercase font-bold tracking-wide">Muertos</p>
                         <p className="text-xl font-bold text-rose-700">1</p>
                     </div>
-                     <div className="bg-amber-50 p-2 rounded-lg text-center border border-amber-100">
+                    <div className="bg-amber-50 p-2 rounded-lg text-center border border-amber-100">
                         <p className="text-[10px] text-amber-600 uppercase font-bold tracking-wide">Momif.</p>
                         <p className="text-xl font-bold text-amber-700">0</p>
                     </div>

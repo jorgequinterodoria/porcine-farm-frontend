@@ -2,7 +2,6 @@ import axios from 'axios';
 
 const getBaseUrl = () => {
     let url = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
-    // Ensure the URL has a protocol
     if (url && !url.startsWith('http')) {
         url = `https://${url}`;
     }
@@ -31,7 +30,6 @@ api.interceptors.response.use(
     (error) => {
         if (error.response?.status === 401) {
             localStorage.removeItem('auth_token');
-            // Redirect to login if necessary or handle in store
         }
         return Promise.reject(error);
     }

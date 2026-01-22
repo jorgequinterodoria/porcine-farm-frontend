@@ -38,8 +38,8 @@ export const LoginPage: React.FC = () => {
       if (err instanceof Error) {
         setError(err.message || 'Credenciales incorrectas. Verifica tu correo y contraseña.');
       } else if (typeof err === 'object' && err !== null && 'response' in err) {
-         const axiosErr = err as { response?: { data?: { message?: string } } };
-         setError(axiosErr.response?.data?.message || 'Credenciales incorrectas. Verifica tu correo y contraseña.');
+        const axiosErr = err as { response?: { data?: { message?: string } } };
+        setError(axiosErr.response?.data?.message || 'Credenciales incorrectas. Verifica tu correo y contraseña.');
       } else {
         setError('Credenciales incorrectas. Verifica tu correo y contraseña.');
       }
@@ -49,16 +49,12 @@ export const LoginPage: React.FC = () => {
   };
 
   return (
-    // bg-slate-50 asegura el fondo claro general
     <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4 relative overflow-hidden">
-      
-      {/* Fondo decorativo sutil (Blur azulado) */}
       <div className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-blue-400/20 rounded-full blur-[120px] pointer-events-none" />
       <div className="absolute bottom-[-10%] right-[-10%] w-[500px] h-[500px] bg-indigo-500/20 rounded-full blur-[120px] pointer-events-none" />
 
-      {/* Tarjeta de Login - Forzamos bg-white para que sea BLANCA sólida */}
       <div className="bg-white w-full max-w-md rounded-2xl shadow-xl border border-gray-100 p-8 md:p-10 relative z-10">
-        
+
         {/* Encabezado */}
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center w-12 h-12 bg-indigo-600 rounded-xl mb-4 shadow-lg shadow-indigo-500/30">
@@ -71,14 +67,13 @@ export const LoginPage: React.FC = () => {
         {/* Alerta de Error */}
         {error && (
           <div className="mb-6 p-4 rounded-lg bg-red-50 border border-red-100 flex items-center gap-3">
-             <div className="w-2 h-2 rounded-full bg-red-500 shrink-0" />
-             <p className="text-sm text-red-600 font-medium">{error}</p>
+            <div className="w-2 h-2 rounded-full bg-red-500 shrink-0" />
+            <p className="text-sm text-red-600 font-medium">{error}</p>
           </div>
         )}
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-          
-          {/* Email - Input BLANCO explícito */}
+
           <div className="space-y-1.5">
             <label className="block text-sm font-semibold text-gray-700">Correo Electrónico</label>
             <div className="relative">
@@ -102,7 +97,6 @@ export const LoginPage: React.FC = () => {
             {errors.email && <span className="text-xs text-red-500 font-medium ml-1">{errors.email.message}</span>}
           </div>
 
-          {/* Password - Input BLANCO explícito */}
           <div className="space-y-1.5">
             <div className="flex justify-between items-center">
               <label className="block text-sm font-semibold text-gray-700">Contraseña</label>
@@ -142,7 +136,7 @@ export const LoginPage: React.FC = () => {
         </form>
 
         <div className="mt-8 pt-6 border-t border-gray-100 text-center">
-           <p className="text-xs text-gray-400">© 2026 PorciFarm Technology</p>
+          <p className="text-xs text-gray-400">© 2026 PorciFarm Technology</p>
         </div>
       </div>
     </div>

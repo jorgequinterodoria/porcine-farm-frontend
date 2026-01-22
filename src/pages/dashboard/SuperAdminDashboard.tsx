@@ -38,7 +38,6 @@ export const SuperAdminDashboard: React.FC = () => {
     const summary = stats?.summary || { totalTenants: 0, activeTenants: 0, totalUsers: 0, totalAnimals: 0 };
     const tenants: TenantSummary[] = stats?.tenants || [];
 
-    // Definición de colores para los KPIs (Light Mode)
     const kpiCards = [
         { 
             name: 'Total Granjas', 
