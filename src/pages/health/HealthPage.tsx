@@ -20,6 +20,7 @@ import type { Medication, Vaccine, Disease } from '../../types/farm.types';
 import { MedicationModal } from '../../components/health/MedicationModal';
 import { VaccineModal } from '../../components/health/VaccineModal';
 import { DiseaseModal } from '../../components/health/DiseaseModal';
+import { HealthRecordModal } from '../../components/health/HealthRecordModal';
 
 export const HealthPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'records' | 'catalog'>('records');
@@ -27,6 +28,7 @@ export const HealthPage: React.FC = () => {
   const queryClient = useQueryClient();
 
   // Modals state
+  const [isHealthRecordModalOpen, setIsHealthRecordModalOpen] = useState(false);
   const [isMedicationModalOpen, setIsMedicationModalOpen] = useState(false);
   const [selectedMedication, setSelectedMedication] = useState<Medication | null>(null);
 
@@ -89,7 +91,10 @@ export const HealthPage: React.FC = () => {
           <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Salud y Sanidad</h1>
           <p className="text-gray-500 text-sm mt-1">Rastrea tratamientos, vacunas e historial clínico del ganado.</p>
         </div>
-        <button className="btn btn-primary shadow-lg shadow-indigo-500/20 gap-2">
+        <button 
+          onClick={() => setIsHealthRecordModalOpen(true)}
+          className="btn btn-primary shadow-lg shadow-indigo-500/20 gap-2"
+        >
           <Plus className="w-4 h-4" />
           Agregar Registro
         </button>
@@ -328,6 +333,12 @@ export const HealthPage: React.FC = () => {
         isOpen={isDiseaseModalOpen} 
         onClose={() => setIsDiseaseModalOpen(false)} 
         disease={selectedDisease} 
+      />
+      <HealthRecordModal
+        isOpen={isHealthRecordModalOpen}
+        onClose={() => setIsHealthRecordModalOpen(false)}
+        medications={medications || []}
+        diseases={diseases || []}
       />
     </div>
   );

@@ -108,16 +108,66 @@ export type DiseaseFormData = z.infer<typeof diseaseSchema>;
 
 // --- Health Records ---
 
+export interface MedicationTreatment {
+    id: string;
+    healthRecordId?: string;
+    medicationId: string;
+    medication?: Medication;
+    startDate: string;
+    endDate?: string;
+    dosage?: string;
+    frequency?: string;
+    applicationRoute?: string;
+    withdrawalDate?: string;
+    administeredBy?: string;
+    notes?: string;
+}
+
 export interface HealthRecord {
     id: string;
     animalId?: string;
     batchId?: string;
     recordDate: string;
+    recordType: 'individual' | 'batch';
     diseaseId?: string;
+    disease?: Disease;
+    symptoms?: string;
     diagnosis?: string;
+    temperature?: number;
     treatmentPlan?: string;
+    prognosis?: string;
     status: 'active' | 'resolved' | 'chronic';
+    veterinarianId?: string;
+    notes?: string;
+    medicationTreatments?: MedicationTreatment[];
+    animal?: { internalCode: string };
+    batch?: { code: string; name: string };
+    veterinarian?: { firstName: string; lastName: string };
 }
+
+// --- Forms Schemas (Zod) ---
+
+export const healthRecordSchema = z.object({
+    targetType: z.enum(['individual', 'batch']),
+    targetId: z.string().min(1, 'Debe seleccionar un animal o lote'),
+    recordDate: z.string().min(1, 'Fecha es requerida'),
+    diseaseId: z.string().optional(),
+    symptoms: z.string().optional(),
+    diagnosis: z.string().min(1, 'Diagnóstico o motivo es requerido'),
+    temperature: z.coerce.number().optional(),
+    treatmentPlan: z.string().optional(),
+    notes: z.string().optional(),
+    treatments: z.array(z.object({
+        medicationId: z.string().min(1, 'Seleccione un medicamento'),
+        startDate: z.string().min(1, 'Fecha de inicio requerida'),
+        dosage: z.string().min(1, 'Dosis requerida'),
+        frequency: z.string().optional(),
+        applicationRoute: z.string().optional(),
+        withdrawalDate: z.string().optional(),
+    })).optional()
+});
+
+export type HealthRecordFormData = z.infer<typeof healthRecordSchema>;
 
 export interface BreedingService {
     id: string;

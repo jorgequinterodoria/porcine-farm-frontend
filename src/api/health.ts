@@ -3,7 +3,7 @@ import type {
     Medication, MedicationFormData, 
     Vaccine, VaccineFormData, 
     Disease, DiseaseFormData,
-    HealthRecord 
+    HealthRecord, HealthRecordFormData
 } from '../types/farm.types';
 
 // --- Medications ---
@@ -69,5 +69,31 @@ export const deleteDisease = async (id: string): Promise<void> => {
 // --- Records ---
 export const getHealthRecords = async (): Promise<HealthRecord[]> => {
     const response = await api.get('/health/records');
+    return response.data.data;
+};
+
+export const createHealthRecord = async (data: HealthRecordFormData): Promise<HealthRecord> => {
+    // Transform FormData to DTO expected by backend
+    const payload = {
+        recordType: data.targetType,
+        animalId: data.targetType === 'individual' ? data.targetId : undefined,
+        batchId: data.targetType === 'batch' ? data.targetId : undefined,
+        recordDate: data.recordDate,
+        diseaseId: data.diseaseId || undefined,
+        symptoms: data.symptoms || undefined,
+        diagnosis: data.diagnosis,
+        temperature: data.temperature,
+        treatmentPlan: data.treatmentPlan || undefined,
+        notes: data.notes || undefined,
+        treatments: data.treatments?.map(t => ({
+            medicationId: t.medicationId,
+            startDate: t.startDate,
+            dosage: t.dosage,
+            frequency: t.frequency || undefined,
+            applicationRoute: t.applicationRoute || undefined,
+            withdrawalDate: t.withdrawalDate || undefined
+        }))
+    };
+    const response = await api.post('/health/records', payload);
     return response.data.data;
 };
