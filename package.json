@@ -6,6 +6,9 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
+    "build:perf": "tsc -b && vite build --config vite.config.performance.ts",
+    "build:bundle": "tsc -b && vite build --config vite.config.bundle.ts",
+    "build:analyze": "tsc -b && vite build --config vite.config.optimized.ts",
     "lint": "eslint .",
     "preview": "vite preview",
     "test": "vitest",
@@ -15,7 +18,9 @@
     "test:watch": "vitest --watch",
     "test:components": "vitest run src/components",
     "test:pages": "vitest run src/pages",
-    "test:ci": "vitest run --coverage --reporter=json --reporter=html"
+    "test:ci": "vitest run --coverage --reporter=json --reporter=html",
+    "analyze": "npm run build:analyze",
+    "bundle-report": "open dist/bundle-analysis.html"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
@@ -35,6 +40,9 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",
+    "@rollup/plugin-commonjs": "^29.0.0",
+    "@rollup/plugin-node-resolve": "^16.0.3",
+    "@rollup/plugin-terser": "^0.4.4",
     "@tailwindcss/postcss": "^4.1.18",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
@@ -46,12 +54,14 @@
     "@vitest/coverage-v8": "^4.0.18",
     "@vitest/ui": "^4.0.18",
     "autoprefixer": "^10.4.23",
+    "bundle-analyzer": "^0.0.6",
     "eslint": "^9.39.1",
     "eslint-plugin-react-hooks": "^7.0.1",
     "eslint-plugin-react-refresh": "^0.4.24",
     "globals": "^16.5.0",
     "jsdom": "^27.4.0",
     "postcss": "^8.5.6",
+    "rollup-plugin-visualizer": "^6.0.5",
     "tailwindcss": "^4.1.18",
     "typescript": "~5.9.3",
     "typescript-eslint": "^8.46.4",
