@@ -140,7 +140,7 @@ export const HealthRecordModal: React.FC<HealthRecordModalProps> = ({ isOpen, on
                                             <option value="">Seleccionar...</option>
                                             {animals?.map(animal => (
                                                 <option key={animal.id} value={animal.id}>
-                                                    {animal.internalCode} - {animal.gender === 'male' ? 'Macho' : 'Hembra'}
+                                                    {animal.internalCode} - {animal.sex === 'male' ? 'Macho' : 'Hembra'}
                                                 </option>
                                             ))}
                                         </select>

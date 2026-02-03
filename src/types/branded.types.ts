@@ -57,7 +57,7 @@ export const BrandedTypeUtils = {
   /**
    * Create a branded type value
    */
-  create: <T, Brand extends string>(value: T, brand: Brand): BrandedType<T, Brand> => {
+  create: <T, Brand extends string>(value: T, _brand: Brand): BrandedType<T, Brand> => {
     return value as BrandedType<T, Brand>;
   },
 
@@ -71,7 +71,7 @@ export const BrandedTypeUtils = {
   /**
    * Type guard for branded types
    */
-  isBrandedType: <T, Brand extends string>(value: any, brand: Brand): value is BrandedType<T, Brand> => {
+  isBrandedType: <T, Brand extends string>(value: any, _brand: Brand): value is BrandedType<T, Brand> => {
     return typeof value === 'object' && '__brand' in value;
   },
 
@@ -130,48 +130,6 @@ export const BrandedTypeUtils = {
   createUserEmail: (value: string): UserEmail => {
     return BrandedTypeUtils.create(value, 'UserEmail');
   },
-
-  /**
-   * Create a UserId
-   */
-  createUserId: (value: string): UserId => {
-    return BrandedTypeUtils.create(value, 'UserId' as any);
-  },
-
-  /**
-   * Create an AnimalId
-   */
-  createAnimalId: (value: string): AnimalId => {
-    return BrandedTypeUtils.create(value, 'AnimalId' as any);
-  },
-
-  /**
-   * Create a FacilityId
-   */
-  createFacilityId: (value: string): FacilityId => {
-    return BrandedTypeUtils.create(value, 'FacilityId' as any);
-  },
-
-  /**
-   * Create a PenId
-   */
-  createPenId: (value: string): PenId => {
-    return BrandedTypeUtils.create(value, 'PenId' as any);
-  },
-
-  /**
-   * Create a JWTToken
-   */
-  createJWTToken: (value: string): JWTToken => {
-    return BrandedTypeUtils.create(value, 'JWTToken' as any);
-  },
-
-  /**
-   * Create a UserEmail
-   */
-  createUserEmail: (value: string): UserEmail => {
-    return BrandedTypeUtils.create(value, 'UserEmail' as any);
-  },
 };
 
 /**
@@ -216,7 +174,7 @@ export const BrandedTypeValidation = {
   /**
    * Validate JWT token format
    */
-  isValidJWTToken: (value: string): boolean {
+  isValidJWTToken: (value: string): boolean => {
     // JWT tokens have 3 parts separated by dots
     return value.split('.').length === 3;
   },

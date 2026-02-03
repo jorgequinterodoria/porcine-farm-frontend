@@ -29,7 +29,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
     console.error('ErrorBoundary caught an error:', error);
     
     // Log to external service in production
-    if (typeof window !== 'undefined' && process.env?.NODE_ENV === 'production') {
+    if (import.meta.env.PROD) {
       // TODO: Integrate with error monitoring service
     }
   }
@@ -105,7 +105,7 @@ export const useErrorHandler = () => {
 export const useLoadingState = () => {
   const [loading, setLoading] = React.useState(false);
 
-  const execute = React.useCallback(async <T>(
+  const execute = React.useCallback(async <T,>(
     operation: () => Promise<T>
   ): Promise<T | null> => {
     try {

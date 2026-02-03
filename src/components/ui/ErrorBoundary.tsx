@@ -43,7 +43,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
     }
 
     // Log to external service in production
-    if (typeof process !== 'undefined' && process.env?.NODE_ENV === 'production') {
+    if (import.meta.env.PROD) {
       // TODO: Integrate with error monitoring service
       // Sentry.captureException(error, { contexts: { react: { componentStack: errorInfo.componentStack } } });
     }
@@ -87,7 +87,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
                   <div className="text-xs font-mono text-gray-700 break-all">
                     {this.state.error?.message || 'Error desconocido'}
                   </div>
-                  {typeof process !== 'undefined' && process.env?.NODE_ENV === 'development' && this.state.error?.stack && (
+                  {import.meta.env.DEV && this.state.error?.stack && (
                     <details className="mt-2">
                       <summary className="cursor-pointer text-xs text-gray-500">
                         Stack trace
@@ -151,7 +151,7 @@ export const useErrorHandler = () => {
     setError(error);
     
     // Log to external service in production
-    if (typeof process !== 'undefined' && process.env?.NODE_ENV === 'production') {
+    if (import.meta.env.PROD) {
       // TODO: Integrate with error monitoring service
     }
   }, []);
@@ -168,7 +168,7 @@ export const useAsyncOperation = () => {
   const { captureError } = useErrorHandler();
 
   const execute = React.useCallback(
-    async <T>(operation: () => Promise<T>): Promise<T | null> => {
+    async <T,>(operation: () => Promise<T>): Promise<T | null> => {
       try {
         setLoading(true);
         setError(null);
