@@ -1,6 +1,6 @@
 
 import { synchronize } from '@nozbe/watermelondb/sync'
-import database from '../db'
+import {database} from '../db'
 import api from '../api/axiosInstance'
 
 export async function sync() {

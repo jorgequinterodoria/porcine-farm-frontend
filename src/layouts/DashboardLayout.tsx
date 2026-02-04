@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import { useAuthStore } from '../store/useAuthStore';
 import { SyncStatus } from '../components/ui/SyncStatus';
+import { InstallPWA } from '../components/ui/InstallPWA';
 import { useSyncInit } from '../hooks/useSync';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
@@ -163,7 +164,9 @@ export const DashboardLayout: React.FC = () => {
         </div>
 
         {/* User Profile Section (Footer) */}
-        <div className="p-4 border-t border-gray-100 bg-gray-50/50">
+        <div className="p-4 border-t border-gray-100 bg-gray-50/50 space-y-3">
+          <InstallPWA />
+
           <Link
             to="/profile"
             onClick={() => setIsMobileMenuOpen(false)}

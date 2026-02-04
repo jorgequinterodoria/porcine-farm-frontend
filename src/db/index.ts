@@ -1,33 +1,32 @@
-
 import { Database } from '@nozbe/watermelondb'
 import LokiJSAdapter from '@nozbe/watermelondb/adapters/lokijs'
+import { mySchema } from './schema'
+import * as Models from './models' 
 
-import { schema } from './schema'
-import Animal from './models/Animal'
-import Task from './models/Task'
-import FeedConsumption from './models/FeedConsumption'
+const modelClasses = Object.values(Models).filter(model => {
+  const isValidClass = model && typeof model === 'function' && 'table' in model;
+  if (!isValidClass) return false;
+  const tableExists = !!mySchema.tables[model.table];
 
-// Create the adapter
+  if (!tableExists) {
+    console.warn(`⚠️ Omitiendo Modelo '${model.name}' porque la tabla '${model.table}' no está en el esquema local.`);
+  }
+
+  return tableExists;
+})
+
 const adapter = new LokiJSAdapter({
-  schema,
-  // migrations, // we'll add this later
+  schema: mySchema,
   useWebWorker: false,
   useIncrementalIndexedDB: true,
-  // dbName: 'porcine_farm_db', // optional
-  onQuotaExceededError: (error) => {
-    // Browser ran out of disk space -- handle appropriately
-    console.error('Disk quota exceeded', error)
+  onIndexedDBVersionChange: () => {
+    if (confirm('Database updated. Reload?')) {
+      window.location.reload()
+    }
   },
 })
 
-// Create the database
-const database = new Database({
+export const database = new Database({
   adapter,
-  modelClasses: [
-    Animal,
-    Task,
-    FeedConsumption,
-  ],
+  modelClasses: modelClasses,
 })
-
-export default database
