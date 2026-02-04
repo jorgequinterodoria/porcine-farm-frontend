@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { useForm, type Resolver } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { X, Loader2, Save } from 'lucide-react';
 import type { Disease, DiseaseFormData } from '../../types/farm.types';

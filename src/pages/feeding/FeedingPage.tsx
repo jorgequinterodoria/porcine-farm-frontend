@@ -9,7 +9,6 @@ import {
   Package,
   ArrowRightLeft,
   History,
-  TrendingDown,
   Edit,
   Trash2,
   Utensils
@@ -17,7 +16,7 @@ import {
 
 // WatermelonDB Imports
 import { database } from '../../db';
-import { FeedType, FeedConsumption, Pen, Batch } from '../../db/models';
+import { FeedType, FeedConsumption, Pen, Batch, FeedInventory } from '../../db/models';
 import type { FeedTypeFormData, FeedConsumptionFormData } from '../../types/feeding.types';
 
 // Components
@@ -27,12 +26,13 @@ import { FeedConsumptionModal } from '../../components/feeding/FeedConsumptionMo
 
 interface FeedingPageProps {
   feedTypes: FeedType[];
+  feedInventory: FeedInventory[];
   consumptionHistory: FeedConsumption[];
   pens: Pen[];
   batches: Batch[];
 }
 
-const FeedingPageComponent: React.FC<FeedingPageProps> = ({ feedTypes, consumptionHistory, pens, batches }) => {
+const FeedingPageComponent: React.FC<FeedingPageProps> = ({ feedTypes, feedInventory, consumptionHistory, pens, batches }) => {
   const [activeTab, setActiveTab] = useState<'inventory' | 'consumption'>('inventory');
   const [search, setSearch] = useState('');
 
@@ -42,31 +42,47 @@ const FeedingPageComponent: React.FC<FeedingPageProps> = ({ feedTypes, consumpti
   const [isMovementModalOpen, setIsMovementModalOpen] = useState(false);
   const [isConsumptionModalOpen, setIsConsumptionModalOpen] = useState(false);
 
-  // --- Filtrado ---
+  // --- Filtrado y Merge con Inventario ---
+  const enrichedFeedTypes = useMemo(() => {
+    return feedTypes.map(type => {
+      const inventory = feedInventory.find(inv => inv.feedTypeId === type.id);
+      return {
+        type,
+        currentStockKg: inventory?.currentStockKg || 0,
+        minimumStockKg: inventory?.minimumStockKg || 0,
+        maximumStockKg: inventory?.maximumStockKg || 0,
+        inventoryId: inventory?.id
+      };
+    });
+  }, [feedTypes, feedInventory]);
+
   const filteredTypes = useMemo(() => 
-    feedTypes.filter(t => 
-      t.name.toLowerCase().includes(search.toLowerCase()) || 
-      t.code.toLowerCase().includes(search.toLowerCase())
-    ), [feedTypes, search]);
+    enrichedFeedTypes.filter(t => 
+      t.type.name.toLowerCase().includes(search.toLowerCase()) || 
+      t.type.code.toLowerCase().includes(search.toLowerCase())
+    ), [enrichedFeedTypes, search]);
 
   // --- Alertas de Stock (Calculadas en Cliente) ---
   const alerts = useMemo(() => {
-    return feedTypes.filter(t => (t.currentStockKg || 0) <= (t.minimumStockKg || 0)).map(t => ({
-      feedName: t.name,
-      code: t.code,
+    return enrichedFeedTypes.filter(t => (t.currentStockKg || 0) <= (t.minimumStockKg || 0)).map(t => ({
+      feedName: t.type.name,
+      code: t.type.code,
       currentStock: t.currentStockKg
     }));
-  }, [feedTypes]);
+  }, [enrichedFeedTypes]);
 
   // 🔥 CORE: Crear / Editar Tipo de Alimento
   const handleSaveType = async (data: FeedTypeFormData) => {
     try {
       await database.write(async () => {
-        const collection = database.collections.get<FeedType>('feed_types');
+        const typeCollection = database.collections.get<FeedType>('feed_types');
+        const invCollection = database.collections.get<FeedInventory>('feed_inventory');
         
+        let typeRecord: FeedType;
+
         if (selectedType) {
-          // Update
-          await selectedType.update(type => {
+          // Update Type
+          typeRecord = await selectedType.update(type => {
             type.code = data.code;
             type.name = data.name;
             type.category = data.category;
@@ -76,12 +92,28 @@ const FeedingPageComponent: React.FC<FeedingPageProps> = ({ feedTypes, consumpti
             type.formula = data.formula;
             type.manufacturer = data.manufacturer;
             type.costPerKg = data.costPerKg;
-            type.minimumStockKg = data.minimumStockKg;
-            type.maximumStockKg = data.maximumStockKg;
           });
+          
+          // Update Inventory Limits (if exists)
+          const existingInv = feedInventory.find(inv => inv.feedTypeId === selectedType.id);
+          if (existingInv) {
+            await existingInv.update(inv => {
+               inv.minimumStockKg = data.minimumStockKg;
+               inv.maximumStockKg = data.maximumStockKg;
+            });
+          } else {
+             // Create Inventory if missing on edit (edge case)
+             await invCollection.create(inv => {
+                inv.feedTypeId = selectedType.id;
+                inv.currentStockKg = 0;
+                inv.minimumStockKg = data.minimumStockKg;
+                inv.maximumStockKg = data.maximumStockKg;
+             });
+          }
+
         } else {
-          // Create
-          await collection.create(type => {
+          // Create Type
+          typeRecord = await typeCollection.create(type => {
             type.code = data.code;
             type.name = data.name;
             type.category = data.category;
@@ -91,9 +123,14 @@ const FeedingPageComponent: React.FC<FeedingPageProps> = ({ feedTypes, consumpti
             type.formula = data.formula;
             type.manufacturer = data.manufacturer;
             type.costPerKg = data.costPerKg;
-            type.minimumStockKg = data.minimumStockKg;
-            type.maximumStockKg = data.maximumStockKg;
-            type.currentStockKg = data.initialStockKg || 0; // Solo al crear
+          });
+
+          // Create Inventory Record
+          await invCollection.create(inv => {
+            inv.feedTypeId = typeRecord.id;
+            inv.currentStockKg = data.initialStockKg || 0;
+            inv.minimumStockKg = data.minimumStockKg;
+            inv.maximumStockKg = data.maximumStockKg;
           });
         }
       });
@@ -113,6 +150,11 @@ const FeedingPageComponent: React.FC<FeedingPageProps> = ({ feedTypes, consumpti
         await database.write(async () => {
             const type = await database.collections.get<FeedType>('feed_types').find(id);
             await type.markAsDeleted();
+            // Optionally mark inventory as deleted too
+            const invs = await database.collections.get<FeedInventory>('feed_inventory').query(Q.where('feed_type_id', id)).fetch();
+            for (const inv of invs) {
+              await inv.markAsDeleted();
+            }
         });
     } catch (error) {
         console.error('Error deleting feed type:', error);
@@ -128,17 +170,22 @@ const FeedingPageComponent: React.FC<FeedingPageProps> = ({ feedTypes, consumpti
                 record.consumptionDate = new Date(data.consumptionDate).getTime();
                 record.feedTypeId = data.feedTypeId;
                 record.quantityKg = data.quantityKg;
-                record.penId = data.targetType === 'pen' ? data.targetId : null;
-                record.batchId = data.targetType === 'batch' ? data.targetId : null;
+                record.penId = data.targetType === 'pen' ? data.targetId : undefined;
+                record.batchId = data.targetType === 'batch' ? data.targetId : undefined;
                 record.notes = data.notes;
-                // record.numberOfAnimals = ... (Podríamos buscar el corral y ver cuántos animales tiene)
+                // record.numberOfAnimals = ... 
             });
 
             // 2. Descontar del inventario (Lógica de Negocio Offline)
-            const feedType = await database.collections.get<FeedType>('feed_types').find(data.feedTypeId);
-            await feedType.update(type => {
-                type.currentStockKg = (type.currentStockKg || 0) - data.quantityKg;
-            });
+            const inventory = (await database.collections.get<FeedInventory>('feed_inventory').query(Q.where('feed_type_id', data.feedTypeId)).fetch())[0];
+            
+            if (inventory) {
+                await inventory.update(inv => {
+                    inv.currentStockKg = (inv.currentStockKg || 0) - data.quantityKg;
+                });
+            } else {
+                console.warn('No inventory record found for feed type:', data.feedTypeId);
+            }
         });
         setIsConsumptionModalOpen(false);
     } catch (error) {
@@ -223,17 +270,17 @@ const FeedingPageComponent: React.FC<FeedingPageProps> = ({ feedTypes, consumpti
                         <span className="text-xs text-gray-500 mt-1">Configurar stock y alertas</span>
                     </button>
 
-                    {filteredTypes.map((type) => (
-                        <div key={type.id} className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-all group relative">
+                    {filteredTypes.map((item) => (
+                        <div key={item.type.id} className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-all group relative">
                             <div className="absolute top-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                                 <button 
-                                    onClick={() => { setSelectedType(type); setIsTypeModalOpen(true); }}
+                                    onClick={() => { setSelectedType(item.type); setIsTypeModalOpen(true); }}
                                     className="p-1.5 text-gray-400 hover:text-indigo-600 bg-white rounded-md shadow-sm border border-gray-100"
                                 >
                                     <Edit className="w-4 h-4" />
                                 </button>
                                 <button 
-                                    onClick={() => handleDeleteType(type.id)}
+                                    onClick={() => handleDeleteType(item.type.id)}
                                     className="p-1.5 text-gray-400 hover:text-red-600 bg-white rounded-md shadow-sm border border-gray-100"
                                 >
                                     <Trash2 className="w-4 h-4" />
@@ -243,13 +290,13 @@ const FeedingPageComponent: React.FC<FeedingPageProps> = ({ feedTypes, consumpti
                             <div className="flex items-start justify-between mb-4">
                                 <div>
                                     <span className="inline-block px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-gray-100 text-gray-600 mb-2">
-                                        {type.code}
+                                        {item.type.code}
                                     </span>
-                                    <h3 className="font-bold text-gray-900">{type.name}</h3>
-                                    <p className="text-sm text-gray-500">{type.category || 'Sin categoría'}</p>
+                                    <h3 className="font-bold text-gray-900">{item.type.name}</h3>
+                                    <p className="text-sm text-gray-500">{item.type.category || 'Sin categoría'}</p>
                                 </div>
                                 <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-                                    (type.currentStockKg || 0) <= (type.minimumStockKg || 0) 
+                                    (item.currentStockKg || 0) <= (item.minimumStockKg || 0) 
                                         ? 'bg-red-50 text-red-600 animate-pulse' 
                                         : 'bg-green-50 text-green-600'
                                 }`}>
@@ -261,19 +308,19 @@ const FeedingPageComponent: React.FC<FeedingPageProps> = ({ feedTypes, consumpti
                                 <div>
                                     <div className="flex justify-between text-sm mb-1">
                                         <span className="text-gray-500">Stock Actual</span>
-                                        <span className="font-bold text-gray-900">{type.currentStockKg?.toLocaleString()} kg</span>
+                                        <span className="font-bold text-gray-900">{item.currentStockKg?.toLocaleString()} kg</span>
                                     </div>
                                     <div className="w-full bg-gray-100 rounded-full h-2 overflow-hidden">
                                         <div 
                                             className={`h-full rounded-full ${
-                                                (type.currentStockKg || 0) <= (type.minimumStockKg || 0) ? 'bg-red-500' : 'bg-indigo-500'
+                                                (item.currentStockKg || 0) <= (item.minimumStockKg || 0) ? 'bg-red-500' : 'bg-indigo-500'
                                             }`} 
-                                            style={{ width: `${Math.min(((type.currentStockKg || 0) / (type.maximumStockKg || 1000)) * 100, 100)}%` }}
+                                            style={{ width: `${Math.min(((item.currentStockKg || 0) / (item.maximumStockKg || 1000)) * 100, 100)}%` }}
                                         />
                                     </div>
                                     <div className="flex justify-between text-[10px] text-gray-400 mt-1">
-                                        <span>Min: {type.minimumStockKg}kg</span>
-                                        <span>Max: {type.maximumStockKg}kg</span>
+                                        <span>Min: {item.minimumStockKg}kg</span>
+                                        <span>Max: {item.maximumStockKg}kg</span>
                                     </div>
                                 </div>
                             </div>
@@ -399,6 +446,7 @@ const FeedingPageComponent: React.FC<FeedingPageProps> = ({ feedTypes, consumpti
         onClose={() => setIsConsumptionModalOpen(false)}
         feedTypes={feedTypes}
         pens={pens}
+        batches={batches}
         onSubmit={handleRegisterConsumption}
       />
     </div>
@@ -407,6 +455,7 @@ const FeedingPageComponent: React.FC<FeedingPageProps> = ({ feedTypes, consumpti
 
 const enhance = withObservables([], () => ({
   feedTypes: database.collections.get<FeedType>('feed_types').query(),
+  feedInventory: database.collections.get<FeedInventory>('feed_inventory').query(),
   consumptionHistory: database.collections.get<FeedConsumption>('feed_consumption').query(
       Q.sortBy('consumption_date', Q.desc)
   ),

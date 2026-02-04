@@ -54,9 +54,9 @@ const BatchListPageComponent: React.FC<BatchListPageProps> = ({ batches }) => {
       startDate: new Date(batch.startDate).toISOString().split('T')[0],
       expectedEndDate: batch.expectedEndDate ? new Date(batch.expectedEndDate).toISOString().split('T')[0] : '',
       actualEndDate: batch.actualEndDate ? new Date(batch.actualEndDate).toISOString().split('T')[0] : '',
-      initialCount: batch.initialCount,
-      currentCount: batch.currentCount,
-      targetWeight: batch.targetWeight,
+      initialCount: batch.initialCount || 0,
+      currentCount: batch.currentCount || 0,
+      targetWeight: batch.targetWeight || 0,
       notes: batch.notes || '',
     };
     setSelectedBatch(batchData);
@@ -110,14 +110,14 @@ const BatchListPageComponent: React.FC<BatchListPageProps> = ({ batches }) => {
     batch.name = data.name;
     batch.batchType = data.batchType;
     batch.status = data.status;
-    batch.startDate = new Date(data.startDate);
-    batch.expectedEndDate = data.expectedEndDate ? new Date(data.expectedEndDate) : undefined;
+    batch.startDate = new Date(data.startDate).getTime();
+    batch.expectedEndDate = data.expectedEndDate ? new Date(data.expectedEndDate).getTime() : undefined;
     batch.initialCount = Number(data.initialCount) || 0;
     batch.currentCount = Number(data.currentCount) || 0;
     batch.targetWeight = Number(data.targetWeight) || 0;
     batch.notes = data.notes || '';
     // batch.actualEndDate se maneja por separado usualmente al cerrar lote, pero lo incluimos si viene
-    if (data.actualEndDate) batch.actualEndDate = new Date(data.actualEndDate);
+    if (data.actualEndDate) batch.actualEndDate = new Date(data.actualEndDate).getTime();
   };
 
   return (

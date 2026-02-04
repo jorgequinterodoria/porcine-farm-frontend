@@ -13,12 +13,13 @@ interface FeedConsumptionModalProps {
     isOpen: boolean;
     onClose: () => void;
     feedTypes: FeedType[];
-    pens: any[]; // Using any[] for now to accept both Pen Model and plain objects if needed, ideally use Pen[]
+    pens: any[];
+    batches: any[];
     onSubmit: (data: FeedConsumptionFormData) => void;
     isLoading?: boolean;
 }
 
-export const FeedConsumptionModal: React.FC<FeedConsumptionModalProps> = ({ isOpen, onClose, feedTypes, pens, onSubmit, isLoading }) => {
+export const FeedConsumptionModal: React.FC<FeedConsumptionModalProps> = ({ isOpen, onClose, feedTypes, pens, batches, onSubmit, isLoading }) => {
     
     const { register, handleSubmit, formState: { errors }, watch, reset } = useForm<FeedConsumptionFormData>({
         resolver: zodResolver(feedConsumptionSchema) as Resolver<FeedConsumptionFormData>,
@@ -114,11 +115,14 @@ export const FeedConsumptionModal: React.FC<FeedConsumptionModalProps> = ({ isOp
                                     ))}
                                 </select>
                             ) : (
-                                <input 
-                                    {...register('targetId')} 
-                                    className="input" 
-                                    placeholder="ID del Lote (simulado)" 
-                                />
+                                <select {...register('targetId')} className="input">
+                                    <option value="">Seleccionar Lote...</option>
+                                    {batches?.map(batch => (
+                                        <option key={batch.id} value={batch.id}>
+                                            {batch.name} ({batch.code})
+                                        </option>
+                                    ))}
+                                </select>
                             )}
                             {errors.targetId && <p className="text-red-500 text-xs">{errors.targetId.message}</p>}
                         </div>

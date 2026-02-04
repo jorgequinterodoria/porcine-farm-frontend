@@ -15,28 +15,32 @@ import {
   Edit,
   Trash2
 } from 'lucide-react';
-import database from '../../db';
+import { database } from '../../db';
 import HealthRecord from '../../db/models/HealthRecord';
 import Medication from '../../db/models/Medication';
 import Vaccine from '../../db/models/Vaccine';
 import Disease from '../../db/models/Disease';
+import Animal from '../../db/models/Animal';
 import { MedicationModal } from '../../components/health/MedicationModal';
 import { VaccineModal } from '../../components/health/VaccineModal';
 import { DiseaseModal } from '../../components/health/DiseaseModal';
 import { HealthRecordModal } from '../../components/health/HealthRecordModal';
+import type { MedicationFormData, VaccineFormData, DiseaseFormData, HealthRecordFormData } from '../../types/farm.types';
 
 interface HealthPageProps {
   healthRecords: HealthRecord[];
   medications: Medication[];
   vaccines: Vaccine[];
   diseases: Disease[];
+  animals: Animal[];
 }
 
 const HealthPage: React.FC<HealthPageProps> = ({ 
   healthRecords, 
   medications, 
   vaccines, 
-  diseases 
+  diseases,
+  animals
 }) => {
   const [activeTab, setActiveTab] = useState<'records' | 'catalog'>('records');
   const [search, setSearch] = useState('');
@@ -52,7 +56,7 @@ const HealthPage: React.FC<HealthPageProps> = ({
   const [isDiseaseModalOpen, setIsDiseaseModalOpen] = useState(false);
   const [selectedDisease, setSelectedDisease] = useState<Disease | null>(null);
 
-  const handleDelete = async (type: 'medication' | 'vaccine' | 'disease', item: any) => {
+  const handleDelete = async (_type: 'medication' | 'vaccine' | 'disease', item: any) => {
     if (window.confirm('¿Estás seguro de eliminar este registro?')) {
         try {
           await database.write(async () => {
@@ -62,6 +66,137 @@ const HealthPage: React.FC<HealthPageProps> = ({
           console.error('Error deleting item:', error);
           alert('Error al eliminar el registro.');
         }
+    }
+  };
+
+  const handleSaveMedication = async (data: MedicationFormData) => {
+    try {
+        await database.write(async () => {
+            const collection = database.collections.get<Medication>('medications');
+            if (selectedMedication) {
+                await selectedMedication.update(med => {
+                    med.code = data.code;
+                    med.commercialName = data.commercialName;
+                    med.genericName = data.genericName;
+                    med.category = data.category;
+                    med.presentation = data.presentation;
+                    med.withdrawalPeriodDays = data.withdrawalPeriodDays;
+                    med.dosageInstructions = data.dosageInstructions;
+                    med.manufacturer = data.manufacturer;
+                });
+            } else {
+                await collection.create(med => {
+                    med.code = data.code;
+                    med.commercialName = data.commercialName;
+                    med.genericName = data.genericName;
+                    med.category = data.category;
+                    med.presentation = data.presentation;
+                    med.withdrawalPeriodDays = data.withdrawalPeriodDays;
+                    med.dosageInstructions = data.dosageInstructions;
+                    med.manufacturer = data.manufacturer;
+                });
+            }
+        });
+        setIsMedicationModalOpen(false);
+    } catch (error) {
+        console.error('Error saving medication:', error);
+        alert('Error al guardar medicamento');
+    }
+  };
+
+  const handleSaveVaccine = async (data: VaccineFormData) => {
+    try {
+        await database.write(async () => {
+            const collection = database.collections.get<Vaccine>('vaccines');
+            if (selectedVaccine) {
+                await selectedVaccine.update(vac => {
+                    vac.code = data.code;
+                    vac.name = data.name;
+                    vac.disease = data.disease;
+                    vac.type = data.type;
+                    vac.manufacturer = data.manufacturer;
+                    vac.applicationRoute = data.applicationRoute;
+                    vac.dosage = data.dosage;
+                    vac.boosterRequired = data.boosterRequired;
+                    vac.boosterIntervalDays = data.boosterIntervalDays;
+                });
+            } else {
+                await collection.create(vac => {
+                    vac.code = data.code;
+                    vac.name = data.name;
+                    vac.disease = data.disease;
+                    vac.type = data.type;
+                    vac.manufacturer = data.manufacturer;
+                    vac.applicationRoute = data.applicationRoute;
+                    vac.dosage = data.dosage;
+                    vac.boosterRequired = data.boosterRequired;
+                    vac.boosterIntervalDays = data.boosterIntervalDays;
+                });
+            }
+        });
+        setIsVaccineModalOpen(false);
+    } catch (error) {
+        console.error('Error saving vaccine:', error);
+        alert('Error al guardar vacuna');
+    }
+  };
+
+  const handleSaveDisease = async (data: DiseaseFormData) => {
+    try {
+        await database.write(async () => {
+            const collection = database.collections.get<Disease>('diseases');
+            if (selectedDisease) {
+                await selectedDisease.update(dis => {
+                    dis.code = data.code;
+                    dis.name = data.name;
+                    dis.scientificName = data.scientificName;
+                    dis.category = data.category;
+                    dis.severity = data.severity;
+                    dis.symptoms = data.symptoms;
+                    dis.treatmentProtocol = data.treatmentProtocol;
+                    dis.preventionMeasures = data.preventionMeasures;
+                    dis.isZoonotic = data.isZoonotic;
+                });
+            } else {
+                await collection.create(dis => {
+                    dis.code = data.code;
+                    dis.name = data.name;
+                    dis.scientificName = data.scientificName;
+                    dis.category = data.category;
+                    dis.severity = data.severity;
+                    dis.symptoms = data.symptoms;
+                    dis.treatmentProtocol = data.treatmentProtocol;
+                    dis.preventionMeasures = data.preventionMeasures;
+                    dis.isZoonotic = data.isZoonotic;
+                });
+            }
+        });
+        setIsDiseaseModalOpen(false);
+    } catch (error) {
+        console.error('Error saving disease:', error);
+        alert('Error al guardar enfermedad');
+    }
+  };
+
+  const handleSaveHealthRecord = async (data: HealthRecordFormData) => {
+    try {
+        await database.write(async () => {
+            await database.collections.get<HealthRecord>('health_records').create(record => {
+                record.recordDate = new Date(data.recordDate).getTime();
+                record.recordType = 'treatment'; // Or determine based on inputs
+                record.diagnosis = data.diagnosis;
+                record.symptoms = data.symptoms;
+                record.treatmentPlan = data.treatmentPlan;
+                record.temperature = data.temperature;
+                record.diseaseId = data.diseaseId;
+                // Add mapping for animal/batch/treatments if needed in model
+                // Note: The HealthRecord model might need relation fields or JSON field for treatments if not normalized
+            });
+        });
+        setIsHealthRecordModalOpen(false);
+    } catch (error) {
+        console.error('Error saving health record:', error);
+        alert('Error al guardar registro de salud');
     }
   };
 
@@ -309,22 +444,27 @@ const HealthPage: React.FC<HealthPageProps> = ({
         isOpen={isMedicationModalOpen} 
         onClose={() => setIsMedicationModalOpen(false)} 
         medication={selectedMedication} 
+        onSubmit={handleSaveMedication}
       />
       <VaccineModal 
         isOpen={isVaccineModalOpen} 
         onClose={() => setIsVaccineModalOpen(false)} 
         vaccine={selectedVaccine} 
+        onSubmit={handleSaveVaccine}
       />
       <DiseaseModal 
         isOpen={isDiseaseModalOpen} 
         onClose={() => setIsDiseaseModalOpen(false)} 
         disease={selectedDisease} 
+        onSubmit={handleSaveDisease}
       />
       <HealthRecordModal
         isOpen={isHealthRecordModalOpen}
         onClose={() => setIsHealthRecordModalOpen(false)}
         medications={medications || []}
         diseases={diseases || []}
+        animals={animals || []}
+        onSubmit={handleSaveHealthRecord}
       />
     </div>
   );
@@ -335,6 +475,7 @@ const enhance = withObservables([], () => ({
   medications: database.collections.get<Medication>('medications').query().observe(),
   vaccines: database.collections.get<Vaccine>('vaccines').query().observe(),
   diseases: database.collections.get<Disease>('diseases').query().observe(),
+  animals: database.collections.get<Animal>('animals').query().observe(),
 }));
 
 export const HealthPageEnhanced = enhance(HealthPage);
