@@ -1,20 +1,19 @@
 import React, { useEffect } from 'react';
 import { useForm, type Resolver } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { X, Loader2, Save } from 'lucide-react';
 import type { Vaccine, VaccineFormData } from '../../types/farm.types';
 import { vaccineSchema } from '../../types/farm.types';
-import { createVaccine, updateVaccine } from '../../api/health';
 
 interface VaccineModalProps {
     isOpen: boolean;
     onClose: () => void;
     vaccine: Vaccine | null;
+    onSubmit: (data: VaccineFormData) => void;
+    isLoading?: boolean;
 }
 
-export const VaccineModal: React.FC<VaccineModalProps> = ({ isOpen, onClose, vaccine }) => {
-    const queryClient = useQueryClient();
+export const VaccineModal: React.FC<VaccineModalProps> = ({ isOpen, onClose, vaccine, onSubmit, isLoading }) => {
     const isEdit = !!vaccine;
 
     const { register, handleSubmit, formState: { errors }, reset } = useForm<VaccineFormData>({
@@ -50,23 +49,6 @@ export const VaccineModal: React.FC<VaccineModalProps> = ({ isOpen, onClose, vac
             }
         }
     }, [isOpen, vaccine, reset]);
-
-    const mutation = useMutation({
-        mutationFn: (data: VaccineFormData) => {
-            if (isEdit && vaccine) {
-                return updateVaccine(vaccine.id, data);
-            }
-            return createVaccine(data);
-        },
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['vaccines'] });
-            onClose();
-        }
-    });
-
-    const onSubmit = (data: VaccineFormData) => {
-        mutation.mutate(data);
-    };
 
     if (!isOpen) return null;
 
@@ -131,15 +113,15 @@ export const VaccineModal: React.FC<VaccineModalProps> = ({ isOpen, onClose, vac
 
                     <div className="space-y-1">
                         <label className="text-sm font-medium text-gray-700">Intervalo de Refuerzo (días)</label>
-                        <input type="number" {...register('boosterIntervalDays')} className="input" placeholder="0" />
+                        <input type="number" {...register('boosterIntervalDays', { valueAsNumber: true })} className="input" placeholder="0" />
                     </div>
 
                     <div className="pt-4 flex gap-3">
                         <button type="button" onClick={onClose} className="btn bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 flex-1">
                             Cancelar
                         </button>
-                        <button type="submit" disabled={mutation.isPending} className="btn btn-primary flex-1 gap-2">
-                            {mutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                        <button type="submit" disabled={isLoading} className="btn btn-primary flex-1 gap-2">
+                            {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
                             {isEdit ? 'Guardar Cambios' : 'Crear Vacuna'}
                         </button>
                     </div>

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Download, Check } from 'lucide-react';
+import { Download } from 'lucide-react';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 

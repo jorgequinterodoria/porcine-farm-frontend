@@ -28,14 +28,14 @@ export interface Animal {
     electronicId?: string;
     visualId?: string;
     sex: string;
-    birthDate: string;
+    birthDate: string | Date;
     birthWeight?: number;
     currentStatus: string;
     stage: string;
     currentPenId?: string;
     breedId?: string;
     breed?: { name: string };
-    createdAt: string;
+    createdAt: string | Date;
     geneticLine?: string;
     purpose?: string;
     origin?: string;

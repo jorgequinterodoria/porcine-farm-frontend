@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import React, { useState, useMemo } from 'react';
+import { withObservables } from '@nozbe/watermelondb/react';
+import { Q } from '@nozbe/watermelondb';
 import {
   Plus,
   Search,
@@ -10,45 +11,33 @@ import {
   Edit,
   Trash2
 } from 'lucide-react';
-import { getBatches, createBatch, updateBatch, deleteBatch } from '../../api/batches';
-import type { Batch, BatchFormData } from '../../types/batch.types';
+
+// WatermelonDB Imports
+import { database } from '../../db';
+import { Batch } from '../../db/models';
+import type { BatchFormData } from '../../types/batch.types';
+
+// Components
 import { BatchForm } from '../../components/batches/BatchForm';
 
-export const BatchListPage: React.FC = () => {
+interface BatchListPageProps {
+  batches: Batch[];
+}
+
+const BatchListPageComponent: React.FC<BatchListPageProps> = ({ batches }) => {
   const [search, setSearch] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedBatch, setSelectedBatch] = useState<BatchFormData & { id?: string } | null>(null);
 
-  const queryClient = useQueryClient();
-
-  const { data: batches, isLoading } = useQuery({
-    queryKey: ['batches'],
-    queryFn: () => getBatches()
-  });
-
-  const createMutation = useMutation({
-    mutationFn: createBatch,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['batches'] });
-      setIsModalOpen(false);
-    }
-  });
-
-  const updateMutation = useMutation({
-    mutationFn: (data: BatchFormData) => updateBatch(selectedBatch!.id!, data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['batches'] });
-      setIsModalOpen(false);
-      setSelectedBatch(null);
-    }
-  });
-
-  const deleteMutation = useMutation({
-    mutationFn: deleteBatch,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['batches'] });
-    }
-  });
+  // --- Lógica de Filtrado (En memoria) ---
+  const filteredBatches = useMemo(() => {
+    return batches.filter(batch => {
+      const matchesSearch = 
+        batch.name.toLowerCase().includes(search.toLowerCase()) || 
+        batch.code.toLowerCase().includes(search.toLowerCase());
+      return matchesSearch;
+    });
+  }, [batches, search]);
 
   const handleCreate = () => {
     setSelectedBatch(null);
@@ -62,44 +51,84 @@ export const BatchListPage: React.FC = () => {
       name: batch.name,
       batchType: batch.batchType as BatchFormData['batchType'],
       status: batch.status as BatchFormData['status'],
-      startDate: batch.startDate,
-      expectedEndDate: batch.expectedEndDate,
-      actualEndDate: batch.actualEndDate,
+      startDate: new Date(batch.startDate).toISOString().split('T')[0],
+      expectedEndDate: batch.expectedEndDate ? new Date(batch.expectedEndDate).toISOString().split('T')[0] : '',
+      actualEndDate: batch.actualEndDate ? new Date(batch.actualEndDate).toISOString().split('T')[0] : '',
       initialCount: batch.initialCount,
       currentCount: batch.currentCount,
       targetWeight: batch.targetWeight,
-      notes: '',
+      notes: batch.notes || '',
     };
     setSelectedBatch(batchData);
     setIsModalOpen(true);
   };
 
+  // 🔥 CORE: Eliminar (Soft Delete)
   const handleDelete = async (id: string) => {
-    if (window.confirm('¿Estás seguro de que deseas eliminar este lote?')) {
-      deleteMutation.mutate(id);
+    if (!window.confirm('¿Estás seguro de que deseas eliminar este lote?')) return;
+
+    try {
+      await database.write(async () => {
+        const batch = await database.collections.get<Batch>('batches').find(id);
+        await batch.markAsDeleted();
+      });
+    } catch (error) {
+      console.error('Error al eliminar lote:', error);
+      alert('Error al eliminar el lote');
     }
   };
 
-  const handleSubmit = (data: BatchFormData) => {
-    if (selectedBatch?.id) {
-      updateMutation.mutate(data);
-    } else {
-      createMutation.mutate(data);
+  // 🔥 CORE: Guardar (Create / Update)
+  const handleSubmit = async (data: BatchFormData) => {
+    try {
+      await database.write(async () => {
+        const collection = database.collections.get<Batch>('batches');
+
+        if (selectedBatch?.id) {
+          // UPDATE
+          const batch = await collection.find(selectedBatch.id);
+          await batch.update(b => {
+            updateBatchFields(b, data);
+          });
+        } else {
+          // CREATE
+          await collection.create(b => {
+            updateBatchFields(b, data);
+          });
+        }
+      });
+      setIsModalOpen(false);
+      setSelectedBatch(null);
+    } catch (error) {
+      console.error('Error al guardar lote:', error);
+      alert('Error al guardar en base de datos local');
     }
   };
 
-  const filteredBatches = batches?.filter((b) =>
-    b.name.toLowerCase().includes(search.toLowerCase()) ||
-    b.code.toLowerCase().includes(search.toLowerCase())
-  );
+  const updateBatchFields = (batch: Batch, data: BatchFormData) => {
+    batch.code = data.code;
+    batch.name = data.name;
+    batch.batchType = data.batchType;
+    batch.status = data.status;
+    batch.startDate = new Date(data.startDate);
+    batch.expectedEndDate = data.expectedEndDate ? new Date(data.expectedEndDate) : undefined;
+    batch.initialCount = Number(data.initialCount) || 0;
+    batch.currentCount = Number(data.currentCount) || 0;
+    batch.targetWeight = Number(data.targetWeight) || 0;
+    batch.notes = data.notes || '';
+    // batch.actualEndDate se maneja por separado usualmente al cerrar lote, pero lo incluimos si viene
+    if (data.actualEndDate) batch.actualEndDate = new Date(data.actualEndDate);
+  };
 
   return (
-    <div className="space-y-8">
-      {}
+    <div className="space-y-8 animate-fadeIn">
+      {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Lotes de Producción</h1>
-          <p className="text-gray-500 text-sm mt-1">Agrupa y rastrea animales por ciclo productivo.</p>
+          <p className="text-gray-500 text-sm mt-1">
+            {batches.length} lotes registrados. Agrupa y rastrea animales por ciclo productivo.
+          </p>
         </div>
         <button
           onClick={handleCreate}
@@ -110,7 +139,7 @@ export const BatchListPage: React.FC = () => {
         </button>
       </div>
 
-      {}
+      {/* Buscador */}
       <div className="relative max-w-lg">
         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
           <Search className="w-5 h-5 text-gray-400" />
@@ -124,24 +153,22 @@ export const BatchListPage: React.FC = () => {
         />
       </div>
 
-      {}
+      {/* Grid de Lotes */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {isLoading ? (
-          [...Array(4)].map((_, i) => (
-            <div key={i} className="h-48 bg-white rounded-xl border border-gray-200 animate-pulse shadow-sm" />
-          ))
-        ) : filteredBatches?.map((batch) => (
+        {filteredBatches.map((batch) => (
           <div
             key={batch.id}
-            className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm hover:shadow-md hover:border-indigo-300 transition-all group relative overflow-hidden"
+            className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm hover:shadow-md hover:border-indigo-300 transition-all group relative overflow-hidden cursor-pointer"
+            onClick={() => handleEdit(batch)}
           >
             <div className="flex items-start justify-between mb-6">
               <div>
                 <div className="flex items-center gap-2 mb-2">
-                  <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${batch.status === 'active' ? 'bg-green-50 text-green-700 border-green-100' :
-                      batch.status === 'closed' ? 'bg-gray-50 text-gray-700 border-gray-100' :
-                        'bg-indigo-50 text-indigo-700 border-indigo-100'
-                    }`}>
+                  <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${
+                    batch.status === 'active' ? 'bg-green-50 text-green-700 border-green-100' :
+                    batch.status === 'closed' ? 'bg-gray-50 text-gray-700 border-gray-100' :
+                    'bg-indigo-50 text-indigo-700 border-indigo-100'
+                  }`}>
                     {batch.batchType}
                   </span>
                   <span className="text-xs text-gray-400 font-mono">{batch.code}</span>
@@ -169,7 +196,7 @@ export const BatchListPage: React.FC = () => {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4 pt-4 border-t border-gray-100 cursor-pointer" onClick={() => handleEdit(batch)}>
+            <div className="grid grid-cols-2 gap-4 pt-4 border-t border-gray-100">
               <div className="flex flex-col gap-1">
                 <div className="flex items-center gap-1.5 text-xs text-gray-500 uppercase font-semibold tracking-wide">
                   <Calendar className="w-3.5 h-3.5" />
@@ -197,15 +224,14 @@ export const BatchListPage: React.FC = () => {
         ))}
       </div>
 
-      {}
-      {!isLoading && filteredBatches?.length === 0 && (
+      {filteredBatches.length === 0 && (
         <div className="p-16 text-center bg-white border border-gray-200 border-dashed rounded-xl">
           <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4">
             <Layers className="w-8 h-8 text-gray-300" />
           </div>
           <h3 className="text-lg font-medium text-gray-900">No se encontraron lotes</h3>
           <p className="text-sm text-gray-500 mt-1">
-            Intenta ajustar tu búsqueda o crea un nuevo lote de producción.
+            {batches.length === 0 ? 'La base de datos está vacía.' : 'Intenta ajustar tu búsqueda o crea un nuevo lote.'}
           </p>
         </div>
       )}
@@ -214,9 +240,16 @@ export const BatchListPage: React.FC = () => {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onSubmit={handleSubmit}
-        isLoading={createMutation.isPending || updateMutation.isPending}
         initialData={selectedBatch}
       />
     </div>
   );
 };
+
+const enhance = withObservables([], () => ({
+  batches: database.collections.get<Batch>('batches').query(
+    Q.sortBy('created_at', Q.desc)
+  ),
+}));
+
+export const BatchListPage = enhance(BatchListPageComponent);

@@ -1,22 +1,22 @@
 import React, { useState } from 'react';
 import { useForm, useFieldArray, type Resolver } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { X, Loader2, Save, Plus, Trash2, Pill, AlertTriangle } from 'lucide-react';
 import type { Medication, Disease, HealthRecordFormData } from '../../types/farm.types';
 import { healthRecordSchema } from '../../types/farm.types';
-import { createHealthRecord } from '../../api/health';
-import { getAnimals } from '../../api/animals';
+// import { Animal } from '../../db/models'; // Assuming Animal model
 
 interface HealthRecordModalProps {
     isOpen: boolean;
     onClose: () => void;
     medications: Medication[];
     diseases: Disease[];
+    animals: any[]; // Using any[] to accept models
+    onSubmit: (data: HealthRecordFormData) => void;
+    isLoading?: boolean;
 }
 
-export const HealthRecordModal: React.FC<HealthRecordModalProps> = ({ isOpen, onClose, medications, diseases }) => {
-    const queryClient = useQueryClient();
+export const HealthRecordModal: React.FC<HealthRecordModalProps> = ({ isOpen, onClose, medications, diseases, animals, onSubmit, isLoading }) => {
     const [activeSection, setActiveSection] = useState<'details' | 'treatment'>('details');
 
     const { register, control, handleSubmit, formState: { errors }, watch, reset } = useForm<HealthRecordFormData>({
@@ -35,33 +35,23 @@ export const HealthRecordModal: React.FC<HealthRecordModalProps> = ({ isOpen, on
 
     const targetType = watch('targetType');
 
-    
-    const { data: animals, isLoading: isLoadingAnimals } = useQuery({
-        queryKey: ['animals'],
-        queryFn: () => getAnimals(),
-        enabled: isOpen && targetType === 'individual'
-    });
-
-    const mutation = useMutation({
-        mutationFn: createHealthRecord,
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['health-records'] });
-            reset();
+    // Reset form when modal opens
+    React.useEffect(() => {
+        if (isOpen) {
+            reset({
+                recordDate: new Date().toISOString().split('T')[0],
+                targetType: 'individual',
+                treatments: []
+            });
             setActiveSection('details');
-            onClose();
         }
-    });
+    }, [isOpen, reset]);
 
-    const onSubmit = (data: HealthRecordFormData) => {
-        mutation.mutate(data);
-    };
-
-    
     const handleDiseaseChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const diseaseId = e.target.value;
         const disease = diseases.find(d => d.id === diseaseId);
         if (disease) {
-            
+            // Optional: Auto-fill symptoms or treatment plan based on disease
         }
     };
 
@@ -84,7 +74,7 @@ export const HealthRecordModal: React.FC<HealthRecordModalProps> = ({ isOpen, on
                 </div>
 
                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-                    {}
+                    {/* Tabs */}
                     <div className="flex border-b border-gray-200 mb-4">
                         <button
                             type="button"
@@ -115,7 +105,7 @@ export const HealthRecordModal: React.FC<HealthRecordModalProps> = ({ isOpen, on
                         </button>
                     </div>
 
-                    {}
+                    {/* Section: Details */}
                     <div className={activeSection === 'details' ? 'block space-y-4' : 'hidden'}>
                         <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-1">
@@ -130,21 +120,14 @@ export const HealthRecordModal: React.FC<HealthRecordModalProps> = ({ isOpen, on
                                     {targetType === 'individual' ? 'Seleccionar Animal' : 'Código del Lote'}
                                 </label>
                                 {targetType === 'individual' ? (
-                                    isLoadingAnimals ? (
-                                        <div className="input flex items-center text-gray-400">
-                                            <Loader2 className="w-4 h-4 animate-spin mr-2" />
-                                            Cargando animales...
-                                        </div>
-                                    ) : (
-                                        <select {...register('targetId')} className="input">
-                                            <option value="">Seleccionar...</option>
-                                            {animals?.map(animal => (
-                                                <option key={animal.id} value={animal.id}>
-                                                    {animal.internalCode} - {animal.sex === 'male' ? 'Macho' : 'Hembra'}
-                                                </option>
-                                            ))}
-                                        </select>
-                                    )
+                                    <select {...register('targetId')} className="input">
+                                        <option value="">Seleccionar...</option>
+                                        {animals?.map(animal => (
+                                            <option key={animal.id} value={animal.id}>
+                                                {animal.internalCode} - {animal.sex === 'male' ? 'Macho' : 'Hembra'}
+                                            </option>
+                                        ))}
+                                    </select>
                                 ) : (
                                     <input {...register('targetId')} className="input" placeholder="Ej. LOTE-2024-A" />
                                 )}
@@ -160,7 +143,7 @@ export const HealthRecordModal: React.FC<HealthRecordModalProps> = ({ isOpen, on
                             </div>
                             <div className="space-y-1">
                                 <label className="text-sm font-medium text-gray-700">Temperatura (°C)</label>
-                                <input type="number" step="0.1" {...register('temperature')} className="input" placeholder="38.5" />
+                                <input type="number" step="0.1" {...register('temperature', { valueAsNumber: true })} className="input" placeholder="38.5" />
                             </div>
                         </div>
 
@@ -192,7 +175,7 @@ export const HealthRecordModal: React.FC<HealthRecordModalProps> = ({ isOpen, on
                         </div>
                     </div>
 
-                    {}
+                    {/* Section: Treatment */}
                     <div className={activeSection === 'treatment' ? 'block space-y-4' : 'hidden'}>
                         {fields.length === 0 ? (
                             <div className="text-center py-8 bg-gray-50 rounded-xl border border-dashed border-gray-200">
@@ -281,8 +264,8 @@ export const HealthRecordModal: React.FC<HealthRecordModalProps> = ({ isOpen, on
                         <button type="button" onClick={onClose} className="btn bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 flex-1">
                             Cancelar
                         </button>
-                        <button type="submit" disabled={mutation.isPending} className="btn btn-primary flex-1 gap-2">
-                            {mutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                        <button type="submit" disabled={isLoading} className="btn btn-primary flex-1 gap-2">
+                            {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
                             Guardar Registro
                         </button>
                     </div>

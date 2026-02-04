@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import React, { useState, useMemo } from 'react';
+import { withObservables } from '@nozbe/watermelondb/react';
 import { 
   Plus, 
   Search, 
@@ -10,57 +10,28 @@ import {
   MapPin,
   Users
 } from 'lucide-react';
-import { 
-  getFacilities, 
-  getPens, 
-  createFacility, 
-  createPen 
-} from '../../api/infrastructure';
-import { FacilityForm } from '../../components/infrastructure/FacilityForm';
-import { PenForm } from '../../components/infrastructure/PenForm';
+
+// WatermelonDB Imports
+import { database } from '../../db';
+import { Facility, Pen } from '../../db/models';
 import type { FacilityFormData, PenFormData } from '../../types/infrastructure.types';
 
-export const InfrastructurePage: React.FC = () => {
+// Components
+import { FacilityForm } from '../../components/infrastructure/FacilityForm';
+import { PenForm } from '../../components/infrastructure/PenForm';
+
+interface InfrastructurePageProps {
+  facilities: Facility[];
+  pens: Pen[];
+}
+
+const InfrastructurePageComponent: React.FC<InfrastructurePageProps> = ({ facilities, pens }) => {
   const [activeTab, setActiveTab] = useState<'facilities' | 'pens'>('facilities');
   const [search, setSearch] = useState('');
-  
   
   const [isFacilityFormOpen, setIsFacilityFormOpen] = useState(false);
   const [isPenFormOpen, setIsPenFormOpen] = useState(false);
 
-  const queryClient = useQueryClient();
-
-  
-  const { data: facilities, isLoading: isLoadingFacilities } = useQuery({
-    queryKey: ['facilities'],
-    queryFn: getFacilities
-  });
-
-  const { data: pens, isLoading: isLoadingPens } = useQuery({
-    queryKey: ['pens'],
-    queryFn: () => getPens() 
-  });
-
-  
-  const createFacilityMutation = useMutation({
-    mutationFn: createFacility,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['facilities'] });
-      setIsFacilityFormOpen(false);
-    }
-  });
-
-  const createPenMutation = useMutation({
-    mutationFn: createPen,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['pens'] });
-      
-      queryClient.invalidateQueries({ queryKey: ['facilities'] });
-      setIsPenFormOpen(false);
-    }
-  });
-
-  
   const handleOpenForm = () => {
     if (activeTab === 'facilities') {
       setIsFacilityFormOpen(true);
@@ -69,34 +40,67 @@ export const InfrastructurePage: React.FC = () => {
     }
   };
 
-  const handleCreateFacility = (data: FacilityFormData) => {
-    createFacilityMutation.mutate({
-      ...data,
-      
-      capacity: Number(data.capacity)
-    });
+  // 🔥 CORE: Crear Facility
+  const handleCreateFacility = async (data: FacilityFormData) => {
+    try {
+      await database.write(async () => {
+        await database.collections.get<Facility>('facilities').create(facility => {
+            facility.name = data.name;
+            facility.code = data.code;
+            facility.facilityType = data.facilityType;
+            facility.capacity = Number(data.capacity) || 0;
+            // facility.areaSqm = Number(data.areaSqm) || 0; // Si el form lo envía
+            facility.isActive = true;
+        });
+      });
+      setIsFacilityFormOpen(false);
+    } catch (error) {
+      console.error('Error creating facility:', error);
+      alert('Error al guardar la instalación');
+    }
   };
 
-  const handleCreatePen = (data: PenFormData) => {
-    createPenMutation.mutate({
-      ...data,
-      capacity: Number(data.capacity)
-    });
+  // 🔥 CORE: Crear Pen
+  const handleCreatePen = async (data: PenFormData) => {
+    try {
+      await database.write(async () => {
+        await database.collections.get<Pen>('pens').create(pen => {
+            pen.name = data.name;
+            pen.code = data.code;
+            pen.facilityId = data.facilityId;
+            pen.capacity = Number(data.capacity) || 0;
+            // pen.areaSqm = Number(data.areaSqm) || 0;
+            pen.isActive = true;
+        });
+      });
+      setIsPenFormOpen(false);
+    } catch (error) {
+      console.error('Error creating pen:', error);
+      alert('Error al guardar el corral');
+    }
   };
 
-  const filteredFacilities = facilities?.filter(f => 
-    f.name.toLowerCase().includes(search.toLowerCase()) || 
-    f.code.toLowerCase().includes(search.toLowerCase())
-  );
+  // --- Filtrado ---
+  const filteredFacilities = useMemo(() => 
+    facilities.filter(f => 
+      f.name.toLowerCase().includes(search.toLowerCase()) || 
+      f.code.toLowerCase().includes(search.toLowerCase())
+    ), [facilities, search]);
 
-  const filteredPens = pens?.filter(p => 
-    p.name.toLowerCase().includes(search.toLowerCase()) || 
-    p.code.toLowerCase().includes(search.toLowerCase())
-  );
+  const filteredPens = useMemo(() => 
+    pens.filter(p => 
+      p.name.toLowerCase().includes(search.toLowerCase()) || 
+      p.code.toLowerCase().includes(search.toLowerCase())
+    ), [pens, search]);
+
+  // Helper para contar corrales por facility (ya que tenemos todos los pens)
+  const getPensCount = (facilityId: string) => {
+      return pens.filter(p => p.facilityId === facilityId).length;
+  };
 
   return (
-    <div className="space-y-8">
-      {}
+    <div className="space-y-8 animate-fadeIn">
+      {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Infraestructura</h1>
@@ -111,10 +115,8 @@ export const InfrastructurePage: React.FC = () => {
         </button>
       </div>
 
-      {}
+      {/* Tabs & Search */}
       <div className="flex flex-col md:flex-row gap-4 justify-between items-start md:items-center">
-        
-        {}
         <div className="flex items-center gap-1 bg-gray-100 p-1 rounded-lg w-full md:w-auto">
           <button 
             onClick={() => setActiveTab('facilities')}
@@ -138,7 +140,6 @@ export const InfrastructurePage: React.FC = () => {
           </button>
         </div>
 
-        {}
         <div className="relative w-full md:w-80">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
           <input 
@@ -151,27 +152,10 @@ export const InfrastructurePage: React.FC = () => {
         </div>
       </div>
 
-      {}
+      {/* Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {activeTab === 'facilities' ? (
-          
-          isLoadingFacilities ? (
-            [...Array(3)].map((_, i) => (
-              <div key={i} className="bg-white p-6 rounded-xl border border-gray-200 animate-pulse">
-                <div className="flex items-center gap-4 mb-4">
-                  <div className="w-12 h-12 bg-gray-100 rounded-lg"></div>
-                  <div className="flex-1 space-y-2">
-                    <div className="h-4 bg-gray-100 rounded w-3/4"></div>
-                    <div className="h-3 bg-gray-100 rounded w-1/2"></div>
-                  </div>
-                </div>
-                <div className="space-y-3">
-                  <div className="h-3 bg-gray-100 rounded w-full"></div>
-                  <div className="h-3 bg-gray-100 rounded w-full"></div>
-                </div>
-              </div>
-            ))
-          ) : filteredFacilities?.map((f) => (
+          filteredFacilities.map((f) => (
             <div key={f.id} className="bg-white p-6 rounded-xl border border-gray-200 hover:shadow-md hover:border-indigo-200 transition-all group">
               <div className="flex items-start justify-between mb-6">
                 <div className="flex items-center gap-4">
@@ -191,7 +175,7 @@ export const InfrastructurePage: React.FC = () => {
               <div className="space-y-4">
                 <div className="flex items-center justify-between text-sm py-2 border-b border-gray-50">
                   <span className="text-gray-500">Corrales</span>
-                  <span className="font-semibold text-gray-900">{f.pens?.length || 0}</span>
+                  <span className="font-semibold text-gray-900">{getPensCount(f.id)}</span>
                 </div>
                 <div className="flex items-center justify-between text-sm py-2 border-b border-gray-50">
                   <span className="text-gray-500">Capacidad Total</span>
@@ -208,12 +192,7 @@ export const InfrastructurePage: React.FC = () => {
             </div>
           ))
         ) : (
-          
-          isLoadingPens ? (
-            [...Array(3)].map((_, i) => (
-              <div key={i} className="bg-white p-6 rounded-xl border border-gray-200 animate-pulse h-48" />
-            ))
-          ) : filteredPens?.map((p) => (
+          filteredPens.map((p) => (
             <div key={p.id} className="bg-white p-6 rounded-xl border border-gray-200 hover:shadow-md hover:border-indigo-200 transition-all group">
                <div className="flex items-start justify-between mb-4">
                 <div>
@@ -229,20 +208,18 @@ export const InfrastructurePage: React.FC = () => {
               </div>
 
               <div className="space-y-5">
-                {}
+                {/* Ocupación Visual (Placeholder, requiere lógica real de animales) */}
                 <div className="bg-gray-50 rounded-lg p-3 border border-gray-100">
                   <div className="flex items-center justify-between text-xs text-gray-500 mb-2 font-medium">
                     <span>Ocupación Actual</span>
-                    <span className={(p.currentOccupancy ?? 0) >= p.capacity ? "text-red-600" : "text-gray-900"}>
-                      {p.currentOccupancy || 0} / {p.capacity}
+                    <span className="text-gray-900">
+                      0 / {p.capacity}
                     </span>
                   </div>
                   <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
                     <div 
-                      className={`h-full rounded-full transition-all duration-500 ${
-                        (p.currentOccupancy ?? 0) >= p.capacity ? 'bg-red-500' : 'bg-indigo-500'
-                      }`} 
-                      style={{ width: `${Math.min(((p.currentOccupancy || 0) / p.capacity) * 100, 100)}%` }}
+                      className="h-full rounded-full bg-indigo-500 transition-all duration-500" 
+                      style={{ width: '0%' }}
                     />
                   </div>
                 </div>
@@ -263,8 +240,8 @@ export const InfrastructurePage: React.FC = () => {
         )}
       </div>
 
-      {}
-      {(!isLoadingFacilities && !isLoadingPens && (activeTab === 'facilities' ? filteredFacilities : filteredPens)?.length === 0) && (
+      {/* Empty State */}
+      {((activeTab === 'facilities' ? filteredFacilities : filteredPens).length === 0) && (
         <div className="bg-white border border-gray-200 border-dashed p-16 text-center rounded-xl">
           <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4">
             <Building2 className="w-8 h-8 text-gray-300" />
@@ -274,21 +251,26 @@ export const InfrastructurePage: React.FC = () => {
         </div>
       )}
 
-      {}
       <FacilityForm 
         isOpen={isFacilityFormOpen} 
         onClose={() => setIsFacilityFormOpen(false)}
         onSubmit={handleCreateFacility}
-        isLoading={createFacilityMutation.isPending}
       />
 
       <PenForm 
         isOpen={isPenFormOpen} 
         onClose={() => setIsPenFormOpen(false)}
         onSubmit={handleCreatePen}
-        isLoading={createPenMutation.isPending}
-        facilities={facilities || []}
+        // Pasamos facilities como prop al formulario para el select
+        facilities={facilities}
       />
     </div>
   );
 };
+
+const enhance = withObservables([], () => ({
+  facilities: database.collections.get<Facility>('facilities').query(),
+  pens: database.collections.get<Pen>('pens').query(),
+}));
+
+export const InfrastructurePage = enhance(InfrastructurePageComponent);

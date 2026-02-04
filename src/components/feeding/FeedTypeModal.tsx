@@ -1,20 +1,19 @@
 import React, { useEffect } from 'react';
 import { useForm, type Resolver } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { X, Loader2, Save } from 'lucide-react';
 import type { FeedType, FeedTypeFormData } from '../../types/feeding.types';
 import { feedTypeSchema } from '../../types/feeding.types';
-import { createFeedType, updateFeedType } from '../../api/feeding';
 
 interface FeedTypeModalProps {
     isOpen: boolean;
     onClose: () => void;
     feedType: FeedType | null;
+    onSubmit: (data: FeedTypeFormData) => void;
+    isLoading?: boolean;
 }
 
-export const FeedTypeModal: React.FC<FeedTypeModalProps> = ({ isOpen, onClose, feedType }) => {
-    const queryClient = useQueryClient();
+export const FeedTypeModal: React.FC<FeedTypeModalProps> = ({ isOpen, onClose, feedType, onSubmit, isLoading }) => {
     const isEdit = !!feedType;
 
     const { register, handleSubmit, formState: { errors }, reset } = useForm<FeedTypeFormData>({
@@ -34,8 +33,8 @@ export const FeedTypeModal: React.FC<FeedTypeModalProps> = ({ isOpen, onClose, f
                     formula: feedType.formula || '',
                     manufacturer: feedType.manufacturer || '',
                     costPerKg: feedType.costPerKg ?? 0,
-                    minimumStockKg: feedType.feedInventory?.[0]?.minimumStockKg ?? 0,
-                    maximumStockKg: feedType.feedInventory?.[0]?.maximumStockKg ?? 0
+                    minimumStockKg: feedType.minimumStockKg ?? 0,
+                    maximumStockKg: feedType.maximumStockKg ?? 0
                 });
             } else {
                 reset({
@@ -55,23 +54,6 @@ export const FeedTypeModal: React.FC<FeedTypeModalProps> = ({ isOpen, onClose, f
             }
         }
     }, [isOpen, feedType, reset]);
-
-    const mutation = useMutation({
-        mutationFn: (data: FeedTypeFormData) => {
-            if (isEdit && feedType) {
-                return updateFeedType(feedType.id, data);
-            }
-            return createFeedType(data);
-        },
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['feed-types'] });
-            onClose();
-        }
-    });
-
-    const onSubmit = (data: FeedTypeFormData) => {
-        mutation.mutate(data);
-    };
 
     if (!isOpen) return null;
 
@@ -115,21 +97,21 @@ export const FeedTypeModal: React.FC<FeedTypeModalProps> = ({ isOpen, onClose, f
                     <div className="grid grid-cols-3 gap-4">
                         <div className="space-y-1">
                             <label className="text-sm font-medium text-gray-700">Proteína (%)</label>
-                            <input type="number" step="0.1" {...register('proteinPercentage')} className="input" />
+                            <input type="number" step="0.1" {...register('proteinPercentage', { valueAsNumber: true })} className="input" />
                         </div>
                         <div className="space-y-1">
                             <label className="text-sm font-medium text-gray-700">Energía (Mcal/kg)</label>
-                            <input type="number" step="0.1" {...register('energyMcalKg')} className="input" />
+                            <input type="number" step="0.1" {...register('energyMcalKg', { valueAsNumber: true })} className="input" />
                         </div>
                         <div className="space-y-1">
                             <label className="text-sm font-medium text-gray-700">Fibra (%)</label>
-                            <input type="number" step="0.1" {...register('crudeFiberPercentage')} className="input" />
+                            <input type="number" step="0.1" {...register('crudeFiberPercentage', { valueAsNumber: true })} className="input" />
                         </div>
                     </div>
 
                     <div className="space-y-1">
                         <label className="text-sm font-medium text-gray-700">Costo Estimado ($/kg)</label>
-                        <input type="number" step="0.01" {...register('costPerKg')} className="input" />
+                        <input type="number" step="0.01" {...register('costPerKg', { valueAsNumber: true })} className="input" />
                     </div>
 
                     <div className="border-t border-gray-100 pt-4">
@@ -138,18 +120,18 @@ export const FeedTypeModal: React.FC<FeedTypeModalProps> = ({ isOpen, onClose, f
                             {!isEdit && (
                                 <div className="space-y-1 col-span-2">
                                     <label className="text-sm font-medium text-gray-700">Stock Inicial (kg)</label>
-                                    <input type="number" step="0.01" {...register('initialStockKg')} className="input" placeholder="0" />
+                                    <input type="number" step="0.01" {...register('initialStockKg', { valueAsNumber: true })} className="input" placeholder="0" />
                                     <p className="text-xs text-gray-500">Cantidad disponible actualmente (solo al crear).</p>
                                 </div>
                             )}
                             <div className="space-y-1">
                                 <label className="text-sm font-medium text-gray-700">Stock Mínimo (Alerta)</label>
-                                <input type="number" {...register('minimumStockKg')} className="input" placeholder="100" />
+                                <input type="number" {...register('minimumStockKg', { valueAsNumber: true })} className="input" placeholder="100" />
                                 <p className="text-xs text-gray-500">Se generará alerta cuando el stock baje de este nivel.</p>
                             </div>
                             <div className="space-y-1">
                                 <label className="text-sm font-medium text-gray-700">Stock Máximo (Capacidad)</label>
-                                <input type="number" {...register('maximumStockKg')} className="input" placeholder="1000" />
+                                <input type="number" {...register('maximumStockKg', { valueAsNumber: true })} className="input" placeholder="1000" />
                             </div>
                         </div>
                     </div>
@@ -158,8 +140,8 @@ export const FeedTypeModal: React.FC<FeedTypeModalProps> = ({ isOpen, onClose, f
                         <button type="button" onClick={onClose} className="btn bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 flex-1">
                             Cancelar
                         </button>
-                        <button type="submit" disabled={mutation.isPending} className="btn btn-primary flex-1 gap-2">
-                            {mutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                        <button type="submit" disabled={isLoading} className="btn btn-primary flex-1 gap-2">
+                            {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
                             {isEdit ? 'Guardar Cambios' : 'Crear Alimento'}
                         </button>
                     </div>

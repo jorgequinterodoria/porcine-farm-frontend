@@ -23,7 +23,7 @@ export default class Animal extends Model {
   @text('origin') origin?: string
   @field('acquisition_cost') acquisitionCost?: number
   @text('notes') notes?: string
-  @json('custom_fields') customFields!: any
+  @json('custom_fields', (raw) => raw) customFields!: any
   @field('is_active') isActive!: boolean
   @readonly @date('created_at') createdAt!: Date
   @readonly @date('updated_at') updatedAt!: Date

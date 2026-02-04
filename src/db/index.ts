@@ -19,11 +19,6 @@ const adapter = new LokiJSAdapter({
   schema: mySchema,
   useWebWorker: false,
   useIncrementalIndexedDB: true,
-  onIndexedDBVersionChange: () => {
-    if (confirm('Database updated. Reload?')) {
-      window.location.reload()
-    }
-  },
 })
 
 export const database = new Database({

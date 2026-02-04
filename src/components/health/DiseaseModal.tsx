@@ -1,20 +1,19 @@
 import React, { useEffect } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, type Resolver } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { X, Loader2, Save } from 'lucide-react';
 import type { Disease, DiseaseFormData } from '../../types/farm.types';
 import { diseaseSchema } from '../../types/farm.types';
-import { createDisease, updateDisease } from '../../api/health';
 
 interface DiseaseModalProps {
     isOpen: boolean;
     onClose: () => void;
     disease: Disease | null;
+    onSubmit: (data: DiseaseFormData) => void;
+    isLoading?: boolean;
 }
 
-export const DiseaseModal: React.FC<DiseaseModalProps> = ({ isOpen, onClose, disease }) => {
-    const queryClient = useQueryClient();
+export const DiseaseModal: React.FC<DiseaseModalProps> = ({ isOpen, onClose, disease, onSubmit, isLoading }) => {
     const isEdit = !!disease;
 
     const { register, handleSubmit, formState: { errors }, reset } = useForm<DiseaseFormData>({
@@ -50,23 +49,6 @@ export const DiseaseModal: React.FC<DiseaseModalProps> = ({ isOpen, onClose, dis
             }
         }
     }, [isOpen, disease, reset]);
-
-    const mutation = useMutation({
-        mutationFn: (data: DiseaseFormData) => {
-            if (isEdit && disease) {
-                return updateDisease(disease.id, data);
-            }
-            return createDisease(data);
-        },
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['diseases'] });
-            onClose();
-        }
-    });
-
-    const onSubmit = (data: DiseaseFormData) => {
-        mutation.mutate(data);
-    };
 
     if (!isOpen) return null;
 
@@ -142,8 +124,8 @@ export const DiseaseModal: React.FC<DiseaseModalProps> = ({ isOpen, onClose, dis
                         <button type="button" onClick={onClose} className="btn bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 flex-1">
                             Cancelar
                         </button>
-                        <button type="submit" disabled={mutation.isPending} className="btn btn-primary flex-1 gap-2">
-                            {mutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                        <button type="submit" disabled={isLoading} className="btn btn-primary flex-1 gap-2">
+                            {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
                             {isEdit ? 'Guardar Cambios' : 'Crear Enfermedad'}
                         </button>
                     </div>

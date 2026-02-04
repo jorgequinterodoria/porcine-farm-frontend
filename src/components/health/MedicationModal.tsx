@@ -1,20 +1,19 @@
 import React, { useEffect } from 'react';
 import { useForm, type Resolver } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { X, Loader2, Save } from 'lucide-react';
 import type { Medication, MedicationFormData } from '../../types/farm.types';
 import { medicationSchema } from '../../types/farm.types';
-import { createMedication, updateMedication } from '../../api/health';
 
 interface MedicationModalProps {
     isOpen: boolean;
     onClose: () => void;
     medication: Medication | null;
+    onSubmit: (data: MedicationFormData) => void;
+    isLoading?: boolean;
 }
 
-export const MedicationModal: React.FC<MedicationModalProps> = ({ isOpen, onClose, medication }) => {
-    const queryClient = useQueryClient();
+export const MedicationModal: React.FC<MedicationModalProps> = ({ isOpen, onClose, medication, onSubmit, isLoading }) => {
     const isEdit = !!medication;
 
     const { register, handleSubmit, formState: { errors }, reset } = useForm<MedicationFormData>({
@@ -48,23 +47,6 @@ export const MedicationModal: React.FC<MedicationModalProps> = ({ isOpen, onClos
             }
         }
     }, [isOpen, medication, reset]);
-
-    const mutation = useMutation({
-        mutationFn: (data: MedicationFormData) => {
-            if (isEdit && medication) {
-                return updateMedication(medication.id, data);
-            }
-            return createMedication(data);
-        },
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['medications'] });
-            onClose();
-        }
-    });
-
-    const onSubmit = (data: MedicationFormData) => {
-        mutation.mutate(data);
-    };
 
     if (!isOpen) return null;
 
@@ -113,7 +95,7 @@ export const MedicationModal: React.FC<MedicationModalProps> = ({ isOpen, onClos
                     <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-1">
                             <label className="text-sm font-medium text-gray-700">Tiempo de Retiro (días)</label>
-                            <input type="number" {...register('withdrawalPeriodDays')} className="input" placeholder="0" />
+                            <input type="number" {...register('withdrawalPeriodDays', { valueAsNumber: true })} className="input" placeholder="0" />
                         </div>
                         <div className="space-y-1">
                             <label className="text-sm font-medium text-gray-700">Fabricante</label>
@@ -130,8 +112,8 @@ export const MedicationModal: React.FC<MedicationModalProps> = ({ isOpen, onClos
                         <button type="button" onClick={onClose} className="btn bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 flex-1">
                             Cancelar
                         </button>
-                        <button type="submit" disabled={mutation.isPending} className="btn btn-primary flex-1 gap-2">
-                            {mutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                        <button type="submit" disabled={isLoading} className="btn btn-primary flex-1 gap-2">
+                            {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
                             {isEdit ? 'Guardar Cambios' : 'Crear Medicamento'}
                         </button>
                     </div>

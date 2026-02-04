@@ -22,7 +22,7 @@ export default class Tenant extends Model {
   @text('timezone') timezone!: string
   @text('currency') currency!: string
   @text('language') language!: string
-  @json('settings') settings!: any
+  @json('settings', (raw) => raw) settings!: any
   @field('is_active') isActive!: boolean
   @readonly @date('created_at') createdAt!: number
   @readonly @date('updated_at') updatedAt!: number

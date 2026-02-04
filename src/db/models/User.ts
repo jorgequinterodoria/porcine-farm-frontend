@@ -12,7 +12,7 @@ export default class User extends Model {
   @text('phone') phone?: string
   @text('avatar_url') avatarUrl?: string
   @text('role') role!: string
-  @json('permissions') permissions!: any
+  @json('permissions', (raw) => raw) permissions!: any
   @field('email_verified') emailVerified!: boolean
   @date('last_login') lastLogin?: number
   @text('reset_token') resetToken?: string

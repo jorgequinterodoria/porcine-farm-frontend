@@ -1,22 +1,25 @@
 import React from 'react';
 import { useForm, type Resolver } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { X, Loader2, Save, Utensils } from 'lucide-react';
 import type { FeedType, FeedConsumptionFormData } from '../../types/feeding.types';
 import { feedConsumptionSchema } from '../../types/feeding.types';
-import { registerFeedConsumption } from '../../api/feeding';
-import { getPens } from '../../api/infrastructure';
+
+// Import models if needed for types, though we are passing them as props
+// import { Pen } from '../../db/models'; 
+// Assuming Pen type matches roughly what we need for the select
 
 interface FeedConsumptionModalProps {
     isOpen: boolean;
     onClose: () => void;
     feedTypes: FeedType[];
+    pens: any[]; // Using any[] for now to accept both Pen Model and plain objects if needed, ideally use Pen[]
+    onSubmit: (data: FeedConsumptionFormData) => void;
+    isLoading?: boolean;
 }
 
-export const FeedConsumptionModal: React.FC<FeedConsumptionModalProps> = ({ isOpen, onClose, feedTypes }) => {
-    const queryClient = useQueryClient();
-
+export const FeedConsumptionModal: React.FC<FeedConsumptionModalProps> = ({ isOpen, onClose, feedTypes, pens, onSubmit, isLoading }) => {
+    
     const { register, handleSubmit, formState: { errors }, watch, reset } = useForm<FeedConsumptionFormData>({
         resolver: zodResolver(feedConsumptionSchema) as Resolver<FeedConsumptionFormData>,
         defaultValues: {
@@ -27,26 +30,15 @@ export const FeedConsumptionModal: React.FC<FeedConsumptionModalProps> = ({ isOp
 
     const targetType = watch('targetType');
 
-    
-    const { data: pens, isLoading: isLoadingPens } = useQuery({
-        queryKey: ['pens'],
-        queryFn: () => getPens(),
-        enabled: isOpen && targetType === 'pen'
-    });
-
-    const mutation = useMutation({
-        mutationFn: registerFeedConsumption,
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['feed-types'] }); 
-            queryClient.invalidateQueries({ queryKey: ['feed-consumption'] });
-            reset();
-            onClose();
+    // Reset form when modal opens/closes
+    React.useEffect(() => {
+        if (isOpen) {
+            reset({
+                consumptionDate: new Date().toISOString().split('T')[0],
+                targetType: 'pen'
+            });
         }
-    });
-
-    const onSubmit = (data: FeedConsumptionFormData) => {
-        mutation.mutate(data);
-    };
+    }, [isOpen, reset]);
 
     if (!isOpen) return null;
 
@@ -86,7 +78,7 @@ export const FeedConsumptionModal: React.FC<FeedConsumptionModalProps> = ({ isOp
                         <div className="space-y-1">
                             <label className="text-sm font-medium text-gray-700">Cantidad Total (kg)</label>
                             <div className="relative">
-                                <input type="number" step="0.01" {...register('quantityKg')} className="input pr-12" placeholder="0.00" />
+                                <input type="number" step="0.01" {...register('quantityKg', { valueAsNumber: true })} className="input pr-12" placeholder="0.00" />
                                 <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm font-medium">kg</span>
                             </div>
                             {errors.quantityKg && <p className="text-red-500 text-xs">{errors.quantityKg.message}</p>}
@@ -113,21 +105,14 @@ export const FeedConsumptionModal: React.FC<FeedConsumptionModalProps> = ({ isOp
                             </label>
                             
                             {targetType === 'pen' ? (
-                                isLoadingPens ? (
-                                    <div className="input flex items-center text-gray-400">
-                                        <Loader2 className="w-4 h-4 animate-spin mr-2" />
-                                        Cargando corrales...
-                                    </div>
-                                ) : (
-                                    <select {...register('targetId')} className="input">
-                                        <option value="">Seleccionar Corral...</option>
-                                        {pens?.map(pen => (
-                                            <option key={pen.id} value={pen.id}>
-                                                {pen.name} ({pen.code}) - Cap: {pen.capacity}
-                                            </option>
-                                        ))}
-                                    </select>
-                                )
+                                <select {...register('targetId')} className="input">
+                                    <option value="">Seleccionar Corral...</option>
+                                    {pens?.map(pen => (
+                                        <option key={pen.id} value={pen.id}>
+                                            {pen.name} ({pen.code}) - Cap: {pen.capacity}
+                                        </option>
+                                    ))}
+                                </select>
                             ) : (
                                 <input 
                                     {...register('targetId')} 
@@ -148,8 +133,8 @@ export const FeedConsumptionModal: React.FC<FeedConsumptionModalProps> = ({ isOp
                         <button type="button" onClick={onClose} className="btn bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 flex-1">
                             Cancelar
                         </button>
-                        <button type="submit" disabled={mutation.isPending} className="btn btn-primary flex-1 gap-2">
-                            {mutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                        <button type="submit" disabled={isLoading} className="btn btn-primary flex-1 gap-2">
+                            {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
                             Registrar Consumo
                         </button>
                     </div>

@@ -7,7 +7,7 @@ export default class DailyMetric extends Model {
   @text('tenant_id') tenantId!: string
   @date('metric_date') metricDate!: number
   @field('total_animals') totalAnimals?: number
-  @json('animals_by_stage') animalsByStage?: any
+  @json('animals_by_stage', (raw) => raw) animalsByStage?: any
   @field('births_today') birthsToday?: number
   @field('deaths_today') deathsToday?: number
   @field('sales_today') salesToday?: number

@@ -9,8 +9,8 @@ export default class AuditLog extends Model {
   @text('action') action!: string
   @text('entity_type') entityType?: string
   @text('entity_id') entityId?: string
-  @json('old_values') oldValues?: any
-  @json('new_values') newValues?: any
+  @json('old_values', (raw) => raw) oldValues?: any
+  @json('new_values', (raw) => raw) newValues?: any
   @text('ip_address') ipAddress?: string
   @text('user_agent') userAgent?: string
   @readonly @date('created_at') createdAt!: number
