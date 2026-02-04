@@ -16,6 +16,8 @@ import {
   Users
 } from 'lucide-react';
 import { useAuthStore } from '../store/useAuthStore';
+import { SyncStatus } from '../components/ui/SyncStatus';
+import { useSyncInit } from '../hooks/useSync';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
@@ -24,6 +26,7 @@ function cn(...inputs: ClassValue[]) {
 }
 
 export const DashboardLayout: React.FC = () => {
+  useSyncInit();
   const { user, tenant, logout } = useAuthStore();
   const navigate = useNavigate();
   const location = useLocation();
@@ -84,12 +87,15 @@ export const DashboardLayout: React.FC = () => {
           </div>
           <span className="font-bold text-lg text-gray-900">PorciFarm</span>
         </div>
-        <button
-          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          className="p-2 text-gray-500 hover:bg-gray-100 rounded-lg transition-colors"
-        >
-          {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-        </button>
+        <div className="flex items-center gap-2">
+            <SyncStatus />
+            <button
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            className="p-2 text-gray-500 hover:bg-gray-100 rounded-lg transition-colors"
+            >
+            {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            </button>
+        </div>
       </div>
 
       {/* --- MOBILE OVERLAY --- */}
@@ -108,7 +114,7 @@ export const DashboardLayout: React.FC = () => {
 
         {/* Logo Section */}
         <div className="p-6 border-b border-gray-100">
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 mb-4">
             <div className="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-500/20">
               <LayoutDashboard className="text-white w-6 h-6" />
             </div>
@@ -119,6 +125,7 @@ export const DashboardLayout: React.FC = () => {
               </p>
             </div>
           </div>
+          <SyncStatus />
         </div>
 
         {/* Navigation Section */}
