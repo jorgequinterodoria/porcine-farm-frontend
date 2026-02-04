@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import React, { useState, useMemo } from 'react';
+import { withObservables } from '@nozbe/watermelondb/react';
+import { Q } from '@nozbe/watermelondb';
 import {
   Plus,
   Search,
@@ -9,16 +10,44 @@ import {
   MapPin,
   Pencil,
   Trash2,
-  Eye
+  Eye,
+  Cloud,
+  Check
 } from 'lucide-react';
-import api from '../../api/axiosInstance';
-import { getPens } from '../../api/infrastructure';
-import { updateAnimal } from '../../api/animals';
-import type { Animal, AnimalFormData } from '../../types/animal.types';
+
+// WatermelonDB Imports
+import { database } from '../../db';
+import { Animal, Pen } from '../../db/models';
+import type { AnimalFormData } from '../../types/animal.types';
+
+// Components
 import { AnimalForm } from '../../components/animals/AnimalForm';
 import { AnimalDetailsModal } from '../../components/animals/AnimalDetailsModal';
 
-export const AnimalListPage: React.FC = () => {
+// Interfaces para las props inyectadas por withObservables
+interface AnimalListPageProps {
+  animals: Animal[];
+  pens: Pen[];
+}
+
+// Mapas de UI (Estados y Etapas)
+const statusMap: Record<string, { label: string; className: string }> = {
+  active: { label: 'Activo', className: 'bg-green-50 text-green-700 border-green-200' },
+  quarantine: { label: 'Cuarentena', className: 'bg-yellow-50 text-yellow-700 border-yellow-200' },
+  sold: { label: 'Vendido', className: 'bg-gray-50 text-gray-700 border-gray-200' },
+  deceased: { label: 'Fallecido', className: 'bg-red-50 text-red-700 border-red-200' },
+  sick: { label: 'Enfermo', className: 'bg-orange-50 text-orange-700 border-orange-200' },
+};
+
+const stageMap: Record<string, { label: string; className: string }> = {
+  piglet: { label: 'Lechón', className: 'bg-pink-50 text-pink-700 border-pink-200' },
+  nursery: { label: 'Cría', className: 'bg-blue-50 text-blue-700 border-blue-200' },
+  fattening: { label: 'Engorde', className: 'bg-indigo-50 text-indigo-700 border-indigo-200' },
+  breeding: { label: 'Reproducción', className: 'bg-purple-50 text-purple-700 border-purple-200' },
+};
+
+const AnimalListPageComponent: React.FC<AnimalListPageProps> = ({ animals, pens }) => {
+  // --- Estados Locales de UI ---
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -27,38 +56,37 @@ export const AnimalListPage: React.FC = () => {
   const [selectedAnimal, setSelectedAnimal] = useState<Animal | null>(null);
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
 
-  const queryClient = useQueryClient();
+  // --- Lógica de Filtrado (En memoria) ---
+  // Nota: Watermelon es muy rápido, filtrar 1000-2000 animales en memoria está bien.
+  // Para datasets gigantes, usaríamos Q.where() en el enhance.
+  const filteredAnimals = useMemo(() => {
+    return animals.filter(animal => {
+      const matchesSearch = 
+        animal.internalCode?.toLowerCase().includes(search.toLowerCase()) || 
+        animal.visualId?.toLowerCase().includes(search.toLowerCase());
+      
+      const matchesStatus = statusFilter === 'all' || animal.currentStatus === statusFilter;
 
-  const { data: animals, isLoading } = useQuery({
-    queryKey: ['animals', statusFilter],
-    queryFn: async () => {
-      const params = statusFilter !== 'all' ? { status: statusFilter } : {};
-      const response = await api.get('/animals', { params });
-      return response.data.data as Animal[];
-    }
-  });
+      return matchesSearch && matchesStatus;
+    });
+  }, [animals, search, statusFilter]);
 
-  const { data: pens } = useQuery({
-    queryKey: ['pens'],
-    queryFn: () => getPens(),
-  });
+  // --- Helpers de UI ---
+  const getStatusInfo = (status: string) => {
+    return statusMap[status] || { label: status, className: 'bg-gray-50 text-gray-700 border-gray-200' };
+  };
 
-  const createAnimalMutation = useMutation({
-    mutationFn: (data: AnimalFormData) => api.post('/animals', data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['animals'] });
-      handleCloseForm();
-    }
-  });
+  const getStageInfo = (stage: string) => {
+    return stageMap[stage] || { label: stage || 'Sin definir', className: 'bg-gray-50 text-gray-700 border-gray-200' };
+  };
 
-  const updateAnimalMutation = useMutation({
-    mutationFn: ({ id, data }: { id: string; data: Partial<AnimalFormData> }) =>
-      updateAnimal(id, data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['animals'] });
-      handleCloseForm();
-    }
-  });
+  const getPenCode = (penId?: string | null) => {
+    if (!penId) return 'Sin asignar';
+    const pen = pens.find(p => p.id === penId);
+    return pen ? pen.code : '...';
+  };
+
+  // --- Manejadores de Acción (Offline-First) ---
 
   const handleCloseForm = () => {
     setIsFormOpen(false);
@@ -82,19 +110,62 @@ export const AnimalListPage: React.FC = () => {
     setIsDetailsOpen(true);
   };
 
-  const handleFormSubmit = (data: AnimalFormData) => {
-    const sanitizedData = {
-      ...data,
-      currentPenId: data.currentPenId || undefined,
-      breedId: data.breedId || undefined,
-      motherId: data.motherId || undefined,
-      fatherId: data.fatherId || undefined,
-    };
+  // 🔥 CORE: Guardar en Base de Datos Local
+  const handleFormSubmit = async (data: AnimalFormData) => {
+    try {
+      await database.write(async () => {
+        const collection = database.collections.get<Animal>('animals');
 
-    if (editingAnimal) {
-      updateAnimalMutation.mutate({ id: editingAnimal.id, data: sanitizedData });
-    } else {
-      createAnimalMutation.mutate(sanitizedData);
+        if (editingAnimal) {
+          // UPDATE
+          await editingAnimal.update(animal => {
+            updateAnimalFields(animal, data);
+          });
+        } else {
+          // CREATE
+          await collection.create(animal => {
+            updateAnimalFields(animal, data);
+            animal.currentStatus = 'active'; // Default
+          });
+        }
+      });
+      handleCloseForm();
+    } catch (error) {
+      console.error("Error al guardar:", error);
+      alert("Error al guardar en base de datos local");
+    }
+  };
+
+  // Helper para mapear campos (DRY)
+  const updateAnimalFields = (animal: Animal, data: AnimalFormData) => {
+    animal.internalCode = data.internalCode;
+    animal.sex = data.sex;
+    animal.birthDate = new Date(data.birthDate);
+    animal.birthWeight = Number(data.birthWeight) || 0;
+    animal.currentPenId = data.currentPenId || null;
+    animal.electronicId = data.electronicId || null;
+    animal.visualId = data.visualId || null;
+    animal.geneticLine = data.geneticLine || null;
+    animal.purpose = data.purpose || null;
+    animal.origin = data.origin || null;
+    animal.acquisitionCost = Number(data.acquisitionCost) || 0;
+    animal.notes = data.notes || null;
+    animal.breedId = data.breedId || null;
+    animal.currentStatus = data.currentStatus || 'active';
+    animal.stage = data.stage || 'nursery';
+  };
+
+  // 🔥 CORE: Eliminar (Soft Delete)
+  const handleDelete = async (animal: Animal) => {
+    if(!confirm('¿Estás seguro de eliminar este animal?')) return;
+    
+    try {
+      await database.write(async () => {
+        await animal.markAsDeleted(); // Soft delete compatible con Sync
+      });
+      setOpenMenuId(null);
+    } catch (error) {
+      console.error(error);
     }
   };
 
@@ -109,45 +180,15 @@ export const AnimalListPage: React.FC = () => {
     return () => document.removeEventListener('click', handleClickOutside);
   }, []);
 
-  const filteredAnimals = animals?.filter(a =>
-    a.internalCode.toLowerCase().includes(search.toLowerCase())
-  );
-
-  const statusMap: Record<string, { label: string; className: string }> = {
-    active: { label: 'Activo', className: 'bg-green-50 text-green-700 border-green-200' },
-    quarantine: { label: 'Cuarentena', className: 'bg-yellow-50 text-yellow-700 border-yellow-200' },
-    sold: { label: 'Vendido', className: 'bg-gray-50 text-gray-700 border-gray-200' },
-    deceased: { label: 'Fallecido', className: 'bg-red-50 text-red-700 border-red-200' },
-    sick: { label: 'Enfermo', className: 'bg-orange-50 text-orange-700 border-orange-200' },
-  };
-
-  const stageMap: Record<string, { label: string; className: string }> = {
-    piglet: { label: 'Lechón', className: 'bg-pink-50 text-pink-700 border-pink-200' },
-    nursery: { label: 'Cría', className: 'bg-blue-50 text-blue-700 border-blue-200' },
-    fattening: { label: 'Engorde', className: 'bg-indigo-50 text-indigo-700 border-indigo-200' },
-    breeding: { label: 'Reproducción', className: 'bg-purple-50 text-purple-700 border-purple-200' },
-  };
-
-  const getStatusInfo = (status: string) => {
-    return statusMap[status] || { label: status, className: 'bg-gray-50 text-gray-700 border-gray-200' };
-  };
-
-  const getStageInfo = (stage: string) => {
-    return stageMap[stage] || { label: stage || 'Sin definir', className: 'bg-gray-50 text-gray-700 border-gray-200' };
-  };
-
-  const getPenCode = (penId?: string | null) => {
-    if (!penId) return 'Sin asignar';
-    const pen = pens?.find(p => p.id === penId);
-    return pen ? pen.code : 'No encontrado';
-  };
-
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 animate-fadeIn">
+      {/* Header */}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Inventario de Animales</h1>
-          <p className="text-gray-500 mt-1">Gestiona y rastrea el historial de tu ganado</p>
+          <p className="text-gray-500 mt-1">
+            {animals.length} animales registrados en base de datos local
+          </p>
         </div>
         <button
           onClick={() => setIsFormOpen(true)}
@@ -158,12 +199,13 @@ export const AnimalListPage: React.FC = () => {
         </button>
       </div>
 
+      {/* Filtros */}
       <div className="flex flex-wrap items-center gap-4">
         <div className="relative flex-1 min-w-[300px]">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
           <input
             type="text"
-            placeholder="Buscar por código o ID electrónico..."
+            placeholder="Buscar por código, ID visual..."
             className="input pl-10 h-11"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
@@ -185,6 +227,7 @@ export const AnimalListPage: React.FC = () => {
         </div>
       </div>
 
+      {/* Tabla */}
       <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden min-h-[400px]">
         <table className="w-full text-left border-collapse">
           <thead>
@@ -193,30 +236,32 @@ export const AnimalListPage: React.FC = () => {
               <th className="px-6 py-4">Sexo</th>
               <th className="px-6 py-4">Peso (kg)</th>
               <th className="px-6 py-4">Corral</th>
-              <th className="px-6 py-4">Edad</th>
+              <th className="px-6 py-4">Fecha Nac.</th>
               <th className="px-6 py-4">Estado</th>
               <th className="px-6 py-4 text-right">Acciones</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100">
-            {isLoading ? (
-              [...Array(5)].map((_, i) => (
-                <tr key={i} className="animate-pulse">
-                  <td className="px-6 py-4"><div className="h-4 bg-gray-100 rounded w-24"></div></td>
-                  <td className="px-6 py-4"><div className="h-4 bg-gray-100 rounded w-16"></div></td>
-                  <td className="px-6 py-4"><div className="h-4 bg-gray-100 rounded w-20"></div></td>
-                  <td className="px-6 py-4"><div className="h-4 bg-gray-100 rounded w-16"></div></td>
-                  <td className="px-6 py-4"><div className="h-4 bg-gray-100 rounded w-20"></div></td>
-                  <td className="px-6 py-4"><div className="h-4 bg-gray-100 rounded w-16"></div></td>
-                  <td className="px-6 py-4"></td>
-                </tr>
-              ))
-            ) : filteredAnimals?.map((animal) => (
+            {filteredAnimals.map((animal) => (
               <tr key={animal.id} className="hover:bg-gray-50 transition-colors group">
-                <td className="px-6 py-4 font-bold text-indigo-600 group-hover:text-indigo-700">
-                  {animal.internalCode}
+                <td className="px-6 py-4">
+                  <div className="flex flex-col">
+                    <span className="font-bold text-indigo-600 group-hover:text-indigo-700">
+                      {animal.internalCode}
+                    </span>
+                    {/* Indicador de Sync */}
+                    <span className="text-[10px] flex items-center gap-1 mt-0.5">
+                       {animal.syncStatus === 'created' || animal.syncStatus === 'updated' ? (
+                         <><Cloud className="w-3 h-3 text-yellow-500" /> <span className="text-yellow-600">Pendiente</span></>
+                       ) : (
+                         <><Check className="w-3 h-3 text-green-500" /> <span className="text-gray-400">Sync</span></>
+                       )}
+                    </span>
+                  </div>
                 </td>
-                <td className="px-6 py-4 capitalize text-gray-700">{animal.sex === 'male' ? 'Macho' : 'Hembra'}</td>
+                <td className="px-6 py-4 capitalize text-gray-700">
+                  {animal.sex === 'male' ? 'Macho' : 'Hembra'}
+                </td>
                 <td className="px-6 py-4 text-sm text-gray-600 font-mono">
                   {animal.birthWeight ? `${animal.birthWeight} kg` : '-'}
                 </td>
@@ -245,7 +290,7 @@ export const AnimalListPage: React.FC = () => {
                     <MoreVertical className="w-4 h-4" />
                   </button>
 
-                  {/* Dropdown Menu */}
+                  {/* Menú Dropdown */}
                   {openMenuId === animal.id && (
                     <div className="absolute right-8 top-8 w-48 bg-white rounded-xl shadow-xl border border-gray-100 z-20 animate-scaleIn origin-top-right overflow-hidden">
                       <div className="p-1">
@@ -264,6 +309,7 @@ export const AnimalListPage: React.FC = () => {
                           Editar Animal
                         </button>
                         <button 
+                          onClick={() => handleDelete(animal)}
                           className="w-full flex items-center gap-2 px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded-lg transition-colors text-left"
                         >
                           <Trash2 className="w-4 h-4" />
@@ -278,25 +324,54 @@ export const AnimalListPage: React.FC = () => {
           </tbody>
         </table>
 
-        {!isLoading && filteredAnimals?.length === 0 && (
+        {filteredAnimals.length === 0 && (
           <div className="p-12 text-center text-gray-400">
             <Rows className="w-12 h-12 mx-auto mb-4 opacity-20 text-gray-300" />
             <p className="text-lg font-medium text-gray-900">No se encontraron animales</p>
-            <p className="text-sm mt-1 text-gray-500">Intenta ajustar tus filtros o términos de búsqueda</p>
+            <p className="text-sm mt-1 text-gray-500">
+               {animals.length === 0 ? 'La base de datos está vacía.' : 'Ajusta los filtros de búsqueda.'}
+            </p>
           </div>
         )}
       </div>
 
-      <AnimalForm 
-        isOpen={isFormOpen} 
-        onClose={handleCloseForm} 
-        onSubmit={handleFormSubmit}
-        isLoading={createAnimalMutation.isPending || updateAnimalMutation.isPending}
-        pens={pens || []}
-        initialData={editingAnimal as unknown as AnimalFormData} // Casting seguro para adaptar la interfaz Animal a AnimalFormData
-      />
+      {/* Modales */}
+<AnimalForm 
+  isOpen={isFormOpen} 
+  onClose={handleCloseForm} 
+  onSubmit={handleFormSubmit}
+  pens={pens.map(p => ({ id: p.id, name: p.name, code: p.code }))}
+  
+  // 👇 AQUÍ ESTÁ LA SOLUCIÓN
+  initialData={editingAnimal ? {
+    // 1. Esparcimos los datos crudos pero forzamos el tipo 'any' temporalmente para romper el bloqueo
+    ...editingAnimal._raw as any,
+    
+    // 2. Sobrescribimos y saneamos los campos específicos que dan error (null -> undefined)
+    electronicId: editingAnimal.electronicId ?? undefined,
+    visualId: editingAnimal.visualId ?? undefined,
+    geneticLine: editingAnimal.geneticLine ?? undefined,
+    purpose: editingAnimal.purpose ?? undefined,
+    origin: editingAnimal.origin ?? undefined,
+    notes: editingAnimal.notes ?? undefined,
+    currentPenId: editingAnimal.currentPenId ?? undefined,
+    breedId: editingAnimal.breedId ?? undefined,
+    motherId: editingAnimal.motherId ?? undefined,
+    fatherId: editingAnimal.fatherId ?? undefined,
 
-      {isDetailsOpen && (
+    // 3. Formateamos fechas y números para el formulario HTML
+    birthDate: new Date(editingAnimal.birthDate).toISOString().split('T')[0],
+    birthWeight: Number(editingAnimal.birthWeight),
+    acquisitionCost: Number(editingAnimal.acquisitionCost),
+    
+    // 4. Aseguramos los Enums (si vienen nulos, ponemos un default)
+    currentStatus: editingAnimal.currentStatus || 'active',
+    stage: editingAnimal.stage || 'nursery',
+    sex: editingAnimal.sex || 'female',
+  } : null} 
+/>
+
+      {isDetailsOpen && selectedAnimal && (
         <AnimalDetailsModal 
           animal={selectedAnimal}
           onClose={handleCloseDetails}
@@ -308,3 +383,14 @@ export const AnimalListPage: React.FC = () => {
     </div>
   );
 };
+
+// 🔌 CONECTOR WATERMELON DB
+// Esto hace que el componente se actualice en tiempo real
+const enhance = withObservables([], () => ({
+  animals: database.collections.get<Animal>('animals').query(
+    Q.sortBy('created_at', Q.desc) // Ordenar por fecha de creación
+  ),
+  pens: database.collections.get<Pen>('pens').query(),
+}));
+
+export const AnimalListPage = enhance(AnimalListPageComponent);

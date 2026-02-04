@@ -10,7 +10,7 @@ export default class Animal extends Model {
   @text('visual_id') visualId?: string
   @text('breed_id') breedId?: string
   @text('sex') sex!: string
-  @date('birth_date') birthDate!: number
+  @date('birth_date') birthDate!: Date
   @field('birth_weight') birthWeight?: number
   @text('mother_id') motherId?: string
   @text('father_id') fatherId?: string
@@ -18,14 +18,14 @@ export default class Animal extends Model {
   @text('current_status') currentStatus!: string
   @text('stage') stage!: string
   @text('current_pen_id') currentPenId?: string
-  @date('entry_date') entryDate?: number
+  @date('entry_date') entryDate?: Date
   @text('purpose') purpose?: string
   @text('origin') origin?: string
   @field('acquisition_cost') acquisitionCost?: number
   @text('notes') notes?: string
   @json('custom_fields') customFields!: any
   @field('is_active') isActive!: boolean
-  @readonly @date('created_at') createdAt!: number
-  @readonly @date('updated_at') updatedAt!: number
-  @date('deleted_at') deletedAt?: number
+  @readonly @date('created_at') createdAt!: Date
+  @readonly @date('updated_at') updatedAt!: Date
+  @date('deleted_at') deletedAt?: Date
 }
