@@ -15,7 +15,7 @@ import {
 import { getUsers, updateUser, deleteUser, inviteUser } from '../../api/users';
 import { useAuthStore } from '../../store/useAuthStore';
 
-// Schema for invitation/creation
+
 const createUserSchema = z.object({
     firstName: z.string().min(1, 'El nombre es requerido'),
     lastName: z.string().min(1, 'El apellido es requerido'),
@@ -197,7 +197,7 @@ export const EmployeeListPage: React.FC = () => {
                                     <td className="px-6 py-4">
                                         <div className="flex items-center gap-2">
                                             {getRoleBadge(user.role)}
-                                            {/* Simple Role Switcher for demo */}
+                                            {}
                                             {user.id !== currentUser?.id && (
                                                 <select 
                                                     className="text-xs border-none bg-transparent text-gray-400 hover:text-gray-600 cursor-pointer focus:ring-0"
@@ -248,7 +248,7 @@ export const EmployeeListPage: React.FC = () => {
                 </div>
             </div>
 
-            {/* Create User Modal */}
+            {}
             {isModalOpen && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/60 backdrop-blur-sm overflow-y-auto">
                     <div className="bg-white w-full max-w-md rounded-2xl shadow-2xl p-6 animate-scaleIn my-8">

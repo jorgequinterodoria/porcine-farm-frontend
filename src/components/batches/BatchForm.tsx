@@ -75,7 +75,7 @@ export const BatchForm: React.FC<BatchFormProps> = ({ isOpen, onClose, onSubmit,
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/60 backdrop-blur-sm transition-all overflow-y-auto">
             <div className="bg-white w-full max-w-4xl rounded-2xl shadow-2xl overflow-hidden animate-scaleIn border border-gray-100 my-8 flex flex-col max-h-[90vh]">
 
-                {/* Header */}
+                {}
                 <div className="flex items-center justify-between p-6 border-b border-gray-100 bg-white sticky top-0 z-10 shadow-sm">
                     <div className="flex items-center gap-3">
                         <div className="bg-indigo-50 p-2.5 rounded-xl">
@@ -96,7 +96,7 @@ export const BatchForm: React.FC<BatchFormProps> = ({ isOpen, onClose, onSubmit,
                 <form onSubmit={handleSubmit(onSubmit)} className="overflow-y-auto custom-scrollbar flex-1">
                     <div className="p-8 space-y-8">
 
-                        {/* Sección: Información General */}
+                        {}
                         <section className="bg-gray-50/50 p-6 rounded-2xl border border-gray-100">
                             <div className="flex items-center gap-2 mb-6">
                                 <Info className="w-5 h-5 text-indigo-500" />
@@ -122,10 +122,10 @@ export const BatchForm: React.FC<BatchFormProps> = ({ isOpen, onClose, onSubmit,
                             </div>
                         </section>
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                            {/* Columna Izquierda */}
+                            {}
                             <div className="space-y-8">
 
-                                {/* Sección: Configuración */}
+                                {}
                                 <section>
                                     <div className="flex items-center gap-2 mb-4 pb-2 border-b border-gray-100">
                                         <Tag className="w-5 h-5 text-indigo-500" />
@@ -160,7 +160,7 @@ export const BatchForm: React.FC<BatchFormProps> = ({ isOpen, onClose, onSubmit,
                                     </div>
                                 </section>
 
-                                {/* Sección: Fechas */}
+                                {}
                                 <section>
                                     <div className="flex items-center gap-2 mb-4 pb-2 border-b border-gray-100">
                                         <Calendar className="w-5 h-5 text-indigo-500" />
@@ -180,9 +180,9 @@ export const BatchForm: React.FC<BatchFormProps> = ({ isOpen, onClose, onSubmit,
                                 </section>
                             </div>
 
-                            {/* Columna Derecha */}
+                            {}
                             <div className="space-y-8">
-                                {/* Sección: Métricas */}
+                                {}
                                 <section>
                                     <div className="flex items-center gap-2 mb-4 pb-2 border-b border-gray-100">
                                         <TrendingUp className="w-5 h-5 text-indigo-500" />

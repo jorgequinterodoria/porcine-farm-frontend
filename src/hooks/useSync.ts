@@ -2,9 +2,9 @@ import { useEffect } from 'react'
 import { sync } from '../services/sync'
 import { useSyncStore } from '../store/useSyncStore'
 
-// Helper to perform sync (can be used by store or hooks)
+
 const performSync = async () => {
-    // Check current state directly from store
+    
     if (useSyncStore.getState().isSyncing || !navigator.onLine) return
 
     const { setSyncing, setError, setLastSyncAt } = useSyncStore.getState()
@@ -40,13 +40,13 @@ export function useSyncInit() {
     window.addEventListener('online', handleOnline)
     window.addEventListener('offline', handleOffline)
 
-    // Initial sync check
+    
     setOnline(navigator.onLine)
     if (navigator.onLine) {
         performSync()
     }
 
-    // Periodic sync (every 5 minutes)
+    
     const intervalId = setInterval(() => {
       if (navigator.onLine) {
         performSync()

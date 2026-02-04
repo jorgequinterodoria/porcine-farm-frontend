@@ -27,7 +27,7 @@ export const HealthPage: React.FC = () => {
   const [search, setSearch] = useState('');
   const queryClient = useQueryClient();
 
-  // Modals state
+  
   const [isHealthRecordModalOpen, setIsHealthRecordModalOpen] = useState(false);
   const [isMedicationModalOpen, setIsMedicationModalOpen] = useState(false);
   const [selectedMedication, setSelectedMedication] = useState<Medication | null>(null);
@@ -38,7 +38,7 @@ export const HealthPage: React.FC = () => {
   const [isDiseaseModalOpen, setIsDiseaseModalOpen] = useState(false);
   const [selectedDisease, setSelectedDisease] = useState<Disease | null>(null);
 
-  // Queries
+  
   const { data: records, isLoading: isLoadingRecords } = useQuery({
     queryKey: ['health-records'],
     queryFn: getHealthRecords
@@ -59,7 +59,7 @@ export const HealthPage: React.FC = () => {
     queryFn: getDiseases
   });
 
-  // Delete mutations
+  
   const deleteMedicationMutation = useMutation({
     mutationFn: deleteMedication,
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['medications'] })
@@ -85,7 +85,7 @@ export const HealthPage: React.FC = () => {
 
   return (
     <div className="space-y-8">
-      {/* Header */}
+      {}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Salud y Sanidad</h1>
@@ -100,10 +100,10 @@ export const HealthPage: React.FC = () => {
         </button>
       </div>
 
-      {/* Tabs & Search Container */}
+      {}
       <div className="flex flex-col md:flex-row gap-4 justify-between items-start md:items-center">
         
-        {/* Segmented Control Tabs */}
+        {}
         <div className="flex items-center gap-1 bg-gray-100 p-1 rounded-lg w-full md:w-auto">
           <button 
             onClick={() => setActiveTab('records')}
@@ -127,7 +127,7 @@ export const HealthPage: React.FC = () => {
           </button>
         </div>
 
-        {/* Search & Filter */}
+        {}
         <div className="flex items-center gap-2 w-full md:w-auto">
           <div className="relative flex-1 md:w-80">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -198,10 +198,10 @@ export const HealthPage: React.FC = () => {
           )}
         </div>
       ) : (
-        /* VISTA DE CATÁLOGOS */
+        
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           
-          {/* Tarjeta de Medicamentos */}
+          {}
           <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm h-full flex flex-col">
             <div className="flex items-center gap-3 mb-6">
               <div className="p-2 bg-indigo-50 rounded-lg text-indigo-600">
@@ -239,7 +239,7 @@ export const HealthPage: React.FC = () => {
             </button>
           </div>
 
-          {/* Tarjeta Vacunas */}
+          {}
           <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm h-full flex flex-col">
             <div className="flex items-center gap-3 mb-6">
               <div className="p-2 bg-teal-50 rounded-lg text-teal-600">
@@ -277,7 +277,7 @@ export const HealthPage: React.FC = () => {
             </button>
           </div>
 
-           {/* Tarjeta Enfermedades */}
+           {}
           <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm h-full flex flex-col">
             <div className="flex items-center gap-3 mb-6">
               <div className="p-2 bg-rose-50 rounded-lg text-rose-600">
@@ -318,7 +318,7 @@ export const HealthPage: React.FC = () => {
         </div>
       )}
 
-      {/* Modals */}
+      {}
       <MedicationModal 
         isOpen={isMedicationModalOpen} 
         onClose={() => setIsMedicationModalOpen(false)} 

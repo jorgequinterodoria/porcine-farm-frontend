@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-// --- Feed Types ---
+
 export interface FeedType {
     id: string;
     code: string;
@@ -16,8 +16,8 @@ export interface FeedType {
     feedInventory?: FeedInventory[];
     minimumStockKg?: number;
     maximumStockKg?: number;
-    currentStockKg?: number; // Helper for frontend display
-    initialStockKg?: number; // Only for creation
+    currentStockKg?: number; 
+    initialStockKg?: number; 
 }
 
 export interface FeedInventory {
@@ -67,7 +67,7 @@ export interface StockAlert {
     severity: 'critical' | 'warning';
 }
 
-// --- Zod Schemas ---
+
 
 export const feedTypeSchema = z.object({
     code: z.string().min(1, 'Código es requerido'),

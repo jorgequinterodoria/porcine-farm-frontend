@@ -12,15 +12,15 @@ export const InstallPWA: React.FC<{ className?: string }> = ({ className }) => {
   const [isInstalled, setIsInstalled] = useState(false);
 
   useEffect(() => {
-    // Escuchar el evento beforeinstallprompt
+    
     const handleBeforeInstallPrompt = (e: any) => {
-      // Prevenir que el navegador muestre el prompt automáticamente
+      
       e.preventDefault();
-      // Guardar el evento para dispararlo después
+      
       setDeferredPrompt(e);
     };
 
-    // Verificar si la app ya está instalada
+    
     const handleAppInstalled = () => {
       setIsInstalled(true);
       setDeferredPrompt(null);
@@ -29,7 +29,7 @@ export const InstallPWA: React.FC<{ className?: string }> = ({ className }) => {
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
     window.addEventListener('appinstalled', handleAppInstalled);
 
-    // Verificar estado inicial (si es standalone, ya está instalada)
+    
     if (window.matchMedia('(display-mode: standalone)').matches) {
       setIsInstalled(true);
     }
@@ -43,10 +43,10 @@ export const InstallPWA: React.FC<{ className?: string }> = ({ className }) => {
   const handleInstallClick = async () => {
     if (!deferredPrompt) return;
 
-    // Mostrar el prompt de instalación
+    
     deferredPrompt.prompt();
 
-    // Esperar a que el usuario responda
+    
     const { outcome } = await deferredPrompt.userChoice;
     
     if (outcome === 'accepted') {
@@ -57,7 +57,7 @@ export const InstallPWA: React.FC<{ className?: string }> = ({ className }) => {
     }
   };
 
-  // Si ya está instalada o no hay prompt disponible, no mostrar nada
+  
   if (isInstalled || !deferredPrompt) {
     return null;
   }

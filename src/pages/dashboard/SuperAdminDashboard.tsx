@@ -75,7 +75,7 @@ export const SuperAdminDashboard: React.FC = () => {
 
     return (
         <div className="space-y-8">
-            {/* Header */}
+            {}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
                     <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Panel Global</h1>
@@ -89,7 +89,7 @@ export const SuperAdminDashboard: React.FC = () => {
                 </button>
             </div>
 
-            {/* KPIs Grid */}
+            {}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 {kpiCards.map((stat) => (
                     <div 
@@ -109,7 +109,7 @@ export const SuperAdminDashboard: React.FC = () => {
                 ))}
             </div>
 
-            {/* Comparison Table Card */}
+            {}
             <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
                 <div className="p-6 border-b border-gray-100">
                     <h3 className="text-lg font-bold text-gray-900">Comparación de Granjas</h3>

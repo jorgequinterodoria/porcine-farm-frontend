@@ -38,7 +38,7 @@ export const TenantListPage: React.FC = () => {
 
   return (
     <div className="space-y-8">
-      {/* Header */}
+      {}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Granjas del Sistema</h1>
@@ -53,7 +53,7 @@ export const TenantListPage: React.FC = () => {
         </button>
       </div>
 
-      {/* Grid */}
+      {}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {isLoading ? (
           [...Array(3)].map((_, i) => (
@@ -114,7 +114,7 @@ export const TenantListPage: React.FC = () => {
         isLoading={createTenant.isPending}
       />
 
-      {/* MODAL DE CREDENCIALES (ÉXITO) */}
+      {}
       {createdCredentials && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/40 backdrop-blur-sm animate-fadeIn">
           <div className="bg-white w-full max-w-md p-8 rounded-2xl relative shadow-2xl border border-gray-100 animate-scaleIn">

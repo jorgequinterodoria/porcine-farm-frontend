@@ -6,9 +6,9 @@ interface LoadingSpinnerProps {
   className?: string;
 }
 
-/**
- * Simple loading spinner component
- */
+
+
+
 export const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({ 
   size = 'medium', 
   message, 
@@ -35,9 +35,9 @@ interface TableSkeletonProps {
   columns?: number;
 }
 
-/**
- * Simple table skeleton for loading states
- */
+
+
+
 export const TableSkeleton: React.FC<TableSkeletonProps> = ({ 
   rows = 5, 
   columns = 4 
@@ -70,9 +70,9 @@ interface LoadingOverlayProps {
   message?: string;
 }
 
-/**
- * Loading overlay for async operations
- */
+
+
+
 export const LoadingOverlay: React.FC<LoadingOverlayProps> = ({ 
   isVisible, 
   message = 'Cargando...' 

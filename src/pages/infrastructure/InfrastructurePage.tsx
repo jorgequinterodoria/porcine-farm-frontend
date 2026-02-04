@@ -24,13 +24,13 @@ export const InfrastructurePage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'facilities' | 'pens'>('facilities');
   const [search, setSearch] = useState('');
   
-  // Estados para modales
+  
   const [isFacilityFormOpen, setIsFacilityFormOpen] = useState(false);
   const [isPenFormOpen, setIsPenFormOpen] = useState(false);
 
   const queryClient = useQueryClient();
 
-  // Queries
+  
   const { data: facilities, isLoading: isLoadingFacilities } = useQuery({
     queryKey: ['facilities'],
     queryFn: getFacilities
@@ -38,10 +38,10 @@ export const InfrastructurePage: React.FC = () => {
 
   const { data: pens, isLoading: isLoadingPens } = useQuery({
     queryKey: ['pens'],
-    queryFn: () => getPens() // Llama a getPens sin argumentos para traer todos
+    queryFn: () => getPens() 
   });
 
-  // Mutations
+  
   const createFacilityMutation = useMutation({
     mutationFn: createFacility,
     onSuccess: () => {
@@ -54,13 +54,13 @@ export const InfrastructurePage: React.FC = () => {
     mutationFn: createPen,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['pens'] });
-      // También invalidamos facilities si queremos refrescar la info de corrales anidados
+      
       queryClient.invalidateQueries({ queryKey: ['facilities'] });
       setIsPenFormOpen(false);
     }
   });
 
-  // Handlers
+  
   const handleOpenForm = () => {
     if (activeTab === 'facilities') {
       setIsFacilityFormOpen(true);
@@ -72,7 +72,7 @@ export const InfrastructurePage: React.FC = () => {
   const handleCreateFacility = (data: FacilityFormData) => {
     createFacilityMutation.mutate({
       ...data,
-      // Aseguramos que capacity sea número, aunque zod lo maneja, el formulario devuelve el tipo correcto
+      
       capacity: Number(data.capacity)
     });
   };
@@ -96,7 +96,7 @@ export const InfrastructurePage: React.FC = () => {
 
   return (
     <div className="space-y-8">
-      {/* --- HEADER --- */}
+      {}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Infraestructura</h1>
@@ -111,10 +111,10 @@ export const InfrastructurePage: React.FC = () => {
         </button>
       </div>
 
-      {/* --- CONTROLES (TABS + BÚSQUEDA) --- */}
+      {}
       <div className="flex flex-col md:flex-row gap-4 justify-between items-start md:items-center">
         
-        {/* TABS (Estilo iOS Segmented Control) */}
+        {}
         <div className="flex items-center gap-1 bg-gray-100 p-1 rounded-lg w-full md:w-auto">
           <button 
             onClick={() => setActiveTab('facilities')}
@@ -138,7 +138,7 @@ export const InfrastructurePage: React.FC = () => {
           </button>
         </div>
 
-        {/* BÚSQUEDA */}
+        {}
         <div className="relative w-full md:w-80">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
           <input 
@@ -151,10 +151,10 @@ export const InfrastructurePage: React.FC = () => {
         </div>
       </div>
 
-      {/* --- GRID DE CONTENIDO --- */}
+      {}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {activeTab === 'facilities' ? (
-          // --- VISTA DE INSTALACIONES ---
+          
           isLoadingFacilities ? (
             [...Array(3)].map((_, i) => (
               <div key={i} className="bg-white p-6 rounded-xl border border-gray-200 animate-pulse">
@@ -208,7 +208,7 @@ export const InfrastructurePage: React.FC = () => {
             </div>
           ))
         ) : (
-          // --- VISTA DE CORRALES ---
+          
           isLoadingPens ? (
             [...Array(3)].map((_, i) => (
               <div key={i} className="bg-white p-6 rounded-xl border border-gray-200 animate-pulse h-48" />
@@ -229,7 +229,7 @@ export const InfrastructurePage: React.FC = () => {
               </div>
 
               <div className="space-y-5">
-                {/* Barra de Progreso */}
+                {}
                 <div className="bg-gray-50 rounded-lg p-3 border border-gray-100">
                   <div className="flex items-center justify-between text-xs text-gray-500 mb-2 font-medium">
                     <span>Ocupación Actual</span>
@@ -263,7 +263,7 @@ export const InfrastructurePage: React.FC = () => {
         )}
       </div>
 
-      {/* --- ESTADO VACÍO --- */}
+      {}
       {(!isLoadingFacilities && !isLoadingPens && (activeTab === 'facilities' ? filteredFacilities : filteredPens)?.length === 0) && (
         <div className="bg-white border border-gray-200 border-dashed p-16 text-center rounded-xl">
           <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -274,7 +274,7 @@ export const InfrastructurePage: React.FC = () => {
         </div>
       )}
 
-      {/* --- MODALES --- */}
+      {}
       <FacilityForm 
         isOpen={isFacilityFormOpen} 
         onClose={() => setIsFacilityFormOpen(false)}

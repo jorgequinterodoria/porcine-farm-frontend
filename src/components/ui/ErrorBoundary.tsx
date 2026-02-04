@@ -15,9 +15,9 @@ interface ErrorBoundaryProps {
   className?: string;
 }
 
-/**
- * Error boundary component for graceful error handling
- */
+
+
+
 export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
   constructor(props: ErrorBoundaryProps) {
     super(props);
@@ -34,18 +34,18 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
       errorInfo,
     });
 
-    // Log error to monitoring service
+    
     console.error('ErrorBoundary caught an error:', error, errorInfo);
 
-    // Call custom error handler
+    
     if (this.props.onError) {
       this.props.onError(error, errorInfo);
     }
 
-    // Log to external service in production
+    
     if (import.meta.env.PROD) {
       // TODO: Integrate with error monitoring service
-      // Sentry.captureException(error, { contexts: { react: { componentStack: errorInfo.componentStack } } });
+      
     }
   }
 
@@ -55,12 +55,12 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
 
   render() {
     if (this.state.hasError) {
-      // Custom fallback UI
+      
       if (this.props.fallback) {
         return this.props.fallback;
       }
 
-      // Default error UI
+      
       return (
         <div className="min-h-[200px] flex items-center justify-center">
           <div className="text-center p-6 max-w-md mx-auto">
@@ -119,9 +119,9 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
   }
 }
 
-/**
- * HOC for wrapping components with error boundary
- */
+
+
+
 export const withErrorBoundary = <P extends object>(
   Component: React.ComponentType<P>,
   errorBoundaryProps?: Omit<ErrorBoundaryProps, 'children'>
@@ -136,9 +136,9 @@ export const withErrorBoundary = <P extends object>(
   return WrappedComponent;
 };
 
-/**
- * Hook for handling async errors in function components
- */
+
+
+
 export const useErrorHandler = () => {
   const [error, setError] = React.useState<Error | null>(null);
 
@@ -150,7 +150,7 @@ export const useErrorHandler = () => {
     console.error('Caught error:', error);
     setError(error);
     
-    // Log to external service in production
+    
     if (import.meta.env.PROD) {
       // TODO: Integrate with error monitoring service
     }
@@ -159,9 +159,9 @@ export const useErrorHandler = () => {
   return { captureError, resetError, error };
 };
 
-/**
- * Simple hook for async operations with error handling
- */
+
+
+
 export const useAsyncOperation = () => {
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState<Error | null>(null);

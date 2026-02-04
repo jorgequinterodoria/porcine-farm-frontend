@@ -28,6 +28,6 @@ export async function sync() {
         throw new Error('Push failed')
       }
     },
-    // migrationsEnabledAtVersion: 1,
+    
   })
 }

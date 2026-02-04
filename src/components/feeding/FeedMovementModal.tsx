@@ -29,7 +29,7 @@ export const FeedMovementModal: React.FC<FeedMovementModalProps> = ({ isOpen, on
     const mutation = useMutation({
         mutationFn: addFeedMovement,
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['feed-types'] }); // To update stock
+            queryClient.invalidateQueries({ queryKey: ['feed-types'] }); 
             reset();
             onClose();
         }

@@ -3,7 +3,7 @@ import { render, screen, fireEvent, waitFor } from '../test/helpers';
 import userEvent from '../test/helpers';
 import { LoginPage } from '../pages/auth/LoginPage';
 
-// Mock dependencies
+
 vi.mock('../store/useAuthStore', () => ({
   useAuthStore: () => ({
     login: vi.fn(),
@@ -28,7 +28,7 @@ describe('LoginPage Component', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     
-    // Reset mocks
+    
     vi.mocked(require('../store/useAuthStore').useAuthStore).mockReturnValue({
       login: mockLogin,
     });
@@ -80,7 +80,7 @@ describe('LoginPage Component', () => {
       const emailInput = screen.getByLabelText('Correo Electrónico');
       const submitButton = screen.getByRole('button', { name: /Iniciar Sesión/ });
       
-      // Submit with empty email
+      
       await userEvent.click(submitButton);
       
       await waitFor(() => {
@@ -93,7 +93,7 @@ describe('LoginPage Component', () => {
       
       const submitButton = screen.getByRole('button', { name: /Iniciar Sesión/ });
       
-      // Submit with empty password
+      
       await userEvent.click(submitButton);
       
       await waitFor(() => {
@@ -273,7 +273,7 @@ describe('LoginPage Component', () => {
       await userEvent.type(passwordInput, 'password123');
       await userEvent.click(submitButton);
       
-      // Check loading state
+      
       expect(screen.getByText('Iniciar Sesión').closest('button')).toBeDisabled();
       expect(screen.getByRole('button', { name: /Iniciar Sesión/ })).toContainHTML('animate-spin');
     });
@@ -287,7 +287,7 @@ describe('LoginPage Component', () => {
       const passwordInput = screen.getByLabelText('Contraseña');
       const submitButton = screen.getByRole('button', { name: /Iniciar Sesión/ });
       
-      // First attempt to trigger error
+      
       await userEvent.type(emailInput, 'test@example.com');
       await userEvent.type(passwordInput, 'wrongpassword');
       await userEvent.click(submitButton);
@@ -296,12 +296,12 @@ describe('LoginPage Component', () => {
         expect(screen.getByText('Credenciales incorrectas')).toBeInTheDocument();
       });
       
-      // Clear error by typing
+      
       await userEvent.clear(emailInput);
       await userEvent.type(emailInput, 'new@example.com');
       
-      // Error should be cleared (this would need implementation in the actual component)
-      // expect(screen.queryByText('Credenciales incorrectas')).not.toBeInTheDocument();
+      
+      
     });
   });
 
@@ -320,11 +320,11 @@ describe('LoginPage Component', () => {
       emailInput.focus();
       expect(emailInput).toHaveFocus();
       
-      // Tab to password
+      
       await userEvent.tab();
       expect(screen.getByLabelText('Contraseña')).toHaveFocus();
       
-      // Tab to submit button
+      
       await userEvent.tab();
       expect(screen.getByRole('button', { name: /Iniciar Sesión/ })).toHaveFocus();
     });
@@ -348,7 +348,7 @@ describe('LoginPage Component', () => {
       await userEvent.type(emailInput, 'test@example.com');
       await userEvent.type(passwordInput, 'password123');
       
-      // Submit with Enter key
+      
       fireEvent.keyDown(passwordInput, { key: 'Enter' });
       
       await waitFor(() => {

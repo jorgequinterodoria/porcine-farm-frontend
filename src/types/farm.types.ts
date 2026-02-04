@@ -19,7 +19,7 @@ export interface Pen {
     currentOccupancy?: number;
 }
 
-// --- Catalogs ---
+
 
 export interface Medication {
     id: string;
@@ -62,7 +62,7 @@ export interface Disease {
     isActive: boolean;
 }
 
-// --- Forms Schemas (Zod) ---
+
 
 export const medicationSchema = z.object({
     code: z.string().min(1, 'Código es requerido'),
@@ -106,7 +106,7 @@ export const diseaseSchema = z.object({
 export type DiseaseFormData = z.infer<typeof diseaseSchema>;
 
 
-// --- Health Records ---
+
 
 export interface MedicationTreatment {
     id: string;
@@ -145,7 +145,7 @@ export interface HealthRecord {
     veterinarian?: { firstName: string; lastName: string };
 }
 
-// --- Forms Schemas (Zod) ---
+
 
 export const healthRecordSchema = z.object({
     targetType: z.enum(['individual', 'batch']),

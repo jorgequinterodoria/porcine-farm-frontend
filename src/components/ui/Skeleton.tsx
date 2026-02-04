@@ -9,9 +9,9 @@ interface SkeletonProps {
   children?: React.ReactNode;
 }
 
-/**
- * Skeleton loading component for better loading experience
- */
+
+
+
 export const Skeleton: React.FC<SkeletonProps> = ({
   className = '',
   width,
@@ -60,9 +60,9 @@ export const Skeleton: React.FC<SkeletonProps> = ({
   );
 };
 
-/**
- * Table skeleton component
- */
+
+
+
 export const TableSkeleton: React.FC<{
   rows?: number;
   columns?: number;
@@ -106,9 +106,9 @@ export const TableSkeleton: React.FC<{
   );
 };
 
-/**
- * Card skeleton component
- */
+
+
+
 export const CardSkeleton: React.FC<{
   showAvatar?: boolean;
   showTitle?: boolean;
@@ -158,9 +158,9 @@ export const CardSkeleton: React.FC<{
   );
 };
 
-/**
- * Form skeleton component
- */
+
+
+
 export const FormSkeleton: React.FC<{
   fieldCount?: number;
   showButton?: boolean;
@@ -183,9 +183,9 @@ export const FormSkeleton: React.FC<{
   );
 };
 
-/**
- * List skeleton component
- */
+
+
+
 export const ListSkeleton: React.FC<{
   items?: number;
   showAvatar?: boolean;
@@ -230,9 +230,9 @@ export const ListSkeleton: React.FC<{
   );
 };
 
-/**
- * Loading overlay component
- */
+
+
+
 export const LoadingOverlay: React.FC<{
   isVisible: boolean;
   message?: string;
@@ -269,9 +269,9 @@ export const LoadingOverlay: React.FC<{
   );
 };
 
-/**
- * Page loading skeleton
- */
+
+
+
 export const PageSkeleton: React.FC<{
   type?: 'dashboard' | 'table' | 'form' | 'cards';
 }> = ({ type = 'table' }) => {
@@ -313,9 +313,9 @@ export const PageSkeleton: React.FC<{
   );
 };
 
-/**
- * Custom shimmer animation CSS - add to your global CSS
- */
+
+
+
 export const shimmerCSS = `
   @keyframes shimmer {
     0% {

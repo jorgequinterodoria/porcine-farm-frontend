@@ -109,7 +109,7 @@ export const ProfilePage: React.FC = () => {
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
         
-        {/* Left Column: User Card */}
+        {}
         <div className="md:col-span-1 space-y-6">
           <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm flex flex-col items-center text-center">
             <div className="w-24 h-24 bg-indigo-100 rounded-full flex items-center justify-center text-3xl font-bold text-indigo-600 mb-4 border-4 border-white shadow-lg">
@@ -137,10 +137,10 @@ export const ProfilePage: React.FC = () => {
           </div>
         </div>
 
-        {/* Right Column: Forms */}
+        {}
         <div className="md:col-span-2 space-y-6">
           
-          {/* Personal Info Form */}
+          {}
           <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
             <div className="p-6 border-b border-gray-100 bg-gray-50/50">
               <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2">
@@ -189,7 +189,7 @@ export const ProfilePage: React.FC = () => {
             </form>
           </div>
 
-          {/* Change Password Form */}
+          {}
           <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
             <div className="p-6 border-b border-gray-100 bg-gray-50/50">
               <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2">

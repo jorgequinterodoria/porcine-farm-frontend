@@ -9,7 +9,7 @@ import type { Tenant } from '../../types/tenant.types';
 import type { Batch } from '../../types/batch.types';
 import type { Facility, Pen } from '../../types/farm.types';
 
-// Test utilities
+
 const createTestQueryClient = () => new QueryClient({
   defaultOptions: {
     queries: {
@@ -22,7 +22,7 @@ const createTestQueryClient = () => new QueryClient({
   },
 });
 
-// Custom render function with providers
+
 const AllTheProviders = ({ children }: { children: React.ReactNode }) => {
   const testQueryClient = createTestQueryClient();
   
@@ -40,7 +40,7 @@ const customRender = (
   options?: Omit<RenderOptions, 'wrapper'>
 ) => render(ui, { wrapper: AllTheProviders, ...options });
 
-// Mock data factories
+
 export const createMockAnimal = (overrides: Partial<Animal> = {}): Animal => ({
   id: 'animal-1',
   internalCode: 'ANIMAL-001',
@@ -117,7 +117,7 @@ export const createMockPen = (overrides: Partial<Pen> = {}): Pen => ({
   ...overrides,
 } as Pen);
 
-// Re-export everything from Testing Library
+
 export * from '@testing-library/react';
 export { customRender as render };
 export { default as userEvent } from '@testing-library/user-event';

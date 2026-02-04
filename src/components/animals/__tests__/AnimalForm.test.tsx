@@ -4,7 +4,7 @@ import { userEvent } from '../../../test/helpers/index.tsx';
 import { AnimalForm } from '../../../components/animals/AnimalForm';
 import type { AnimalFormData } from '../../../types/animal.types';
 
-// Mock the form component dependencies 
+
 vi.mock('../../../types/animal.types', () => ({
   animalSchema: {
     parse: vi.fn(),
@@ -92,15 +92,15 @@ describe('AnimalForm Component', () => {
 
       render(<AnimalForm {...defaultProps} />);
 
-      // Fill required fields
+      
       await userEvent.type(screen.getByLabelText(/Código Interno/), validData.internalCode);
       await userEvent.type(screen.getByLabelText(/Fecha Nacimiento/), validData.birthDate);
       
-      // Select gender
+      
       const maleRadio = screen.getByLabelText(/Macho/);
       await userEvent.click(maleRadio);
 
-      // Submit form
+      
       const submitButton = screen.getByRole('button', { name: /Guardar Registro/ });
       await userEvent.click(submitButton);
 
@@ -144,11 +144,11 @@ describe('AnimalForm Component', () => {
       const maleRadio = screen.getByLabelText(/Macho/);
       const femaleRadio = screen.getByLabelText(/Hembra/);
 
-      // Initially female should be selected
+      
       expect(femaleRadio).toBeChecked();
       expect(maleRadio).not.toBeChecked();
 
-      // Click male option
+      
       await userEvent.click(maleRadio);
 
       expect(maleRadio).toBeChecked();
@@ -273,7 +273,7 @@ describe('AnimalForm Component', () => {
       firstInput.focus();
       expect(firstInput).toHaveFocus();
 
-      // Tab through form elements
+      
       await userEvent.tab();
       expect(screen.getByLabelText(/ID Electrónico/)).toHaveFocus();
     });
@@ -283,8 +283,8 @@ describe('AnimalForm Component', () => {
       
       fireEvent.keyDown(document, { key: 'Escape' });
       
-      // This would need to be implemented in the actual component
-      // expect(mockOnClose).toHaveBeenCalled();
+      
+      
     });
   });
 
@@ -295,8 +295,8 @@ describe('AnimalForm Component', () => {
       const submitButton = screen.getByRole('button', { name: /Guardar Registro/ });
       await userEvent.click(submitButton);
 
-      // Note: This depends on the validation schema implementation
-      // The actual error messages would be displayed based on Zod validation
+      
+      
       await waitFor(() => {
         expect(mockOnSubmit).not.toHaveBeenCalled();
       });
@@ -317,7 +317,7 @@ describe('AnimalForm Component', () => {
         expect(mockOnSubmit).toHaveBeenCalled();
       });
       
-      // Component should handle the error (this would need error handling implementation)
+      
     });
   });
 });

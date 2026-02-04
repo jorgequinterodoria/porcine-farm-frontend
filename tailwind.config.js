@@ -40,13 +40,13 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
-        // Aliases for legacy classes to support gradual migration
+        
         'bg-main': 'transparent',
         'text-main': 'hsl(var(--foreground))',
         'text-dim': 'hsl(var(--muted-foreground))',
         'error': 'hsl(var(--destructive))',
-        'success': '#22c55e', // green-500
-        'warning': '#f59e0b', // amber-500
+        'success': '#22c55e', 
+        'warning': '#f59e0b', 
       },
       borderRadius: {
         lg: "var(--radius)",

@@ -27,7 +27,7 @@ export const FeedConsumptionModal: React.FC<FeedConsumptionModalProps> = ({ isOp
 
     const targetType = watch('targetType');
 
-    // Fetch pens if targetType is 'pen'
+    
     const { data: pens, isLoading: isLoadingPens } = useQuery({
         queryKey: ['pens'],
         queryFn: () => getPens(),
@@ -37,7 +37,7 @@ export const FeedConsumptionModal: React.FC<FeedConsumptionModalProps> = ({ isOp
     const mutation = useMutation({
         mutationFn: registerFeedConsumption,
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['feed-types'] }); // To update stock
+            queryClient.invalidateQueries({ queryKey: ['feed-types'] }); 
             queryClient.invalidateQueries({ queryKey: ['feed-consumption'] });
             reset();
             onClose();

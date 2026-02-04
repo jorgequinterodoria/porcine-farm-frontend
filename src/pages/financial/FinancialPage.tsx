@@ -26,7 +26,7 @@ export const FinancialPage: React.FC = () => {
 
   return (
     <div className="space-y-8">
-      {/* Header */}
+      {}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Finanzas y Ventas</h1>
@@ -44,9 +44,9 @@ export const FinancialPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Summary Cards Grid */}
+      {}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {/* Card: Ingresos */}
+        {}
         <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-all relative overflow-hidden group">
             <div className="flex justify-between items-start mb-4">
                 <div className="p-2 bg-emerald-50 rounded-lg text-emerald-600 border border-emerald-100">
@@ -63,7 +63,7 @@ export const FinancialPage: React.FC = () => {
             </div>
         </div>
 
-        {/* Card: Gastos */}
+        {}
         <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-all relative overflow-hidden group">
             <div className="flex justify-between items-start mb-4">
                 <div className="p-2 bg-rose-50 rounded-lg text-rose-600 border border-rose-100">
@@ -80,7 +80,7 @@ export const FinancialPage: React.FC = () => {
             </div>
         </div>
 
-        {/* Card: Balance Neto */}
+        {}
         <div className="bg-indigo-600 p-6 rounded-xl border border-indigo-500 shadow-lg shadow-indigo-500/20 relative overflow-hidden text-white">
             <div className="absolute top-0 right-0 p-4 opacity-10">
                 <Wallet className="w-32 h-32 transform -rotate-12 translate-x-8 -translate-y-8" />
@@ -100,9 +100,9 @@ export const FinancialPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Transactions Table */}
+      {}
       <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-        {/* Table Header & Controls */}
+        {}
         <div className="p-5 border-b border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <h3 className="font-bold text-lg text-gray-900 flex items-center gap-2">
                 Transacciones Recientes
@@ -122,7 +122,7 @@ export const FinancialPage: React.FC = () => {
             </div>
         </div>
 
-        {/* Table Content */}
+        {}
         <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
                 <thead>

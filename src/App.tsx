@@ -20,7 +20,7 @@ import './index.css';
 
 const queryClient = new QueryClient();
 
-// Protected Route Component
+
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const token = useAuthStore((state) => state.token);
   if (!token) return <Navigate to="/login" />;

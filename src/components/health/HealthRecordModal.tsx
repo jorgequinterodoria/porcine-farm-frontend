@@ -35,7 +35,7 @@ export const HealthRecordModal: React.FC<HealthRecordModalProps> = ({ isOpen, on
 
     const targetType = watch('targetType');
 
-    // Fetch animals if targetType is 'individual'
+    
     const { data: animals, isLoading: isLoadingAnimals } = useQuery({
         queryKey: ['animals'],
         queryFn: () => getAnimals(),
@@ -56,12 +56,12 @@ export const HealthRecordModal: React.FC<HealthRecordModalProps> = ({ isOpen, on
         mutation.mutate(data);
     };
 
-    // Auto-fill diagnosis if disease is selected
+    
     const handleDiseaseChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const diseaseId = e.target.value;
         const disease = diseases.find(d => d.id === diseaseId);
         if (disease) {
-            // Only strictly necessary fields, let user fill diagnosis
+            
         }
     };
 
@@ -84,7 +84,7 @@ export const HealthRecordModal: React.FC<HealthRecordModalProps> = ({ isOpen, on
                 </div>
 
                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-                    {/* Tabs for Sections */}
+                    {}
                     <div className="flex border-b border-gray-200 mb-4">
                         <button
                             type="button"
@@ -115,7 +115,7 @@ export const HealthRecordModal: React.FC<HealthRecordModalProps> = ({ isOpen, on
                         </button>
                     </div>
 
-                    {/* DETAILS SECTION */}
+                    {}
                     <div className={activeSection === 'details' ? 'block space-y-4' : 'hidden'}>
                         <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-1">
@@ -192,7 +192,7 @@ export const HealthRecordModal: React.FC<HealthRecordModalProps> = ({ isOpen, on
                         </div>
                     </div>
 
-                    {/* TREATMENT SECTION */}
+                    {}
                     <div className={activeSection === 'treatment' ? 'block space-y-4' : 'hidden'}>
                         {fields.length === 0 ? (
                             <div className="text-center py-8 bg-gray-50 rounded-xl border border-dashed border-gray-200">

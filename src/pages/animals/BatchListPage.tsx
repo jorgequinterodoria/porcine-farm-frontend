@@ -95,7 +95,7 @@ export const BatchListPage: React.FC = () => {
 
   return (
     <div className="space-y-8">
-      {/* Header Section */}
+      {}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Lotes de Producción</h1>
@@ -110,7 +110,7 @@ export const BatchListPage: React.FC = () => {
         </button>
       </div>
 
-      {/* Search Section */}
+      {}
       <div className="relative max-w-lg">
         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
           <Search className="w-5 h-5 text-gray-400" />
@@ -124,7 +124,7 @@ export const BatchListPage: React.FC = () => {
         />
       </div>
 
-      {/* Grid Layout */}
+      {}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {isLoading ? (
           [...Array(4)].map((_, i) => (
@@ -197,7 +197,7 @@ export const BatchListPage: React.FC = () => {
         ))}
       </div>
 
-      {/* Empty State */}
+      {}
       {!isLoading && filteredBatches?.length === 0 && (
         <div className="p-16 text-center bg-white border border-gray-200 border-dashed rounded-xl">
           <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4">

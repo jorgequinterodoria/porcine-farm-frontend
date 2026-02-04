@@ -24,14 +24,14 @@ export const FeedingPage: React.FC = () => {
   const [search, setSearch] = useState('');
   const queryClient = useQueryClient();
 
-  // Modals state
+  
   const [isTypeModalOpen, setIsTypeModalOpen] = useState(false);
   const [selectedType, setSelectedType] = useState<FeedType | null>(null);
   
   const [isMovementModalOpen, setIsMovementModalOpen] = useState(false);
   const [isConsumptionModalOpen, setIsConsumptionModalOpen] = useState(false);
 
-  // Queries
+  
   const { data: feedTypes, isLoading: isLoadingTypes } = useQuery({
     queryKey: ['feed-types'],
     queryFn: getFeedTypes
@@ -40,7 +40,7 @@ export const FeedingPage: React.FC = () => {
   const { data: alerts } = useQuery({
     queryKey: ['stock-alerts'],
     queryFn: getStockAlerts,
-    refetchInterval: 30000 // Check alerts every 30s
+    refetchInterval: 30000 
   });
 
   const { data: consumptionHistory, isLoading: isLoadingConsumption } = useQuery({
@@ -49,7 +49,7 @@ export const FeedingPage: React.FC = () => {
     enabled: activeTab === 'consumption'
   });
 
-  // Mutations
+  
   const deleteTypeMutation = useMutation({
     mutationFn: deleteFeedType,
     onSuccess: () => {
@@ -71,7 +71,7 @@ export const FeedingPage: React.FC = () => {
 
   return (
     <div className="space-y-8">
-      {/* Header */}
+      {}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Alimentación y Nutrición</h1>
@@ -86,7 +86,7 @@ export const FeedingPage: React.FC = () => {
         </button>
       </div>
 
-      {/* Tabs & Search */}
+      {}
       <div className="flex flex-col md:flex-row gap-4 justify-between items-start md:items-center">
         <div className="flex items-center gap-1 bg-gray-100 p-1 rounded-lg w-full md:w-auto">
           <button 
@@ -129,11 +129,11 @@ export const FeedingPage: React.FC = () => {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Main Content Area */}
+        {}
         <div className="lg:col-span-2 space-y-6">
             {activeTab === 'inventory' ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    {/* Add New Card */}
+                    {}
                     <button 
                         onClick={() => { setSelectedType(null); setIsTypeModalOpen(true); }}
                         className="flex flex-col items-center justify-center p-8 border-2 border-dashed border-gray-200 rounded-xl hover:border-indigo-400 hover:bg-indigo-50/50 transition-all group min-h-[200px]"
@@ -244,7 +244,7 @@ export const FeedingPage: React.FC = () => {
                                             </div>
                                         </td>
                                         <td className="px-6 py-4 text-xs text-gray-500">
-                                            {/* Need to include recorder in API response type properly to display here */}
+                                            {}
                                             Admin
                                         </td>
                                     </tr>
@@ -262,9 +262,9 @@ export const FeedingPage: React.FC = () => {
             )}
         </div>
 
-        {/* Sidebar Widgets */}
+        {}
         <div className="space-y-6">
-            {/* Alerts Widget */}
+            {}
             {alerts && alerts.length > 0 && (
                 <div className="bg-white p-5 rounded-xl border border-red-100 shadow-sm">
                     <div className="flex items-center gap-2 mb-4 text-red-700 font-bold">
@@ -287,7 +287,7 @@ export const FeedingPage: React.FC = () => {
                 </div>
             )}
 
-            {/* Quick Actions */}
+            {}
             <div className="bg-white p-5 rounded-xl border border-gray-200 shadow-sm">
                 <div className="flex items-center gap-2 mb-4 text-gray-900 font-bold">
                     <ArrowRightLeft className="w-5 h-5 text-indigo-600" />
@@ -314,7 +314,7 @@ export const FeedingPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Modals */}
+      {}
       <FeedTypeModal 
         isOpen={isTypeModalOpen} 
         onClose={() => setIsTypeModalOpen(false)} 

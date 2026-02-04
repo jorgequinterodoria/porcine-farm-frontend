@@ -6,7 +6,7 @@ import type {
     HealthRecord, HealthRecordFormData
 } from '../types/farm.types';
 
-// --- Medications ---
+
 export const getMedications = async (): Promise<Medication[]> => {
     const response = await api.get('/health/medications');
     return response.data.data;
@@ -26,7 +26,7 @@ export const deleteMedication = async (id: string): Promise<void> => {
     await api.delete(`/health/medications/${id}`);
 };
 
-// --- Vaccines ---
+
 export const getVaccines = async (): Promise<Vaccine[]> => {
     const response = await api.get('/health/vaccines');
     return response.data.data;
@@ -46,7 +46,7 @@ export const deleteVaccine = async (id: string): Promise<void> => {
     await api.delete(`/health/vaccines/${id}`);
 };
 
-// --- Diseases ---
+
 export const getDiseases = async (): Promise<Disease[]> => {
     const response = await api.get('/health/diseases');
     return response.data.data;
@@ -66,14 +66,14 @@ export const deleteDisease = async (id: string): Promise<void> => {
     await api.delete(`/health/diseases/${id}`);
 };
 
-// --- Records ---
+
 export const getHealthRecords = async (): Promise<HealthRecord[]> => {
     const response = await api.get('/health/records');
     return response.data.data;
 };
 
 export const createHealthRecord = async (data: HealthRecordFormData): Promise<HealthRecord> => {
-    // Transform FormData to DTO expected by backend
+    
     const payload = {
         recordType: data.targetType,
         animalId: data.targetType === 'individual' ? data.targetId : undefined,

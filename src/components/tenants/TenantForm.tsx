@@ -46,7 +46,7 @@ export const TenantForm: React.FC<TenantFormProps> = ({ isOpen, onClose, onSubmi
         </div>
 
         <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-8 overflow-y-auto">
-          {/* Farm Information */}
+          {}
           <section>
             <div className="flex items-center gap-2 mb-4 text-primary">
               <ShieldCheck className="w-4 h-4" />
@@ -85,7 +85,7 @@ export const TenantForm: React.FC<TenantFormProps> = ({ isOpen, onClose, onSubmi
             </div>
           </section>
 
-          {/* Admin User Information */}
+          {}
           <section>
             <div className="flex items-center gap-2 mb-4 text-accent">
               <User className="w-4 h-4" />
@@ -115,7 +115,7 @@ export const TenantForm: React.FC<TenantFormProps> = ({ isOpen, onClose, onSubmi
             </div>
           </section>
 
-          {/* Limits */}
+          {}
           <section>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">

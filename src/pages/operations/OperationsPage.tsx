@@ -27,7 +27,7 @@ export const OperationsPage: React.FC = () => {
 
   return (
     <div className="space-y-8">
-      {/* Header */}
+      {}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Centro de Operaciones</h1>
@@ -39,7 +39,7 @@ export const OperationsPage: React.FC = () => {
         </button>
       </div>
 
-      {/* Tabs */}
+      {}
       <div className="flex items-center gap-1 bg-gray-100 p-1 rounded-lg w-full md:w-fit">
         <button 
           onClick={() => setActiveTab('tasks')}
@@ -65,7 +65,7 @@ export const OperationsPage: React.FC = () => {
 
       {activeTab === 'tasks' ? (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Left Column: Task List */}
+            {}
             <div className="lg:col-span-2 space-y-4">
                 <div className="flex gap-2">
                     <div className="relative flex-1">
@@ -99,7 +99,7 @@ export const OperationsPage: React.FC = () => {
                                 className="bg-white p-4 rounded-xl border border-gray-200 flex items-center justify-between group hover:shadow-md hover:border-indigo-200 transition-all cursor-pointer"
                             >
                                 <div className="flex items-center gap-4">
-                                    {/* Priority Indicator Bar */}
+                                    {}
                                     <div className={`w-1.5 h-10 rounded-full ${
                                         task.priority === 'urgent' ? 'bg-rose-500' : 
                                         task.priority === 'high' ? 'bg-amber-500' : 'bg-blue-500'
@@ -135,7 +135,7 @@ export const OperationsPage: React.FC = () => {
                 </div>
             </div>
 
-            {/* Right Column: Progress Widget */}
+            {}
             <div className="space-y-4">
                 <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
                     <h3 className="font-bold mb-6 flex items-center gap-2 text-gray-900">
@@ -158,7 +158,7 @@ export const OperationsPage: React.FC = () => {
             </div>
         </div>
       ) : (
-        /* Notifications Tab */
+        
         <div className="max-w-3xl mx-auto space-y-6">
             <div className="flex items-center justify-between px-2">
                  <h3 className="font-bold flex items-center gap-2 text-gray-900 text-lg">

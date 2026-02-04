@@ -72,13 +72,13 @@ export const FarmDashboard: React.FC = () => {
 
   return (
     <div className="space-y-8">
-      {/* Header */}
+      {}
       <div>
         <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Resumen de la Granja</h1>
         <p className="text-gray-500 mt-1 text-sm">Métricas de rendimiento y actividad en tiempo real.</p>
       </div>
 
-      {/* Stats Grid */}
+      {}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {stats.map((stat) => (
           <div 
@@ -106,10 +106,10 @@ export const FarmDashboard: React.FC = () => {
         ))}
       </div>
 
-      {/* Charts & Activity Section */}
+      {}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         
-        {/* Growth Performance Chart (Placeholder) */}
+        {}
         <div className="lg:col-span-2 bg-white p-6 rounded-xl border border-gray-200 shadow-sm flex flex-col h-[400px]">
           <div className="flex items-center justify-between mb-6">
             <h3 className="text-lg font-bold text-gray-900">Rendimiento de Crecimiento</h3>
@@ -123,7 +123,7 @@ export const FarmDashboard: React.FC = () => {
           </div>
         </div>
 
-        {/* Recent Activity Feed */}
+        {}
         <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm flex flex-col h-[400px]">
           <h3 className="text-lg font-bold mb-6 text-gray-900">Actividad Reciente</h3>
           <div className="space-y-6 flex-1 overflow-y-auto pr-2 custom-scrollbar">

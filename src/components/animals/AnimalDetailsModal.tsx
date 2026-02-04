@@ -35,7 +35,7 @@ export const AnimalDetailsModal: React.FC<AnimalDetailsModalProps> = ({
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/60 backdrop-blur-sm transition-all overflow-y-auto">
       <div className="bg-white w-full max-w-3xl rounded-2xl shadow-2xl overflow-hidden animate-scaleIn border border-gray-100 my-8 flex flex-col max-h-[90vh]">
 
-        {/* Header */}
+        {}
         <div className="flex items-center justify-between p-6 border-b border-gray-100 bg-white sticky top-0 z-10 shadow-sm">
           <div className="flex items-center gap-3">
             <div className="bg-indigo-50 p-2.5 rounded-xl">
@@ -56,7 +56,7 @@ export const AnimalDetailsModal: React.FC<AnimalDetailsModalProps> = ({
 
         <div className="overflow-y-auto custom-scrollbar flex-1 p-8 space-y-8">
 
-          {/* Sección: Identificación */}
+          {}
           <section className="bg-gray-50/50 p-6 rounded-2xl border border-gray-100">
             <div className="flex items-center gap-2 mb-4">
               <Info className="w-5 h-5 text-indigo-500" />
@@ -79,9 +79,9 @@ export const AnimalDetailsModal: React.FC<AnimalDetailsModalProps> = ({
           </section>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {/* Columna Izquierda */}
+            {}
             <div className="space-y-8">
-              {/* Sección: Características */}
+              {}
               <section>
                 <div className="flex items-center gap-2 mb-4 pb-2 border-b border-gray-100">
                   <Dna className="w-5 h-5 text-indigo-500" />
@@ -120,7 +120,7 @@ export const AnimalDetailsModal: React.FC<AnimalDetailsModalProps> = ({
                 </div>
               </section>
 
-              {/* Sección: Ubicación y Estado */}
+              {}
               <section>
                 <div className="flex items-center gap-2 mb-4 pb-2 border-b border-gray-100">
                   <MapPin className="w-5 h-5 text-indigo-500" />
@@ -150,9 +150,9 @@ export const AnimalDetailsModal: React.FC<AnimalDetailsModalProps> = ({
               </section>
             </div>
 
-            {/* Columna Derecha */}
+            {}
             <div className="space-y-8">
-              {/* Sección: Origen y Costos */}
+              {}
               <section>
                 <div className="flex items-center gap-2 mb-4 pb-2 border-b border-gray-100">
                   <DollarSign className="w-5 h-5 text-indigo-500" />
@@ -182,7 +182,7 @@ export const AnimalDetailsModal: React.FC<AnimalDetailsModalProps> = ({
                 </div>
               </section>
 
-              {/* Sección: Notas */}
+              {}
               <section className="flex-1">
                 <div className="flex items-center gap-2 mb-4 pb-2 border-b border-gray-100">
                   <FileText className="w-5 h-5 text-indigo-500" />

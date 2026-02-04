@@ -4,7 +4,7 @@ import userEvent from '../test/helpers';
 import { AnimalListPage } from '../pages/animals/AnimalListPage';
 import { createMockAnimal, createMockAnimal } from '../test/helpers';
 
-// Mock API dependencies
+
 vi.mock('../api/axiosInstance', () => ({
   default: {
     get: vi.fn(),
@@ -20,7 +20,7 @@ vi.mock('../api/animals', () => ({
   updateAnimal: vi.fn(),
 }));
 
-// Mock components
+
 vi.mock('../components/animals/AnimalForm', () => ({
   AnimalForm: ({ isOpen, onClose, onSubmit, isLoading, pens, initialData }: any) => (
     isOpen ? (
@@ -82,7 +82,7 @@ describe('AnimalListPage Integration Tests', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     
-    // Setup default mocks
+    
     vi.mocked(require('../api/axiosInstance').default.get).mockResolvedValue({
       data: { data: mockAnimals },
     });
@@ -122,7 +122,7 @@ describe('AnimalListPage Integration Tests', () => {
 
   describe('Data Loading', () => {
     it('should display loading skeleton while fetching data', () => {
-      // Mock loading state
+      
       vi.mocked(require('@tanstack/react-query').useQuery).mockReturnValueOnce({
         data: undefined,
         isLoading: true,
@@ -130,7 +130,7 @@ describe('AnimalListPage Integration Tests', () => {
 
       render(<AnimalListPage />);
       
-      // Check for skeleton elements
+      
       const skeletonElements = document.querySelectorAll('.animate-pulse');
       expect(skeletonElements.length).toBeGreaterThan(0);
     });
@@ -209,7 +209,7 @@ describe('AnimalListPage Integration Tests', () => {
       await userEvent.selectOptions(statusFilter, 'active');
 
       await waitFor(() => {
-        // Should only show active animals
+        
         expect(screen.getByText('ANIMAL-001')).toBeInTheDocument();
         expect(screen.queryByText('ANIMAL-002')).not.toBeInTheDocument();
       });
@@ -249,7 +249,7 @@ describe('AnimalListPage Integration Tests', () => {
         expect(screen.getByText('ANIMAL-001')).toBeInTheDocument();
       });
 
-      // Find the actions button for the first animal
+      
       const actionsButtons = screen.getAllByRole('button').filter(button => 
         button.querySelector('svg') && !button.textContent?.includes('Agregar')
       );
@@ -287,7 +287,7 @@ describe('AnimalListPage Integration Tests', () => {
           expect(screen.getByText('Ver Detalles')).toBeInTheDocument();
         });
 
-        // Click outside
+        
         fireEvent.click(document.body);
 
         await waitFor(() => {
@@ -305,7 +305,7 @@ describe('AnimalListPage Integration Tests', () => {
         expect(screen.getByText('ANIMAL-001')).toBeInTheDocument();
       });
 
-      // Open menu and click edit
+      
       const actionsButton = screen.getAllByRole('button').find(button => 
         button.closest('tr')?.textContent?.includes('ANIMAL-001')
       );
@@ -329,7 +329,7 @@ describe('AnimalListPage Integration Tests', () => {
     it('should close form when calling handleClose', async () => {
       render(<AnimalListPage />);
       
-      // Open form
+      
       const addButton = screen.getByRole('button', { name: /Agregar Animal/ });
       await userEvent.click(addButton);
 
@@ -337,7 +337,7 @@ describe('AnimalListPage Integration Tests', () => {
         expect(screen.getByTestId('animal-form')).toBeInTheDocument();
       });
 
-      // Close form
+      
       await userEvent.click(screen.getByTestId('form-close'));
 
       await waitFor(() => {
@@ -351,7 +351,7 @@ describe('AnimalListPage Integration Tests', () => {
 
       render(<AnimalListPage />);
       
-      // Open form
+      
       const addButton = screen.getByRole('button', { name: /Agregar Animal/ });
       await userEvent.click(addButton);
 
@@ -359,7 +359,7 @@ describe('AnimalListPage Integration Tests', () => {
         expect(screen.getByTestId('animal-form')).toBeInTheDocument();
       });
 
-      // Submit form
+      
       await userEvent.click(screen.getByTestId('form-submit'));
 
       await waitFor(() => {
@@ -378,7 +378,7 @@ describe('AnimalListPage Integration Tests', () => {
         expect(screen.getByText('ANIMAL-001')).toBeInTheDocument();
       });
 
-      // Open menu and click view details
+      
       const actionsButton = screen.getAllByRole('button').find(button => 
         button.closest('tr')?.textContent?.includes('ANIMAL-001')
       );
@@ -407,7 +407,7 @@ describe('AnimalListPage Integration Tests', () => {
         expect(screen.getByText('ANIMAL-001')).toBeInTheDocument();
       });
 
-      // Open modal
+      
       const actionsButton = screen.getAllByRole('button').find(button => 
         button.closest('tr')?.textContent?.includes('ANIMAL-001')
       );
@@ -426,7 +426,7 @@ describe('AnimalListPage Integration Tests', () => {
           expect(screen.getByTestId('animal-details-modal')).toBeInTheDocument();
         });
 
-        // Close modal
+        
         await userEvent.click(screen.getByTestId('modal-close'));
 
         await waitFor(() => {
@@ -453,11 +453,11 @@ describe('AnimalListPage Integration Tests', () => {
       render(<AnimalListPage />);
       
       await waitFor(() => {
-        // Check status badge for active animal
+        
         const activeBadge = screen.getByText('Activo');
         expect(activeBadge).toHaveClass('bg-green-50', 'text-green-700');
 
-        // Check status badge for sold animal
+        
         const soldBadge = screen.getByText('Vendido');
         expect(soldBadge).toHaveClass('bg-gray-50', 'text-gray-700');
       });
@@ -467,10 +467,10 @@ describe('AnimalListPage Integration Tests', () => {
       render(<AnimalListPage />);
       
       await waitFor(() => {
-        // Animal with pen assignment
+        
         expect(screen.getByText('PA')).toBeInTheDocument();
         
-        // Animal without pen assignment
+        
         expect(screen.getByText('Sin asignar')).toBeInTheDocument();
       });
     });
@@ -479,7 +479,7 @@ describe('AnimalListPage Integration Tests', () => {
       render(<AnimalListPage />);
       
       await waitFor(() => {
-        const birthDate = screen.getByText('1/1/2024'); // Formatted date
+        const birthDate = screen.getByText('1/1/2024'); 
         expect(birthDate).toBeInTheDocument();
       });
     });
@@ -493,7 +493,7 @@ describe('AnimalListPage Integration Tests', () => {
 
       render(<AnimalListPage />);
       
-      // Component should still render and show error state or empty state
+      
       await waitFor(() => {
         expect(screen.getByText('No se encontraron animales')).toBeInTheDocument();
       });

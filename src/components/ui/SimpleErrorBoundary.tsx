@@ -12,9 +12,9 @@ interface ErrorBoundaryProps {
   showRetry?: boolean;
 }
 
-/**
- * Simple error boundary component for graceful error handling
- */
+
+
+
 export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
   constructor(props: ErrorBoundaryProps) {
     super(props);
@@ -28,7 +28,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
   componentDidCatch(error: Error) {
     console.error('ErrorBoundary caught an error:', error);
     
-    // Log to external service in production
+    
     if (import.meta.env.PROD) {
       // TODO: Integrate with error monitoring service
     }
@@ -40,12 +40,12 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
 
   render() {
     if (this.state.hasError) {
-      // Custom fallback UI
+      
       if (this.props.fallback) {
         return this.props.fallback;
       }
 
-      // Default error UI
+      
       return (
         <div className="min-h-[200px] flex items-center justify-center">
           <div className="text-center p-6 max-w-md mx-auto">
@@ -81,9 +81,9 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
   }
 }
 
-/**
- * Hook for handling errors in function components
- */
+
+
+
 export const useErrorHandler = () => {
   const [error, setError] = React.useState<Error | null>(null);
 
@@ -99,9 +99,9 @@ export const useErrorHandler = () => {
   return { captureError, resetError, error };
 };
 
-/**
- * Loading state hook
- */
+
+
+
 export const useLoadingState = () => {
   const [loading, setLoading] = React.useState(false);
 

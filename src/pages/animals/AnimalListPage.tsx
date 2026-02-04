@@ -15,22 +15,22 @@ import {
   Check
 } from 'lucide-react';
 
-// WatermelonDB Imports
+
 import { database } from '../../db';
 import { Animal, Pen } from '../../db/models';
 import type { AnimalFormData } from '../../types/animal.types';
 
-// Components
+
 import { AnimalForm } from '../../components/animals/AnimalForm';
 import { AnimalDetailsModal } from '../../components/animals/AnimalDetailsModal';
 
-// Interfaces para las props inyectadas por withObservables
+
 interface AnimalListPageProps {
   animals: Animal[];
   pens: Pen[];
 }
 
-// Mapas de UI (Estados y Etapas)
+
 const statusMap: Record<string, { label: string; className: string }> = {
   active: { label: 'Activo', className: 'bg-green-50 text-green-700 border-green-200' },
   quarantine: { label: 'Cuarentena', className: 'bg-yellow-50 text-yellow-700 border-yellow-200' },
@@ -47,7 +47,7 @@ const stageMap: Record<string, { label: string; className: string }> = {
 };
 
 const AnimalListPageComponent: React.FC<AnimalListPageProps> = ({ animals, pens }) => {
-  // --- Estados Locales de UI ---
+  
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -56,9 +56,9 @@ const AnimalListPageComponent: React.FC<AnimalListPageProps> = ({ animals, pens 
   const [selectedAnimal, setSelectedAnimal] = useState<Animal | null>(null);
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
 
-  // --- Lógica de Filtrado (En memoria) ---
-  // Nota: Watermelon es muy rápido, filtrar 1000-2000 animales en memoria está bien.
-  // Para datasets gigantes, usaríamos Q.where() en el enhance.
+  
+  
+  
   const filteredAnimals = useMemo(() => {
     return animals.filter(animal => {
       const matchesSearch = 
@@ -71,7 +71,7 @@ const AnimalListPageComponent: React.FC<AnimalListPageProps> = ({ animals, pens 
     });
   }, [animals, search, statusFilter]);
 
-  // --- Helpers de UI ---
+  
   const getStatusInfo = (status: string) => {
     return statusMap[status] || { label: status, className: 'bg-gray-50 text-gray-700 border-gray-200' };
   };
@@ -86,7 +86,7 @@ const AnimalListPageComponent: React.FC<AnimalListPageProps> = ({ animals, pens 
     return pen ? pen.code : '...';
   };
 
-  // --- Manejadores de Acción (Offline-First) ---
+  
 
   const handleCloseForm = () => {
     setIsFormOpen(false);
@@ -110,22 +110,22 @@ const AnimalListPageComponent: React.FC<AnimalListPageProps> = ({ animals, pens 
     setIsDetailsOpen(true);
   };
 
-  // 🔥 CORE: Guardar en Base de Datos Local
+  
   const handleFormSubmit = async (data: AnimalFormData) => {
     try {
       await database.write(async () => {
         const collection = database.collections.get<Animal>('animals');
 
         if (editingAnimal) {
-          // UPDATE
+          
           await editingAnimal.update(animal => {
             updateAnimalFields(animal, data);
           });
         } else {
-          // CREATE
+          
           await collection.create(animal => {
             updateAnimalFields(animal, data);
-            animal.currentStatus = 'active'; // Default
+            animal.currentStatus = 'active'; 
           });
         }
       });
@@ -136,7 +136,7 @@ const AnimalListPageComponent: React.FC<AnimalListPageProps> = ({ animals, pens 
     }
   };
 
-  // Helper para mapear campos (DRY)
+  
   const updateAnimalFields = (animal: Animal, data: AnimalFormData) => {
     animal.internalCode = data.internalCode;
     animal.sex = data.sex;
@@ -155,13 +155,13 @@ const AnimalListPageComponent: React.FC<AnimalListPageProps> = ({ animals, pens 
     animal.stage = data.stage || 'nursery';
   };
 
-  // 🔥 CORE: Eliminar (Soft Delete)
+  
   const handleDelete = async (animal: Animal) => {
     if(!confirm('¿Estás seguro de eliminar este animal?')) return;
     
     try {
       await database.write(async () => {
-        await animal.markAsDeleted(); // Soft delete compatible con Sync
+        await animal.markAsDeleted(); 
       });
       setOpenMenuId(null);
     } catch (error) {
@@ -182,7 +182,7 @@ const AnimalListPageComponent: React.FC<AnimalListPageProps> = ({ animals, pens 
 
   return (
     <div className="space-y-6 animate-fadeIn">
-      {/* Header */}
+      {}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Inventario de Animales</h1>
@@ -199,7 +199,7 @@ const AnimalListPageComponent: React.FC<AnimalListPageProps> = ({ animals, pens 
         </button>
       </div>
 
-      {/* Filtros */}
+      {}
       <div className="flex flex-wrap items-center gap-4">
         <div className="relative flex-1 min-w-[300px]">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
@@ -227,7 +227,7 @@ const AnimalListPageComponent: React.FC<AnimalListPageProps> = ({ animals, pens 
         </div>
       </div>
 
-      {/* Tabla */}
+      {}
       <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden min-h-[400px]">
         <table className="w-full text-left border-collapse">
           <thead>
@@ -249,7 +249,7 @@ const AnimalListPageComponent: React.FC<AnimalListPageProps> = ({ animals, pens 
                     <span className="font-bold text-indigo-600 group-hover:text-indigo-700">
                       {animal.internalCode}
                     </span>
-                    {/* Indicador de Sync */}
+                    {}
                     <span className="text-[10px] flex items-center gap-1 mt-0.5">
                        {animal.syncStatus === 'created' || animal.syncStatus === 'updated' ? (
                          <><Cloud className="w-3 h-3 text-yellow-500" /> <span className="text-yellow-600">Pendiente</span></>
@@ -290,7 +290,7 @@ const AnimalListPageComponent: React.FC<AnimalListPageProps> = ({ animals, pens 
                     <MoreVertical className="w-4 h-4" />
                   </button>
 
-                  {/* Menú Dropdown */}
+                  {}
                   {openMenuId === animal.id && (
                     <div className="absolute right-8 top-8 w-48 bg-white rounded-xl shadow-xl border border-gray-100 z-20 animate-scaleIn origin-top-right overflow-hidden">
                       <div className="p-1">
@@ -335,19 +335,19 @@ const AnimalListPageComponent: React.FC<AnimalListPageProps> = ({ animals, pens 
         )}
       </div>
 
-      {/* Modales */}
+      {}
 <AnimalForm 
   isOpen={isFormOpen} 
   onClose={handleCloseForm} 
   onSubmit={handleFormSubmit}
   pens={pens.map(p => ({ id: p.id, name: p.name, code: p.code }))}
   
-  // 👇 AQUÍ ESTÁ LA SOLUCIÓN
+  
   initialData={editingAnimal ? {
-    // 1. Esparcimos los datos crudos pero forzamos el tipo 'any' temporalmente para romper el bloqueo
+    
     ...editingAnimal._raw as any,
     
-    // 2. Sobrescribimos y saneamos los campos específicos que dan error (null -> undefined)
+    
     electronicId: editingAnimal.electronicId ?? undefined,
     visualId: editingAnimal.visualId ?? undefined,
     geneticLine: editingAnimal.geneticLine ?? undefined,
@@ -359,12 +359,12 @@ const AnimalListPageComponent: React.FC<AnimalListPageProps> = ({ animals, pens 
     motherId: editingAnimal.motherId ?? undefined,
     fatherId: editingAnimal.fatherId ?? undefined,
 
-    // 3. Formateamos fechas y números para el formulario HTML
+    
     birthDate: new Date(editingAnimal.birthDate).toISOString().split('T')[0],
     birthWeight: Number(editingAnimal.birthWeight),
     acquisitionCost: Number(editingAnimal.acquisitionCost),
     
-    // 4. Aseguramos los Enums (si vienen nulos, ponemos un default)
+    
     currentStatus: editingAnimal.currentStatus || 'active',
     stage: editingAnimal.stage || 'nursery',
     sex: editingAnimal.sex || 'female',
@@ -384,11 +384,11 @@ const AnimalListPageComponent: React.FC<AnimalListPageProps> = ({ animals, pens 
   );
 };
 
-// 🔌 CONECTOR WATERMELON DB
-// Esto hace que el componente se actualice en tiempo real
+
+
 const enhance = withObservables([], () => ({
   animals: database.collections.get<Animal>('animals').query(
-    Q.sortBy('created_at', Q.desc) // Ordenar por fecha de creación
+    Q.sortBy('created_at', Q.desc) 
   ),
   pens: database.collections.get<Pen>('pens').query(),
 }));

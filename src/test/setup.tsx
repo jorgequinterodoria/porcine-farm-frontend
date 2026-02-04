@@ -3,45 +3,45 @@ import { vi } from 'vitest';
 import { cleanup } from '@testing-library/react';
 import { afterEach } from 'vitest';
 
-// Cleanup after each test
+
 afterEach(() => {
   cleanup();
 });
 
-// Mock window.matchMedia
+
 Object.defineProperty(window, 'matchMedia', {
   writable: true,
   value: vi.fn().mockImplementation(query => ({
     matches: false,
     media: query,
     onchange: null,
-    addListener: vi.fn(), // deprecated
-    removeListener: vi.fn(), // deprecated
+    addListener: vi.fn(), 
+    removeListener: vi.fn(), 
     addEventListener: vi.fn(),
     removeEventListener: vi.fn(),
     dispatchEvent: vi.fn(),
   })),
 });
 
-// Mock IntersectionObserver
+
 global.IntersectionObserver = vi.fn().mockImplementation(() => ({
   observe: vi.fn(),
   unobserve: vi.fn(),
   disconnect: vi.fn(),
 }));
 
-// Mock ResizeObserver
+
 global.ResizeObserver = vi.fn().mockImplementation(() => ({
   observe: vi.fn(),
   unobserve: vi.fn(),
   disconnect: vi.fn(),
 }));
 
-// Mock window.scroll
+
 window.scroll = vi.fn();
 window.scrollTo = vi.fn();
 
-// Mock localStorage
+
 const localStorageMock = {
   getItem: vi.fn(),
   setItem: vi.fn(),
@@ -50,7 +50,7 @@ const localStorageMock = {
 };
 vi.stubGlobal('localStorage', localStorageMock);
 
-// Mock sessionStorage
+
 const sessionStorageMock = {
   getItem: vi.fn(),
   setItem: vi.fn(),
@@ -59,10 +59,10 @@ const sessionStorageMock = {
 };
 vi.stubGlobal('sessionStorage', sessionStorageMock);
 
-// Mock fetch API
+
 global.fetch = vi.fn();
 
-// Mock React Router DOM
+
 vi.mock('react-router-dom', async () => {
   const actual = await vi.importActual('react-router-dom');
   return {
@@ -74,7 +74,7 @@ vi.mock('react-router-dom', async () => {
   };
 });
 
-// Mock Zustand stores
+
 vi.mock('@/store/useAuthStore', () => ({
   useAuthStore: () => ({
     user: null,
@@ -86,7 +86,7 @@ vi.mock('@/store/useAuthStore', () => ({
   }),
 }));
 
-// Mock React Query
+
 vi.mock('@tanstack/react-query', () => ({
   useQuery: vi.fn(),
   useMutation: vi.fn(),
@@ -96,7 +96,7 @@ vi.mock('@tanstack/react-query', () => ({
   }),
 }));
 
-// Mock Framer Motion
+
 vi.mock('framer-motion', () => ({
   motion: {
     div: ({ children, ...props }: any) => <div {...props}>{children}</div>,
@@ -107,7 +107,7 @@ vi.mock('framer-motion', () => ({
   AnimatePresence: ({ children }: any) => <>{children}</>,
 }));
 
-// Mock Lucide React icons
+
 vi.mock('lucide-react', () => ({
   User: () => <div data-testid="user-icon"></div>,
   Menu: () => <div data-testid="menu-icon"></div>,

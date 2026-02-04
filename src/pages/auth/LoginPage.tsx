@@ -55,7 +55,7 @@ export const LoginPage: React.FC = () => {
 
       <div className="bg-white w-full max-w-md rounded-2xl shadow-xl border border-gray-100 p-8 md:p-10 relative z-10">
 
-        {/* Encabezado */}
+        {}
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center w-12 h-12 bg-indigo-600 rounded-xl mb-4 shadow-lg shadow-indigo-500/30">
             <LogIn className="w-6 h-6 text-white" />
@@ -64,7 +64,7 @@ export const LoginPage: React.FC = () => {
           <p className="text-gray-500 text-sm mt-2">Gestiona tu granja eficientemente</p>
         </div>
 
-        {/* Alerta de Error */}
+        {}
         {error && (
           <div className="mb-6 p-4 rounded-lg bg-red-50 border border-red-100 flex items-center gap-3">
             <div className="w-2 h-2 rounded-full bg-red-500 shrink-0" />
@@ -125,7 +125,7 @@ export const LoginPage: React.FC = () => {
             {errors.password && <span className="text-xs text-red-500 font-medium ml-1">{errors.password.message}</span>}
           </div>
 
-          {/* Botón */}
+          {}
           <button
             type="submit"
             disabled={isLoading}

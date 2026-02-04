@@ -80,7 +80,7 @@ export const DashboardLayout: React.FC = () => {
   return (
     <div className="flex min-h-screen bg-slate-50">
 
-      {/* --- MOBILE HEADER (Solo visible en móviles) --- */}
+      {}
       <div className="md:hidden fixed top-0 left-0 right-0 h-16 bg-white z-30 flex items-center justify-between px-4 border-b border-gray-200 shadow-sm">
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center shadow-indigo-200">
@@ -99,7 +99,7 @@ export const DashboardLayout: React.FC = () => {
         </div>
       </div>
 
-      {/* --- MOBILE OVERLAY --- */}
+      {}
       {isMobileMenuOpen && (
         <div
           className="fixed inset-0 bg-gray-900/50 z-30 md:hidden backdrop-blur-sm transition-opacity"
@@ -107,13 +107,13 @@ export const DashboardLayout: React.FC = () => {
         />
       )}
 
-      {/* --- SIDEBAR --- */}
+      {}
       <aside className={cn(
         "fixed inset-y-0 left-0 z-40 w-72 bg-white border-r border-gray-200 flex flex-col transition-transform duration-300 ease-in-out md:sticky md:top-0 md:h-screen md:translate-x-0 shadow-[4px_0_24px_-12px_rgba(0,0,0,0.1)]",
         isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"
       )}>
 
-        {/* Logo Section */}
+        {}
         <div className="p-6 border-b border-gray-100">
           <div className="flex items-center gap-3 mb-4">
             <div className="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-500/20">
@@ -129,7 +129,7 @@ export const DashboardLayout: React.FC = () => {
           <SyncStatus />
         </div>
 
-        {/* Navigation Section */}
+        {}
         <div className="flex-1 overflow-y-auto py-6 px-4">
           <nav className="space-y-1">
             {navItems.map((item) => {
@@ -163,7 +163,7 @@ export const DashboardLayout: React.FC = () => {
           </nav>
         </div>
 
-        {/* User Profile Section (Footer) */}
+        {}
         <div className="p-4 border-t border-gray-100 bg-gray-50/50 space-y-3">
           <InstallPWA />
 
@@ -193,7 +193,7 @@ export const DashboardLayout: React.FC = () => {
         </div>
       </aside>
 
-      {/* --- MAIN CONTENT AREA --- */}
+      {}
       <main className="flex-1 min-w-0 transition-all duration-300">
         <div className="p-4 md:p-8 pt-20 md:pt-8 max-w-[1600px] mx-auto animate-fadeIn">
           <Outlet />
