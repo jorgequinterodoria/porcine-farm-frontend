@@ -4,14 +4,14 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { X, Loader2, Save, Plus, Trash2, Pill, AlertTriangle } from 'lucide-react';
 import type { Medication, Disease, HealthRecordFormData } from '../../types/farm.types';
 import { healthRecordSchema } from '../../types/farm.types';
-// import { Animal } from '../../db/models'; // Assuming Animal model
+
 
 interface HealthRecordModalProps {
     isOpen: boolean;
     onClose: () => void;
     medications: Medication[];
     diseases: Disease[];
-    animals: any[]; // Using any[] to accept models
+    animals: any[]; 
     onSubmit: (data: HealthRecordFormData) => void;
     isLoading?: boolean;
 }
@@ -35,7 +35,7 @@ export const HealthRecordModal: React.FC<HealthRecordModalProps> = ({ isOpen, on
 
     const targetType = watch('targetType');
 
-    // Reset form when modal opens
+    
     React.useEffect(() => {
         if (isOpen) {
             reset({
@@ -50,9 +50,6 @@ export const HealthRecordModal: React.FC<HealthRecordModalProps> = ({ isOpen, on
     const handleDiseaseChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const diseaseId = e.target.value;
         const disease = diseases.find(d => d.id === diseaseId);
-        if (disease) {
-            // Optional: Auto-fill symptoms or treatment plan based on disease
-        }
     };
 
     if (!isOpen) return null;
@@ -74,7 +71,7 @@ export const HealthRecordModal: React.FC<HealthRecordModalProps> = ({ isOpen, on
                 </div>
 
                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-                    {/* Tabs */}
+                    {}
                     <div className="flex border-b border-gray-200 mb-4">
                         <button
                             type="button"
@@ -105,7 +102,7 @@ export const HealthRecordModal: React.FC<HealthRecordModalProps> = ({ isOpen, on
                         </button>
                     </div>
 
-                    {/* Section: Details */}
+                    {}
                     <div className={activeSection === 'details' ? 'block space-y-4' : 'hidden'}>
                         <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-1">
@@ -175,7 +172,7 @@ export const HealthRecordModal: React.FC<HealthRecordModalProps> = ({ isOpen, on
                         </div>
                     </div>
 
-                    {/* Section: Treatment */}
+                    {}
                     <div className={activeSection === 'treatment' ? 'block space-y-4' : 'hidden'}>
                         {fields.length === 0 ? (
                             <div className="text-center py-8 bg-gray-50 rounded-xl border border-dashed border-gray-200">

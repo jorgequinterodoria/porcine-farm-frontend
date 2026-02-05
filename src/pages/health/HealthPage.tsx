@@ -183,14 +183,14 @@ const HealthPage: React.FC<HealthPageProps> = ({
         await database.write(async () => {
             await database.collections.get<HealthRecord>('health_records').create(record => {
                 record.recordDate = new Date(data.recordDate).getTime();
-                record.recordType = 'treatment'; // Or determine based on inputs
+                record.recordType = 'treatment'; 
                 record.diagnosis = data.diagnosis;
                 record.symptoms = data.symptoms;
                 record.treatmentPlan = data.treatmentPlan;
                 record.temperature = data.temperature;
                 record.diseaseId = data.diseaseId;
-                // Add mapping for animal/batch/treatments if needed in model
-                // Note: The HealthRecord model might need relation fields or JSON field for treatments if not normalized
+                
+                
             });
         });
         setIsHealthRecordModalOpen(false);
@@ -222,7 +222,7 @@ const HealthPage: React.FC<HealthPageProps> = ({
 
   return (
     <div className="space-y-8">
-      {/* Header */}
+      {}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Salud y Sanidad</h1>
@@ -237,10 +237,10 @@ const HealthPage: React.FC<HealthPageProps> = ({
         </button>
       </div>
 
-      {/* Tabs & Search */}
+      {}
       <div className="flex flex-col md:flex-row gap-4 justify-between items-start md:items-center">
         
-        {/* Tabs */}
+        {}
         <div className="flex items-center gap-1 bg-gray-100 p-1 rounded-lg w-full md:w-auto">
           <button 
             onClick={() => setActiveTab('records')}
@@ -264,7 +264,7 @@ const HealthPage: React.FC<HealthPageProps> = ({
           </button>
         </div>
 
-        {/* Search & Filter */}
+        {}
         <div className="flex items-center gap-2 w-full md:w-auto">
           <div className="relative flex-1 md:w-80">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -303,7 +303,7 @@ const HealthPage: React.FC<HealthPageProps> = ({
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-1">
                       <h3 className="font-bold text-gray-900">{record.diagnosis || 'Observación General'}</h3>
-                      {/* Status logic needs to be adapted if it's not in the model directly */}
+                      {}
                     </div>
                     <div className="flex items-center gap-4 text-sm text-gray-500">
                       <span className="flex items-center gap-1.5 capitalize">
@@ -325,10 +325,10 @@ const HealthPage: React.FC<HealthPageProps> = ({
           )}
         </div>
       ) : (
-        /* Catalog Tab */
+        
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           
-          {/* Medications */}
+          {}
           <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm h-full flex flex-col">
             <div className="flex items-center gap-3 mb-6">
               <div className="p-2 bg-indigo-50 rounded-lg text-indigo-600">
@@ -364,7 +364,7 @@ const HealthPage: React.FC<HealthPageProps> = ({
             </button>
           </div>
 
-          {/* Vaccines */}
+          {}
           <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm h-full flex flex-col">
             <div className="flex items-center gap-3 mb-6">
               <div className="p-2 bg-teal-50 rounded-lg text-teal-600">
@@ -400,7 +400,7 @@ const HealthPage: React.FC<HealthPageProps> = ({
             </button>
           </div>
 
-           {/* Diseases */}
+           {}
           <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm h-full flex flex-col">
             <div className="flex items-center gap-3 mb-6">
               <div className="p-2 bg-rose-50 rounded-lg text-rose-600">
@@ -439,7 +439,7 @@ const HealthPage: React.FC<HealthPageProps> = ({
         </div>
       )}
 
-      {/* Modals */}
+      {}
       <MedicationModal 
         isOpen={isMedicationModalOpen} 
         onClose={() => setIsMedicationModalOpen(false)} 
@@ -479,5 +479,5 @@ const enhance = withObservables([], () => ({
 }));
 
 export const HealthPageEnhanced = enhance(HealthPage);
-// We need to export it as HealthPage to maintain compatibility with the router if it uses named exports
+
 export { HealthPageEnhanced as HealthPage };

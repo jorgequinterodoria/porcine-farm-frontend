@@ -5,9 +5,9 @@ import { X, Loader2, Save, Utensils } from 'lucide-react';
 import type { FeedType, FeedConsumptionFormData } from '../../types/feeding.types';
 import { feedConsumptionSchema } from '../../types/feeding.types';
 
-// Import models if needed for types, though we are passing them as props
-// import { Pen } from '../../db/models'; 
-// Assuming Pen type matches roughly what we need for the select
+
+
+
 
 interface FeedConsumptionModalProps {
     isOpen: boolean;
@@ -31,7 +31,7 @@ export const FeedConsumptionModal: React.FC<FeedConsumptionModalProps> = ({ isOp
 
     const targetType = watch('targetType');
 
-    // Reset form when modal opens/closes
+    
     React.useEffect(() => {
         if (isOpen) {
             reset({

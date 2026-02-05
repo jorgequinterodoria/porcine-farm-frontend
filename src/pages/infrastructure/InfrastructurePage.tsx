@@ -11,12 +11,12 @@ import {
   Users
 } from 'lucide-react';
 
-// WatermelonDB Imports
+
 import { database } from '../../db';
 import { Facility, Pen } from '../../db/models';
 import type { FacilityFormData, PenFormData } from '../../types/infrastructure.types';
 
-// Components
+
 import { FacilityForm } from '../../components/infrastructure/FacilityForm';
 import { PenForm } from '../../components/infrastructure/PenForm';
 
@@ -40,7 +40,7 @@ const InfrastructurePageComponent: React.FC<InfrastructurePageProps> = ({ facili
     }
   };
 
-  // 🔥 CORE: Crear Facility
+  
   const handleCreateFacility = async (data: FacilityFormData) => {
     try {
       await database.write(async () => {
@@ -49,7 +49,7 @@ const InfrastructurePageComponent: React.FC<InfrastructurePageProps> = ({ facili
             facility.code = data.code;
             facility.facilityType = data.facilityType;
             facility.capacity = Number(data.capacity) || 0;
-            // facility.areaSqm = Number(data.areaSqm) || 0; // Si el form lo envía
+            
             facility.isActive = true;
         });
       });
@@ -60,7 +60,7 @@ const InfrastructurePageComponent: React.FC<InfrastructurePageProps> = ({ facili
     }
   };
 
-  // 🔥 CORE: Crear Pen
+  
   const handleCreatePen = async (data: PenFormData) => {
     try {
       await database.write(async () => {
@@ -69,7 +69,7 @@ const InfrastructurePageComponent: React.FC<InfrastructurePageProps> = ({ facili
             pen.code = data.code;
             pen.facilityId = data.facilityId;
             pen.capacity = Number(data.capacity) || 0;
-            // pen.areaSqm = Number(data.areaSqm) || 0;
+            
             pen.isActive = true;
         });
       });
@@ -80,7 +80,7 @@ const InfrastructurePageComponent: React.FC<InfrastructurePageProps> = ({ facili
     }
   };
 
-  // --- Filtrado ---
+  
   const filteredFacilities = useMemo(() => 
     facilities.filter(f => 
       f.name.toLowerCase().includes(search.toLowerCase()) || 
@@ -93,14 +93,14 @@ const InfrastructurePageComponent: React.FC<InfrastructurePageProps> = ({ facili
       p.code.toLowerCase().includes(search.toLowerCase())
     ), [pens, search]);
 
-  // Helper para contar corrales por facility (ya que tenemos todos los pens)
+  
   const getPensCount = (facilityId: string) => {
       return pens.filter(p => p.facilityId === facilityId).length;
   };
 
   return (
     <div className="space-y-8 animate-fadeIn">
-      {/* Header */}
+      {}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Infraestructura</h1>
@@ -115,7 +115,7 @@ const InfrastructurePageComponent: React.FC<InfrastructurePageProps> = ({ facili
         </button>
       </div>
 
-      {/* Tabs & Search */}
+      {}
       <div className="flex flex-col md:flex-row gap-4 justify-between items-start md:items-center">
         <div className="flex items-center gap-1 bg-gray-100 p-1 rounded-lg w-full md:w-auto">
           <button 
@@ -152,7 +152,7 @@ const InfrastructurePageComponent: React.FC<InfrastructurePageProps> = ({ facili
         </div>
       </div>
 
-      {/* Grid */}
+      {}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {activeTab === 'facilities' ? (
           filteredFacilities.map((f) => (
@@ -208,7 +208,7 @@ const InfrastructurePageComponent: React.FC<InfrastructurePageProps> = ({ facili
               </div>
 
               <div className="space-y-5">
-                {/* Ocupación Visual (Placeholder, requiere lógica real de animales) */}
+                {}
                 <div className="bg-gray-50 rounded-lg p-3 border border-gray-100">
                   <div className="flex items-center justify-between text-xs text-gray-500 mb-2 font-medium">
                     <span>Ocupación Actual</span>
@@ -240,7 +240,7 @@ const InfrastructurePageComponent: React.FC<InfrastructurePageProps> = ({ facili
         )}
       </div>
 
-      {/* Empty State */}
+      {}
       {((activeTab === 'facilities' ? filteredFacilities : filteredPens).length === 0) && (
         <div className="bg-white border border-gray-200 border-dashed p-16 text-center rounded-xl">
           <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -261,7 +261,7 @@ const InfrastructurePageComponent: React.FC<InfrastructurePageProps> = ({ facili
         isOpen={isPenFormOpen} 
         onClose={() => setIsPenFormOpen(false)}
         onSubmit={handleCreatePen}
-        // Pasamos facilities como prop al formulario para el select
+        
         facilities={facilities}
       />
     </div>

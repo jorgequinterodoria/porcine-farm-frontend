@@ -12,12 +12,12 @@ import {
   Trash2
 } from 'lucide-react';
 
-// WatermelonDB Imports
+
 import { database } from '../../db';
 import { Batch } from '../../db/models';
 import type { BatchFormData } from '../../types/batch.types';
 
-// Components
+
 import { BatchForm } from '../../components/batches/BatchForm';
 
 interface BatchListPageProps {
@@ -29,7 +29,7 @@ const BatchListPageComponent: React.FC<BatchListPageProps> = ({ batches }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedBatch, setSelectedBatch] = useState<BatchFormData & { id?: string } | null>(null);
 
-  // --- Lógica de Filtrado (En memoria) ---
+  
   const filteredBatches = useMemo(() => {
     return batches.filter(batch => {
       const matchesSearch = 
@@ -63,7 +63,7 @@ const BatchListPageComponent: React.FC<BatchListPageProps> = ({ batches }) => {
     setIsModalOpen(true);
   };
 
-  // 🔥 CORE: Eliminar (Soft Delete)
+  
   const handleDelete = async (id: string) => {
     if (!window.confirm('¿Estás seguro de que deseas eliminar este lote?')) return;
 
@@ -78,20 +78,20 @@ const BatchListPageComponent: React.FC<BatchListPageProps> = ({ batches }) => {
     }
   };
 
-  // 🔥 CORE: Guardar (Create / Update)
+  
   const handleSubmit = async (data: BatchFormData) => {
     try {
       await database.write(async () => {
         const collection = database.collections.get<Batch>('batches');
 
         if (selectedBatch?.id) {
-          // UPDATE
+          
           const batch = await collection.find(selectedBatch.id);
           await batch.update(b => {
             updateBatchFields(b, data);
           });
         } else {
-          // CREATE
+          
           await collection.create(b => {
             updateBatchFields(b, data);
           });
@@ -116,13 +116,13 @@ const BatchListPageComponent: React.FC<BatchListPageProps> = ({ batches }) => {
     batch.currentCount = Number(data.currentCount) || 0;
     batch.targetWeight = Number(data.targetWeight) || 0;
     batch.notes = data.notes || '';
-    // batch.actualEndDate se maneja por separado usualmente al cerrar lote, pero lo incluimos si viene
+    
     if (data.actualEndDate) batch.actualEndDate = new Date(data.actualEndDate).getTime();
   };
 
   return (
     <div className="space-y-8 animate-fadeIn">
-      {/* Header */}
+      {}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Lotes de Producción</h1>
@@ -139,7 +139,7 @@ const BatchListPageComponent: React.FC<BatchListPageProps> = ({ batches }) => {
         </button>
       </div>
 
-      {/* Buscador */}
+      {}
       <div className="relative max-w-lg">
         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
           <Search className="w-5 h-5 text-gray-400" />
@@ -153,7 +153,7 @@ const BatchListPageComponent: React.FC<BatchListPageProps> = ({ batches }) => {
         />
       </div>
 
-      {/* Grid de Lotes */}
+      {}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredBatches.map((batch) => (
           <div

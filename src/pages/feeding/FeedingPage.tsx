@@ -14,12 +14,12 @@ import {
   Utensils
 } from 'lucide-react';
 
-// WatermelonDB Imports
+
 import { database } from '../../db';
 import { FeedType, FeedConsumption, Pen, Batch, FeedInventory } from '../../db/models';
 import type { FeedTypeFormData, FeedConsumptionFormData } from '../../types/feeding.types';
 
-// Components
+
 import { FeedTypeModal } from '../../components/feeding/FeedTypeModal';
 import { FeedMovementModal } from '../../components/feeding/FeedMovementModal';
 import { FeedConsumptionModal } from '../../components/feeding/FeedConsumptionModal';
@@ -42,7 +42,7 @@ const FeedingPageComponent: React.FC<FeedingPageProps> = ({ feedTypes, feedInven
   const [isMovementModalOpen, setIsMovementModalOpen] = useState(false);
   const [isConsumptionModalOpen, setIsConsumptionModalOpen] = useState(false);
 
-  // --- Filtrado y Merge con Inventario ---
+  
   const enrichedFeedTypes = useMemo(() => {
     return feedTypes.map(type => {
       const inventory = feedInventory.find(inv => inv.feedTypeId === type.id);
@@ -62,7 +62,7 @@ const FeedingPageComponent: React.FC<FeedingPageProps> = ({ feedTypes, feedInven
       t.type.code.toLowerCase().includes(search.toLowerCase())
     ), [enrichedFeedTypes, search]);
 
-  // --- Alertas de Stock (Calculadas en Cliente) ---
+  
   const alerts = useMemo(() => {
     return enrichedFeedTypes.filter(t => (t.currentStockKg || 0) <= (t.minimumStockKg || 0)).map(t => ({
       feedName: t.type.name,
@@ -71,7 +71,7 @@ const FeedingPageComponent: React.FC<FeedingPageProps> = ({ feedTypes, feedInven
     }));
   }, [enrichedFeedTypes]);
 
-  // 🔥 CORE: Crear / Editar Tipo de Alimento
+  
   const handleSaveType = async (data: FeedTypeFormData) => {
     try {
       await database.write(async () => {
@@ -81,7 +81,7 @@ const FeedingPageComponent: React.FC<FeedingPageProps> = ({ feedTypes, feedInven
         let typeRecord: FeedType;
 
         if (selectedType) {
-          // Update Type
+          
           typeRecord = await selectedType.update(type => {
             type.code = data.code;
             type.name = data.name;
@@ -94,7 +94,7 @@ const FeedingPageComponent: React.FC<FeedingPageProps> = ({ feedTypes, feedInven
             type.costPerKg = data.costPerKg;
           });
           
-          // Update Inventory Limits (if exists)
+          
           const existingInv = feedInventory.find(inv => inv.feedTypeId === selectedType.id);
           if (existingInv) {
             await existingInv.update(inv => {
@@ -102,7 +102,7 @@ const FeedingPageComponent: React.FC<FeedingPageProps> = ({ feedTypes, feedInven
                inv.maximumStockKg = data.maximumStockKg;
             });
           } else {
-             // Create Inventory if missing on edit (edge case)
+             
              await invCollection.create(inv => {
                 inv.feedTypeId = selectedType.id;
                 inv.currentStockKg = 0;
@@ -112,7 +112,7 @@ const FeedingPageComponent: React.FC<FeedingPageProps> = ({ feedTypes, feedInven
           }
 
         } else {
-          // Create Type
+          
           typeRecord = await typeCollection.create(type => {
             type.code = data.code;
             type.name = data.name;
@@ -125,7 +125,7 @@ const FeedingPageComponent: React.FC<FeedingPageProps> = ({ feedTypes, feedInven
             type.costPerKg = data.costPerKg;
           });
 
-          // Create Inventory Record
+          
           await invCollection.create(inv => {
             inv.feedTypeId = typeRecord.id;
             inv.currentStockKg = data.initialStockKg || 0;
@@ -142,7 +142,7 @@ const FeedingPageComponent: React.FC<FeedingPageProps> = ({ feedTypes, feedInven
     }
   };
 
-  // 🔥 CORE: Eliminar Tipo (Soft Delete)
+  
   const handleDeleteType = async (id: string) => {
     if (!window.confirm('¿Estás seguro de eliminar este tipo de alimento? Se desactivará del inventario.')) return;
     
@@ -150,7 +150,7 @@ const FeedingPageComponent: React.FC<FeedingPageProps> = ({ feedTypes, feedInven
         await database.write(async () => {
             const type = await database.collections.get<FeedType>('feed_types').find(id);
             await type.markAsDeleted();
-            // Optionally mark inventory as deleted too
+            
             const invs = await database.collections.get<FeedInventory>('feed_inventory').query(Q.where('feed_type_id', id)).fetch();
             for (const inv of invs) {
               await inv.markAsDeleted();
@@ -161,11 +161,11 @@ const FeedingPageComponent: React.FC<FeedingPageProps> = ({ feedTypes, feedInven
     }
   };
 
-  // 🔥 CORE: Registrar Consumo
+  
   const handleRegisterConsumption = async (data: FeedConsumptionFormData) => {
     try {
         await database.write(async () => {
-            // 1. Crear registro de consumo
+            
             await database.collections.get<FeedConsumption>('feed_consumption').create(record => {
                 record.consumptionDate = new Date(data.consumptionDate).getTime();
                 record.feedTypeId = data.feedTypeId;
@@ -173,10 +173,10 @@ const FeedingPageComponent: React.FC<FeedingPageProps> = ({ feedTypes, feedInven
                 record.penId = data.targetType === 'pen' ? data.targetId : undefined;
                 record.batchId = data.targetType === 'batch' ? data.targetId : undefined;
                 record.notes = data.notes;
-                // record.numberOfAnimals = ... 
+                
             });
 
-            // 2. Descontar del inventario (Lógica de Negocio Offline)
+            
             const inventory = (await database.collections.get<FeedInventory>('feed_inventory').query(Q.where('feed_type_id', data.feedTypeId)).fetch())[0];
             
             if (inventory) {
@@ -196,7 +196,7 @@ const FeedingPageComponent: React.FC<FeedingPageProps> = ({ feedTypes, feedInven
 
   return (
     <div className="space-y-8 animate-fadeIn">
-      {/* Header */}
+      {}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Alimentación y Nutrición</h1>
@@ -211,7 +211,7 @@ const FeedingPageComponent: React.FC<FeedingPageProps> = ({ feedTypes, feedInven
         </button>
       </div>
 
-      {/* Tabs & Search */}
+      {}
       <div className="flex flex-col md:flex-row gap-4 justify-between items-start md:items-center">
         <div className="flex items-center gap-1 bg-gray-100 p-1 rounded-lg w-full md:w-auto">
           <button 
@@ -254,11 +254,11 @@ const FeedingPageComponent: React.FC<FeedingPageProps> = ({ feedTypes, feedInven
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Main Content */}
+        {}
         <div className="lg:col-span-2 space-y-6">
             {activeTab === 'inventory' ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    {/* Add Card */}
+                    {}
                     <button 
                         onClick={() => { setSelectedType(null); setIsTypeModalOpen(true); }}
                         className="flex flex-col items-center justify-center p-8 border-2 border-dashed border-gray-200 rounded-xl hover:border-indigo-400 hover:bg-indigo-50/50 transition-all group min-h-[200px]"
@@ -342,9 +342,9 @@ const FeedingPageComponent: React.FC<FeedingPageProps> = ({ feedTypes, feedInven
                             </thead>
                             <tbody className="divide-y divide-gray-100">
                                 {consumptionHistory.map((record) => {
-                                    // Resolver relaciones manualmente si no están disponibles directamente
+                                    
                                     const feedType = feedTypes.find(f => f.id === record.feedTypeId);
-                                    // const pen = pens.find(p => p.id === record.penId); // Necesitaríamos pasar pens también
+                                    
                                     
                                     return (
                                         <tr key={record.id} className="hover:bg-gray-50">
@@ -355,7 +355,7 @@ const FeedingPageComponent: React.FC<FeedingPageProps> = ({ feedTypes, feedInven
                                                 {feedType?.name || 'Desconocido'}
                                             </td>
                                             <td className="px-6 py-4">
-                                                {/* Aquí simplificamos, idealmente resolveríamos el nombre del corral/lote */}
+                                                {}
                                                 {record.penId ? `Corral ID: ${record.penId.slice(0,8)}...` : record.batchId ? `Lote ID: ${record.batchId.slice(0,8)}...` : '-'}
                                             </td>
                                             <td className="px-6 py-4 text-right font-mono font-medium text-gray-900">
@@ -382,9 +382,9 @@ const FeedingPageComponent: React.FC<FeedingPageProps> = ({ feedTypes, feedInven
             )}
         </div>
 
-        {/* Sidebar */}
+        {}
         <div className="space-y-6">
-            {/* Alerts Widget */}
+            {}
             {alerts.length > 0 && (
                 <div className="bg-white p-5 rounded-xl border border-red-100 shadow-sm">
                     <div className="flex items-center gap-2 mb-4 text-red-700 font-bold">
@@ -407,7 +407,7 @@ const FeedingPageComponent: React.FC<FeedingPageProps> = ({ feedTypes, feedInven
                 </div>
             )}
 
-            {/* Quick Actions */}
+            {}
             <div className="bg-white p-5 rounded-xl border border-gray-200 shadow-sm">
                 <div className="flex items-center gap-2 mb-4 text-gray-900 font-bold">
                     <ArrowRightLeft className="w-5 h-5 text-indigo-600" />
@@ -421,7 +421,7 @@ const FeedingPageComponent: React.FC<FeedingPageProps> = ({ feedTypes, feedInven
                         Ajuste de Inventario / Compra
                         <Plus className="w-4 h-4 text-gray-400 group-hover:text-indigo-600" />
                     </button>
-                    {/* Más botones... */}
+                    {}
                 </div>
             </div>
         </div>
@@ -434,7 +434,7 @@ const FeedingPageComponent: React.FC<FeedingPageProps> = ({ feedTypes, feedInven
         onSubmit={handleSaveType}
       />
       
-      {/* FeedMovementModal requeriría refactor similar, lo omitimos por brevedad del ejemplo, asumiendo que el usuario lo hará igual */}
+      {}
       <FeedMovementModal 
         isOpen={isMovementModalOpen} 
         onClose={() => setIsMovementModalOpen(false)}
